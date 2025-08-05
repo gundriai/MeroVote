@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(0, 84.2%, 60.2%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+  
+  /* Nepal-themed colors */
+  --nepal-red: hsl(345, 80%, 48%);
+  --nepal-blue: hsl(217, 100%, 29%);
+  --nepal-orange: hsl(22, 100%, 60%);
+  --success: hsl(142, 76%, 36%);
+  --warning: hsl(45, 93%, 47%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(345, 80%, 48%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .nepal-red {
+    color: var(--nepal-red);
+  }
+  
+  .bg-nepal-red {
+    background-color: var(--nepal-red);
+  }
+  
+  .border-nepal-red {
+    border-color: var(--nepal-red);
+  }
+  
+  .nepal-blue {
+    color: var(--nepal-blue);
+  }
+  
+  .bg-nepal-blue {
+    background-color: var(--nepal-blue);
+  }
+  
+  .border-nepal-blue {
+    border-color: var(--nepal-blue);
+  }
+  
+  .nepal-orange {
+    color: var(--nepal-orange);
+  }
+  
+  .bg-nepal-orange {
+    background-color: var(--nepal-orange);
+  }
+  
+  .border-nepal-orange {
+    border-color: var(--nepal-orange);
+  }
+}
+
+/* Nepali font support */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+
+.font-nepali {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+}
+
+/* Vote button animations */
+.vote-button {
+  @apply transition-all duration-200 ease-in-out transform;
+}
+
+.vote-button:hover {
+  @apply scale-105 shadow-lg;
+}
+
+.vote-button:active {
+  @apply scale-95;
+}
+
+/* Card hover effects */
+.comparison-card {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+.comparison-card:hover {
+  @apply transform -translate-y-1 shadow-xl;
+}
