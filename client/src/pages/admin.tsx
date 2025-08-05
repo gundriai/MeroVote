@@ -1,314 +1,268 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { queryClient, apiRequest } from "@/lib/queryClient";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Users, BarChart3, MessageSquare, Calendar } from "lucide-react";
-import { Link } from "wouter";
-import AdminDashboard from "@/components/admin-dashboard";
+import { BarChart3, Users, MessageSquare, Grid3X3, Edit3, Pause, Trash2, LogOut } from "lucide-react";
+import { useState } from "react";
 
-const pollFormSchema = z.object({
-  title: z.string().min(1, "शीर्षक आवश्यक छ"),
-  description: z.string().optional(),
-  type: z.enum(["daily_rating", "political_rating", "comparison_voting"]),
-  duration: z.number().min(1, "अवधि कम्तिमा १ घण्टा हुनुपर्छ"),
-  mediaUrl: z.string().optional(),
-  createdBy: z.string().default("admin"), // Simplified for demo
-  candidates: z.array(z.object({
-    name: z.string().min(1, "उम्मेदवारको नाम आवश्यक छ"),
-    description: z.string().optional(),
-    imageUrl: z.string().optional(),
-  })).optional(),
-});
+// Mock data for admin dashboard
+const mockStats = {
+  totalPolls: 1827,
+  activePolls: 3,
+  totalComments: 135,
+  totalCards: 7
+};
 
-type PollFormData = z.infer<typeof pollFormSchema>;
+const mockPolls = [
+  {
+    id: "1",
+    title: "नयाँ सरकारी नीति कस्तो लाग्यो?",
+    description: "सरकारले ल्याएको नयाँ शिक्षा नीति बारे तपाईंको राय दिनुहोस्।",
+    type: "political_rating",
+    createdAt: "August 5, 2025 at 07:17 PM",
+    totalVotes: 490,
+    totalComments: 23,
+    voteCounts: {
+      excellent: 245,
+      good: 89,
+      poor: 156
+    }
+  },
+  {
+    id: "2", 
+    title: "आजको मौसम कस्तो छ?",
+    description: "काठमाडौंको आजको मौसम कस्तो लाग्यो तपाईंलाई?",
+    type: "daily_rating",
+    createdAt: "August 5, 2025 at 05:17 PM",
+    totalVotes: 635,
+    totalComments: 45,
+    voteCounts: {
+      gajjab: 312,
+      bekar: 180,
+      furious: 143
+    }
+  }
+];
 
 export default function Admin() {
   const { toast } = useToast();
 
-  const form = useForm<PollFormData>({
-    resolver: zodResolver(pollFormSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      type: "daily_rating",
-      duration: 24,
-      mediaUrl: "",
-      candidates: [],
-    },
-  });
-
-  const watchedType = form.watch("type");
-
-  // Fetch analytics
-  const { data: stats } = useQuery({
-    queryKey: ["/api/analytics/stats"],
-  });
-
-  // Create poll mutation
-  const createPollMutation = useMutation({
-    mutationFn: async (data: PollFormData) => {
-      const response = await apiRequest("POST", "/api/polls", data);
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "सफलता",
-        description: "नयाँ पोल सिर्जना गरियो",
-      });
-      form.reset();
-      queryClient.invalidateQueries({ queryKey: ["/api/polls"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/analytics/stats"] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "त्रुटि",
-        description: "पोल सिर्जना गर्न सकिएन",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const onSubmit = (data: PollFormData) => {
-    createPollMutation.mutate(data);
+  const handleEdit = (pollId: string) => {
+    toast({
+      title: "संशोधन",
+      description: "पोल संशोधन गर्ने सुविधा छिट्टै आउँदैछ",
+    });
   };
 
-  const addCandidate = () => {
-    const candidates = form.getValues("candidates") || [];
-    form.setValue("candidates", [...candidates, { name: "", description: "", imageUrl: "" }]);
+  const handlePause = (pollId: string) => {
+    toast({
+      title: "रोकियो",
+      description: "पोल अस्थायी रूपमा रोकियो",
+    });
   };
 
-  const removeCandidate = (index: number) => {
-    const candidates = form.getValues("candidates") || [];
-    form.setValue("candidates", candidates.filter((_, i) => i !== index));
+  const handleDelete = (pollId: string) => {
+    toast({
+      title: "मेटाइयो",
+      description: "पोल सफलतापूर्वक मेटाइयो",
+      variant: "destructive",
+    });
+  };
+
+  const getTypeLabel = (type: string): string => {
+    switch (type) {
+      case "daily_rating": return "Daily Rating";
+      case "political_rating": return "Politician Rating";
+      default: return "मतदान";
+    }
+  };
+
+  const getTypeBadgeColor = (type: string): string => {
+    switch (type) {
+      case "daily_rating": return "bg-nepal-orange";
+      case "political_rating": return "bg-purple-600";
+      default: return "bg-gray-600";
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 p-6">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">एडमिन ड्यासबोर्ड</h1>
+        <Button variant="outline" className="flex items-center space-x-2 text-nepal-red border-nepal-red hover:bg-nepal-red hover:text-white">
+          <LogOut className="w-4 h-4" />
+          <span>व्यवस्थापक मोड</span>
+        </Button>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <Card className="bg-white">
+          <CardContent className="p-6">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-nepal-red rounded-lg flex items-center justify-center">
-                  <Calendar className="text-white w-4 h-4" />
-                </div>
-                <h1 className="text-xl font-bold text-gray-900">MeroVote Admin</h1>
-              </Link>
+              <div className="p-3 bg-red-100 rounded-lg">
+                <BarChart3 className="w-6 h-6 text-nepal-red" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{mockStats.totalPolls}</p>
+                <p className="text-sm text-gray-600">कुल मत</p>
+              </div>
             </div>
-            
-            <nav className="flex items-center space-x-6">
-              <Link href="/" className="text-gray-700 hover:text-nepal-red transition-colors">
-                होम
-              </Link>
-              <Link href="/admin" className="text-nepal-red font-medium">
-                एडमिन
-              </Link>
-            </nav>
-          </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Users className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{mockStats.activePolls}</p>
+                <p className="text-sm text-gray-600">सक्रिय पोस्ट</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-green-100 rounded-lg">
+                <MessageSquare className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{mockStats.totalComments}</p>
+                <p className="text-sm text-gray-600">कुल टिप्पणी</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Grid3X3 className="w-6 h-6 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{mockStats.totalCards}</p>
+                <p className="text-sm text-gray-600">कार्ड प्रकार</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Categories */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="text-center">
+          <p className="text-sm text-gray-600 mb-1">मत्तदात कार्डहरू</p>
         </div>
-      </header>
+        <div className="text-center">
+          <p className="text-sm text-gray-600 mb-1">पोस्ट व्यवस्थापन</p>
+        </div>
+        <div className="text-center">
+          <p className="text-sm text-gray-600 mb-1">विश्लेषण</p>
+        </div>
+        <div className="text-center">
+          <p className="text-sm text-gray-600 mb-1">सुरक्षा</p>
+        </div>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content - Create Poll Form */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Plus className="w-5 h-5" />
-                  <span>नयाँ पोल बनाउनुहोस्</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>शीर्षक</FormLabel>
-                          <FormControl>
-                            <Input placeholder="पोलको शीर्षक लेख्नुहोस्" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>विवरण</FormLabel>
-                          <FormControl>
-                            <Textarea placeholder="पोलको विस्तृत विवरण" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="type"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>पोल प्रकार</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="प्रकार छान्नुहोस्" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="daily_rating">दैनिक मूल्याङ्कन</SelectItem>
-                                <SelectItem value="political_rating">राजनैतिक मूल्याङ्कन</SelectItem>
-                                <SelectItem value="comparison_voting">तुलना मतदान</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="duration"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>अवधि (घण्टामा)</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="number" 
-                                placeholder="24" 
-                                {...field}
-                                onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+      {/* All Posts Section */}
+      <Card className="bg-white">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold text-gray-900">सबै पोस्टहरू</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {mockPolls.map((poll) => (
+            <Card key={poll.id} className="border border-gray-200">
+              <CardContent className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{poll.title}</h3>
+                    <p className="text-gray-600 text-sm mb-3">{poll.description}</p>
+                    <div className="flex items-center space-x-4 mb-4">
+                      <Badge className={`${getTypeBadgeColor(poll.type)} text-white text-xs`}>
+                        {getTypeLabel(poll.type)}
+                      </Badge>
+                      <span className="text-xs text-gray-500">{poll.createdAt}</span>
+                      <span className="text-xs text-gray-500">{poll.totalVotes} मत</span>
+                      <span className="text-xs text-gray-500">{poll.totalComments} टिप्पणी</span>
                     </div>
-
-                    <FormField
-                      control={form.control}
-                      name="mediaUrl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>मिडिया URL (वैकल्पिक)</FormLabel>
-                          <FormControl>
-                            <Input placeholder="https://example.com/image.jpg" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Candidates Section for Comparison Voting */}
-                    {watchedType === "comparison_voting" && (
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-medium">उम्मेदवारहरू</h3>
-                          <Button type="button" onClick={addCandidate} variant="outline" size="sm">
-                            <Plus className="w-4 h-4 mr-2" />
-                            उम्मेदवार थप्नुहोस्
-                          </Button>
-                        </div>
-
-                        {(form.watch("candidates") || []).map((_, index) => (
-                          <Card key={index} className="p-4">
-                            <div className="space-y-4">
-                              <div className="flex items-center justify-between">
-                                <h4 className="font-medium">उम्मेदवार {index + 1}</h4>
-                                <Button 
-                                  type="button" 
-                                  onClick={() => removeCandidate(index)}
-                                  variant="destructive" 
-                                  size="sm"
-                                >
-                                  हटाउनुहोस्
-                                </Button>
-                              </div>
-                              
-                              <FormField
-                                control={form.control}
-                                name={`candidates.${index}.name`}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>नाम</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="उम्मेदवारको नाम" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              
-                              <FormField
-                                control={form.control}
-                                name={`candidates.${index}.description`}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>विवरण</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="छोटो विवरण" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              
-                              <FormField
-                                control={form.control}
-                                name={`candidates.${index}.imageUrl`}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>तस्बिर URL</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="https://example.com/candidate.jpg" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                          </Card>
-                        ))}
-                      </div>
-                    )}
-
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-nepal-red hover:bg-red-700"
-                      disabled={createPollMutation.isPending}
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      onClick={() => handleEdit(poll.id)}
+                      variant="outline"
+                      size="sm"
+                      className="text-blue-600 border-blue-600 hover:bg-blue-50"
                     >
-                      {createPollMutation.isPending ? "सिर्जना गर्दै..." : "पोल सिर्जना गर्नुहोस्"}
+                      <Edit3 className="w-4 h-4 mr-1" />
+                      संशोधन
                     </Button>
-                  </form>
-                </Form>
+                    <Button
+                      onClick={() => handlePause(poll.id)}
+                      variant="outline"
+                      size="sm"
+                      className="text-orange-600 border-orange-600 hover:bg-orange-50"
+                    >
+                      <Pause className="w-4 h-4 mr-1" />
+                      पज
+                    </Button>
+                    <Button
+                      onClick={() => handleDelete(poll.id)}
+                      variant="outline"
+                      size="sm"
+                      className="text-red-600 border-red-600 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      डिलिट
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Vote Statistics */}
+                <div className="grid grid-cols-3 gap-4">
+                  {poll.type === "political_rating" ? (
+                    <>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-green-600">{poll.voteCounts.excellent}</p>
+                        <p className="text-sm text-gray-600">गजब</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-orange-600">{poll.voteCounts.good}</p>
+                        <p className="text-sm text-gray-600">बेकार</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-red-600">{poll.voteCounts.poor}</p>
+                        <p className="text-sm text-gray-600">यस्तो नी हुन्छ गथे</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-green-600">{poll.voteCounts.gajjab}</p>
+                        <p className="text-sm text-gray-600">गजब</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-orange-600">{poll.voteCounts.bekar}</p>
+                        <p className="text-sm text-gray-600">बेकार</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-red-600">{poll.voteCounts.furious}</p>
+                        <p className="text-sm text-gray-600">यस्तो नी हुन्छ गथे</p>
+                      </div>
+                    </>
+                  )}
+                </div>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Sidebar - Admin Dashboard */}
-          <div className="lg:col-span-1">
-            <AdminDashboard stats={stats as any} />
-          </div>
-        </div>
-      </main>
+          ))}
+        </CardContent>
+      </Card>
     </div>
   );
 }
