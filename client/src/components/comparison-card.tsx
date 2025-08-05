@@ -5,6 +5,9 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { voteTracker } from "@/lib/vote-tracker";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
+import { MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import CommentSection from "./comment-section";
 
 interface ComparisonCardProps {
   poll: {
@@ -30,6 +33,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
   const { toast } = useToast();
   const [hasVoted, setHasVoted] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState("");
+  const [showComments, setShowComments] = useState(false);
 
   // Check if user has voted locally
   useEffect(() => {
@@ -206,6 +210,22 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
             </div>
           </div>
         </div>
+
+        {/* Comment Toggle Button */}
+        <Button
+          onClick={() => setShowComments(!showComments)}
+          variant="outline"
+          className="w-full mb-4 flex items-center justify-center space-x-2 hover:bg-gray-50"
+        >
+          <MessageSquare className="w-4 h-4" />
+          <span>{showComments ? "टिप्पणी लुकाउनुहोस्" : "टिप्पणी देखाउनुहोस्"}</span>
+          {showComments ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </Button>
+
+        {/* Comment Section */}
+        {showComments && (
+          <CommentSection pollId={poll.id} showWordLimit={false} />
+        )}
       </CardContent>
     </Card>
   );

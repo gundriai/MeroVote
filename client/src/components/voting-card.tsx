@@ -5,8 +5,9 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { voteTracker } from "@/lib/vote-tracker";
 import { useToast } from "@/hooks/use-toast";
-import { ThumbsUp, ThumbsDown, Flame, Star, Minus } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Flame, Star, Minus, MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect } from "react";
+import CommentSection from "./comment-section";
 
 interface VotingCardProps {
   poll: {
@@ -67,6 +68,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
   const { toast } = useToast();
   const [hasVoted, setHasVoted] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState("");
+  const [showComments, setShowComments] = useState(false);
 
   const voteOptions = getVoteOptions(poll.type);
 
@@ -213,6 +215,22 @@ export default function VotingCard({ poll }: VotingCardProps) {
             </div>
           </div>
         </div>
+
+        {/* Comment Toggle Button */}
+        <Button
+          onClick={() => setShowComments(!showComments)}
+          variant="outline"
+          className="w-full mb-4 flex items-center justify-center space-x-2 hover:bg-gray-50"
+        >
+          <MessageSquare className="w-4 h-4" />
+          <span>{showComments ? "टिप्पणी लुकाउनुहोस्" : "टिप्पणी देखाउनुहोस्"}</span>
+          {showComments ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </Button>
+
+        {/* Comment Section */}
+        {showComments && (
+          <CommentSection pollId={poll.id} showWordLimit={poll.type === "daily_rating"} />
+        )}
       </CardContent>
     </Card>
   );
