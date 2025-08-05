@@ -56,7 +56,7 @@ export default function Home() {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 text-sm">
                 <span className="w-3 h-3 bg-nepal-red rounded-full"></span>
-                <span className="text-gray-600">{stats?.activeVoters || 0}</span>
+                <span className="text-gray-600">{(stats as any)?.activeVoters || 0}</span>
                 <span className="text-gray-500">सुरक्षित</span>
                 <span className="w-3 h-3 bg-green-500 rounded-full ml-2"></span>
                 <span className="text-gray-600">सत्यापित</span>
@@ -99,7 +99,7 @@ export default function Home() {
                 <div>
                   <p className="text-sm text-gray-600 mb-1">कुल मतदान</p>
                   <p className="text-3xl font-bold text-nepal-red">
-                    {stats?.totalVotes?.toLocaleString() || "०"}
+                    {(stats as any)?.totalVotes?.toLocaleString() || "०"}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
@@ -115,7 +115,7 @@ export default function Home() {
                 <div>
                   <p className="text-sm text-gray-600 mb-1">सक्रिय मतदाता</p>
                   <p className="text-3xl font-bold text-green-600">
-                    {stats?.activeVoters?.toLocaleString() || "०"}
+                    {(stats as any)?.activeVoters?.toLocaleString() || "०"}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -131,7 +131,7 @@ export default function Home() {
                 <div>
                   <p className="text-sm text-gray-600 mb-1">मतदान प्रकार</p>
                   <p className="text-3xl font-bold text-nepal-blue">
-                    {stats?.activePolls || "०"}
+                    {(stats as any)?.activePolls || "०"}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -171,7 +171,7 @@ export default function Home() {
             <div className="text-center py-8">
               <p className="text-gray-500">पोलहरू लोड गर्दै...</p>
             </div>
-          ) : !polls || polls.length === 0 ? (
+          ) : !polls || !Array.isArray(polls) || polls.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500">कुनै पोल भेटिएन</p>
             </div>

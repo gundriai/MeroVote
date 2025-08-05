@@ -72,7 +72,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
     queryKey: ["/api/polls", poll.id],
   });
 
-  const candidates = pollData?.candidates || [];
+  const candidates = (pollData as any)?.candidates || [];
   const totalVotes = candidates.reduce((sum: number, candidate: Candidate) => sum + candidate.voteCount, 0);
 
   // Vote mutation
@@ -130,7 +130,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
     return totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
   };
 
-  const getCandidateColor = (index: number): string => {
+  const getCandidateColor = (index: number) => {
     const colors = [
       { bg: "from-blue-50 to-indigo-50", border: "border-nepal-blue", text: "text-nepal-blue", progress: "bg-nepal-blue" },
       { bg: "from-green-50 to-emerald-50", border: "border-green-500", text: "text-green-600", progress: "bg-green-500" },

@@ -305,7 +305,7 @@ export default function Admin() {
 
           {/* Sidebar - Admin Dashboard */}
           <div className="lg:col-span-1">
-            <AdminDashboard stats={stats} />
+            <AdminDashboard stats={stats as any} />
           </div>
         </div>
       </main>

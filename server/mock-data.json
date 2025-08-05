@@ -1,0 +1,179 @@
+{
+  "polls": [
+    {
+      "id": "1",
+      "title": "नेपालको सबैभन्दा राम्रो खाना कुन हो?",
+      "description": "नेपालका पारम्परिक खानाहरूमध्ये तपाईंलाई कुन सबैभन्दा मन पर्छ?",
+      "type": "daily_rating",
+      "mediaUrl": null,
+      "duration": 24,
+      "isActive": true,
+      "createdAt": "2024-08-05T10:00:00Z",
+      "expiresAt": "2024-08-06T10:00:00Z",
+      "createdBy": "admin"
+    },
+    {
+      "id": "2",
+      "title": "वर्तमान प्रधानमन्त्रीको कामको मूल्याङ्कन",
+      "description": "वर्तमान प्रधानमन्त्रीको कामको तपाईंको मूल्याङ्कन के छ?",
+      "type": "political_rating",
+      "mediaUrl": null,
+      "duration": 48,
+      "isActive": true,
+      "createdAt": "2024-08-04T15:00:00Z",
+      "expiresAt": "2024-08-06T15:00:00Z",
+      "createdBy": "admin"
+    },
+    {
+      "id": "3",
+      "title": "अर्को राष्ट्रपति को हुनुपर्छ?",
+      "description": "तपाईंको विचारमा अर्को राष्ट्रपति को हुनुपर्छ?",
+      "type": "comparison_voting",
+      "mediaUrl": null,
+      "duration": 72,
+      "isActive": true,
+      "createdAt": "2024-08-03T12:00:00Z",
+      "expiresAt": "2024-08-06T12:00:00Z",
+      "createdBy": "admin"
+    },
+    {
+      "id": "4",
+      "title": "नेपालकी सुन्दरी को हुन्?",
+      "description": "नेपालकी सबैभन्दा सुन्दरी अभिनेत्री को हो तपाईंको विचारमा?",
+      "type": "comparison_voting",
+      "mediaUrl": null,
+      "duration": 24,
+      "isActive": true,
+      "createdAt": "2024-08-05T08:00:00Z",
+      "expiresAt": "2024-08-06T08:00:00Z",
+      "createdBy": "admin"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "1",
+      "pollId": "3",
+      "name": "डा. रामबरन यादव",
+      "description": "पूर्व राष्ट्रपति, अनुभवी राजनीतिज्ञ",
+      "imageUrl": null,
+      "voteCount": 245
+    },
+    {
+      "id": "2",
+      "pollId": "3",
+      "name": "विद्यादेवी भण्डारी",
+      "description": "पूर्व राष्ट्रपति, महिला नेत्री",
+      "imageUrl": null,
+      "voteCount": 198
+    },
+    {
+      "id": "3",
+      "pollId": "3",
+      "name": "डा. शेखर कोइराला",
+      "description": "चिकित्सक, राजनीतिज्ञ",
+      "imageUrl": null,
+      "voteCount": 167
+    },
+    {
+      "id": "4",
+      "pollId": "3",
+      "name": "प्रकाशमान सिंह",
+      "description": "पूर्व मुख्यमन्त्री, युवा नेता",
+      "imageUrl": null,
+      "voteCount": 134
+    },
+    {
+      "id": "5",
+      "pollId": "4",
+      "name": "रेखा थापा",
+      "description": "लोकप्रिय अभिनेत्री",
+      "imageUrl": null,
+      "voteCount": 312
+    },
+    {
+      "id": "6",
+      "pollId": "4",
+      "name": "प्रियंका कार्की",
+      "description": "युवा अभिनेत्री",
+      "imageUrl": null,
+      "voteCount": 289
+    },
+    {
+      "id": "7",
+      "pollId": "4",
+      "name": "सम्राग्यी राज्य लक्ष्मी शाह",
+      "description": "मिस नेपाल विजेता",
+      "imageUrl": null,
+      "voteCount": 267
+    },
+    {
+      "id": "8",
+      "pollId": "4",
+      "name": "शिल्पा पोखरेल",
+      "description": "बहुमुखी अभिनेत्री",
+      "imageUrl": null,
+      "voteCount": 198
+    }
+  ],
+  "votes": {
+    "1": {
+      "gajjab": 156,
+      "bekar": 89,
+      "furious": 45
+    },
+    "2": {
+      "excellent": 123,
+      "good": 98,
+      "average": 67,
+      "poor": 34
+    }
+  },
+  "comments": [
+    {
+      "id": "1",
+      "pollId": "1",
+      "content": "दाल भात नेपालको आत्मा हो",
+      "author": "राम बहादुर",
+      "fingerprint": "sample_fingerprint_1",
+      "ipAddress": "127.0.0.1",
+      "gajjabCount": 12,
+      "bekarCount": 2,
+      "furiousCount": 1,
+      "isModerated": false,
+      "createdAt": "2024-08-05T11:30:00Z"
+    },
+    {
+      "id": "2",
+      "pollId": "1",
+      "content": "मोमो सबैभन्दा राम्रो छ",
+      "author": "सीता देवी",
+      "fingerprint": "sample_fingerprint_2",
+      "ipAddress": "127.0.0.2",
+      "gajjabCount": 8,
+      "bekarCount": 5,
+      "furiousCount": 0,
+      "isModerated": false,
+      "createdAt": "2024-08-05T12:15:00Z"
+    },
+    {
+      "id": "3",
+      "pollId": "2",
+      "content": "राम्रो काम गरिरहेका छन्",
+      "author": "हरि प्रसाद",
+      "fingerprint": "sample_fingerprint_3",
+      "ipAddress": "127.0.0.3",
+      "gajjabCount": 15,
+      "bekarCount": 8,
+      "furiousCount": 3,
+      "isModerated": false,
+      "createdAt": "2024-08-05T09:45:00Z"
+    }
+  ],
+  "analytics": {
+    "totalVotes": 2847,
+    "activeVoters": 1234,
+    "totalPolls": 7,
+    "activePolls": 4,
+    "pendingComments": 3
+  }
+}

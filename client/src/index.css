@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -103,8 +105,7 @@
   }
 }
 
-/* Nepali font support */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+/* Nepali font support - imported at top of file */
 
 .font-nepali {
   font-family: 'Noto Sans Devanagari', sans-serif;

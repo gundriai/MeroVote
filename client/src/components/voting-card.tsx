@@ -195,7 +195,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
         <div className={`grid gap-4 mb-6 ${voteOptions.length === 3 ? 'grid-cols-3' : 'grid-cols-2 md:grid-cols-4'}`}>
           {voteOptions.map((option) => {
             const Icon = option.icon;
-            const count = voteCounts?.[option.type] || 0;
+            const count = (voteCounts as any)?.[option.type] || 0;
             const isDisabled = hasVoted || isExpired || voteMutation.isPending;
 
             return (

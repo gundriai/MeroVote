@@ -151,12 +151,12 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
             <div className="text-center py-4">
               <p className="text-gray-500">टिप्पणीहरू लोड गर्दै...</p>
             </div>
-          ) : !comments || comments.length === 0 ? (
+          ) : !comments || !Array.isArray(comments) || comments.length === 0 ? (
             <div className="text-center py-4">
               <p className="text-gray-500">कुनै टिप्पणी छैन</p>
             </div>
           ) : (
-            comments.map((comment: Comment) => (
+            (comments as Comment[]).map((comment: Comment) => (
               <div key={comment.id} className="bg-gray-50 rounded-lg p-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
