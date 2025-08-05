@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,19 +7,21 @@ import CommentSection from "@/components/comment-section";
 import { Vote, TrendingUp, Users, CheckSquare, Zap, Landmark, Scale } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
+import { mockPolls, MockPoll } from "@/data/mock-polls";
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string>("daily_rating");
 
-  // Fetch analytics stats
-  const { data: stats } = useQuery({
-    queryKey: ["/api/analytics/stats"],
-  });
+  // Use hardcoded data instead of API calls
+  const stats = {
+    totalVotes: 2847,
+    activeVoters: 1234, 
+    activePolls: 3
+  };
 
-  // Fetch polls based on selected category
-  const { data: polls, isLoading } = useQuery({
-    queryKey: ["/api/polls", { type: selectedCategory }],
-  });
+  // Filter polls by selected category
+  const polls = mockPolls.filter(poll => poll.type === selectedCategory);
+  const isLoading = false;
 
   const categories = [
     { id: "daily_rating", label: "मतदान कार्यक्रम", icon: Zap },
@@ -99,7 +100,7 @@ export default function Home() {
                 <div>
                   <p className="text-sm text-gray-600 mb-1">कुल मतदान</p>
                   <p className="text-3xl font-bold text-nepal-red">
-                    {(stats as any)?.totalVotes?.toLocaleString() || "०"}
+                    {stats.totalVotes.toLocaleString()}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
@@ -115,7 +116,7 @@ export default function Home() {
                 <div>
                   <p className="text-sm text-gray-600 mb-1">सक्रिय मतदाता</p>
                   <p className="text-3xl font-bold text-green-600">
-                    {(stats as any)?.activeVoters?.toLocaleString() || "०"}
+                    {stats.activeVoters.toLocaleString()}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -131,7 +132,7 @@ export default function Home() {
                 <div>
                   <p className="text-sm text-gray-600 mb-1">मतदान प्रकार</p>
                   <p className="text-3xl font-bold text-nepal-blue">
-                    {(stats as any)?.activePolls || "०"}
+                    {stats.activePolls}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">

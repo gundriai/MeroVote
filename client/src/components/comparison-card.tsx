@@ -67,44 +67,19 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
     return () => clearInterval(interval);
   }, [poll.expiresAt]);
 
-  // Fetch poll with candidates
-  const { data: pollData } = useQuery({
-    queryKey: ["/api/polls", poll.id],
-  });
+  // Use candidates directly from poll data
+  const candidates = (poll as any)?.candidates || [];
+  const totalVotes = candidates.reduce((sum: number, candidate: any) => sum + candidate.voteCount, 0);
 
-  const candidates = (pollData as any)?.candidates || [];
-  const totalVotes = candidates.reduce((sum: number, candidate: Candidate) => sum + candidate.voteCount, 0);
-
-  // Vote mutation
-  const voteMutation = useMutation({
-    mutationFn: async (candidateId: string) => {
-      const fingerprint = voteTracker.getFingerprint();
-      const response = await apiRequest("POST", "/api/votes", {
-        pollId: poll.id,
-        candidateId,
-        fingerprint,
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      voteTracker.recordVote(poll.id);
-      setHasVoted(true);
-      toast({
-        title: "सफलता",
-        description: "तपाईंको मत सफलतापूर्वक दर्ता भयो",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/polls", poll.id] });
-      queryClient.invalidateQueries({ queryKey: ["/api/analytics/stats"] });
-    },
-    onError: (error: any) => {
-      const message = error.message || "मत दिन सकिएन";
-      toast({
-        title: "त्रुटि",
-        description: message,
-        variant: "destructive",
-      });
-    },
-  });
+  // Simulate voting without API call
+  const handleVoteAction = (candidateId: string) => {
+    voteTracker.recordVote(poll.id);
+    setHasVoted(true);
+    toast({
+      title: "सफलता",
+      description: "तपाईंको मत सफलतापूर्वक दर्ता भयो",
+    });
+  };
 
   const handleVote = (candidateId: string) => {
     if (hasVoted) {
@@ -123,7 +98,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
       return;
     }
 
-    voteMutation.mutate(candidateId);
+    handleVoteAction(candidateId);
   };
 
   const getPercentage = (voteCount: number): number => {
@@ -140,7 +115,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
     return colors[index % colors.length];
   };
 
-  const isExpired = !poll.isActive || new Date() > new Date(poll.expiresAt);
+  const isExpired = new Date() > new Date(poll.expiresAt);
 
   return (
     <Card className="bg-white shadow-sm border border-gray-200">
@@ -165,7 +140,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
           {candidates.map((candidate: Candidate, index: number) => {
             const colorScheme = getCandidateColor(index);
             const percentage = getPercentage(candidate.voteCount);
-            const isDisabled = hasVoted || isExpired || voteMutation.isPending;
+            const isDisabled = hasVoted || isExpired;
 
             return (
               <div

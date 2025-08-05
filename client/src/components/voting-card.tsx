@@ -12,11 +12,11 @@ interface VotingCardProps {
   poll: {
     id: string;
     title: string;
-    description?: string;
+    description?: string | null;
     type: string;
-    mediaUrl?: string;
+    mediaUrl?: string | null;
     expiresAt: string;
-    isActive: boolean;
+    voteCounts?: { [key: string]: number };
   };
 }
 
@@ -106,41 +106,18 @@ export default function VotingCard({ poll }: VotingCardProps) {
     return () => clearInterval(interval);
   }, [poll.expiresAt]);
 
-  // Fetch vote counts
-  const { data: voteCounts } = useQuery({
-    queryKey: ["/api/polls", poll.id, "votes"],
-  });
+  // Use hardcoded vote counts from poll data
+  const voteCounts = (poll as any).voteCounts || {};
 
-  // Vote mutation
-  const voteMutation = useMutation({
-    mutationFn: async (voteType: string) => {
-      const fingerprint = voteTracker.getFingerprint();
-      const response = await apiRequest("POST", "/api/votes", {
-        pollId: poll.id,
-        voteType,
-        fingerprint,
-      });
-      return response.json();
-    },
-    onSuccess: (_, voteType) => {
-      voteTracker.recordVote(poll.id);
-      setHasVoted(true);
-      toast({
-        title: "सफलता",
-        description: "तपाईंको मत सफलतापूर्वक दर्ता भयो",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/polls", poll.id, "votes"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/analytics/stats"] });
-    },
-    onError: (error: any) => {
-      const message = error.message || "मत दिन सकिएन";
-      toast({
-        title: "त्रुटि",
-        description: message,
-        variant: "destructive",
-      });
-    },
-  });
+  // Simulate voting without API call
+  const handleVoteAction = (voteType: string) => {
+    voteTracker.recordVote(poll.id);
+    setHasVoted(true);
+    toast({
+      title: "सफलता",
+      description: "तपाईंको मत सफलतापूर्वक दर्ता भयो",
+    });
+  };
 
   const handleVote = (voteType: string) => {
     if (hasVoted) {
@@ -151,7 +128,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
       return;
     }
 
-    if (!poll.isActive || new Date() > new Date(poll.expiresAt)) {
+    if (new Date() > new Date(poll.expiresAt)) {
       toast({
         title: "जानकारी",
         description: "यो पोल समाप्त भएको छ",
@@ -159,10 +136,10 @@ export default function VotingCard({ poll }: VotingCardProps) {
       return;
     }
 
-    voteMutation.mutate(voteType);
+    handleVoteAction(voteType);
   };
 
-  const isExpired = !poll.isActive || new Date() > new Date(poll.expiresAt);
+  const isExpired = new Date() > new Date(poll.expiresAt);
 
   return (
     <Card className="bg-white shadow-sm border border-gray-200">
@@ -196,7 +173,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
           {voteOptions.map((option) => {
             const Icon = option.icon;
             const count = (voteCounts as any)?.[option.type] || 0;
-            const isDisabled = hasVoted || isExpired || voteMutation.isPending;
+            const isDisabled = hasVoted || isExpired;
 
             return (
               <Button

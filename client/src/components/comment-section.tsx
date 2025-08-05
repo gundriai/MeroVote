@@ -28,67 +28,31 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
   const [comment, setComment] = useState("");
   const [author, setAuthor] = useState("");
 
-  // Fetch comments
-  const { data: comments, isLoading } = useQuery({
-    queryKey: ["/api/polls", pollId, "comments"],
-  });
+  // Use hardcoded comments data
+  const mockComments = [
+    {
+      id: "1",
+      content: "रवि लामिछाने नै उत्तम विकल्प हो",
+      author: "राम बहादुर",
+      createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+      gajjabCount: 12,
+      bekarCount: 2,
+      furiousCount: 1,
+    },
+    {
+      id: "2",
+      content: "गगन थापाको नेतृत्व चाहिन्छ",
+      author: "सीता देवी", 
+      createdAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
+      gajjabCount: 8,
+      bekarCount: 5,
+      furiousCount: 0,
+    }
+  ];
+  const comments = mockComments;
+  const isLoading = false;
 
-  // Submit comment mutation
-  const submitCommentMutation = useMutation({
-    mutationFn: async (commentData: { content: string; author: string }) => {
-      const fingerprint = voteTracker.getFingerprint();
-      const response = await apiRequest("POST", "/api/comments", {
-        pollId,
-        content: commentData.content,
-        author: commentData.author,
-        fingerprint,
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      setComment("");
-      setAuthor("");
-      toast({
-        title: "सफलता",
-        description: "तपाईंको टिप्पणी पोस्ट भयो",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/polls", pollId, "comments"] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "त्रुटि",
-        description: error.message || "टिप्पणी पोस्ट गर्न सकिएन",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // React to comment mutation
-  const reactToCommentMutation = useMutation({
-    mutationFn: async ({ commentId, reactionType }: { commentId: string; reactionType: string }) => {
-      const fingerprint = voteTracker.getFingerprint();
-      const response = await apiRequest("POST", `/api/comments/${commentId}/reactions`, {
-        reactionType,
-        fingerprint,
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/polls", pollId, "comments"] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "त्रुटि",
-        description: error.message || "प्रतिक्रिया दिन सकिएन",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const getWordCount = (text: string): number => {
-    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
-  };
-
+  // Simulate comment submission without API
   const handleSubmitComment = () => {
     if (!comment.trim() || !author.trim()) {
       toast({
@@ -109,11 +73,24 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
       return;
     }
 
-    submitCommentMutation.mutate({ content: comment, author });
+    setComment("");
+    setAuthor("");
+    toast({
+      title: "सफलता",
+      description: "तपाईंको टिप्पणी पोस्ट भयो",
+    });
   };
 
+  // Simulate comment reaction without API
   const handleReactToComment = (commentId: string, reactionType: string) => {
-    reactToCommentMutation.mutate({ commentId, reactionType });
+    toast({
+      title: "सफलता",
+      description: "प्रतिक्रिया दिइयो",
+    });
+  };
+
+  const getWordCount = (text: string): number => {
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
   };
 
   const formatTimeAgo = (dateString: string): string => {
@@ -170,7 +147,6 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
                     <button
                       onClick={() => handleReactToComment(comment.id, "gajjab")}
                       className="text-green-500 hover:text-green-700 text-xs flex items-center space-x-1"
-                      disabled={reactToCommentMutation.isPending}
                     >
                       <ThumbsUp className="w-3 h-3" />
                       <span>{comment.gajjabCount}</span>
@@ -178,7 +154,6 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
                     <button
                       onClick={() => handleReactToComment(comment.id, "bekar")}
                       className="text-red-500 hover:text-red-700 text-xs flex items-center space-x-1"
-                      disabled={reactToCommentMutation.isPending}
                     >
                       <ThumbsDown className="w-3 h-3" />
                       <span>{comment.bekarCount}</span>
@@ -186,7 +161,6 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
                     <button
                       onClick={() => handleReactToComment(comment.id, "furious")}
                       className="text-orange-500 hover:text-orange-700 text-xs flex items-center space-x-1"
-                      disabled={reactToCommentMutation.isPending}
                     >
                       <Flame className="w-3 h-3" />
                       <span>{comment.furiousCount}</span>
@@ -225,11 +199,11 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
             )}
             <Button
               onClick={handleSubmitComment}
-              disabled={submitCommentMutation.isPending || !comment.trim() || !author.trim() || isOverLimit}
+              disabled={!comment.trim() || !author.trim() || isOverLimit}
               className="bg-nepal-red hover:bg-red-700 text-white ml-auto"
               size="sm"
             >
-              {submitCommentMutation.isPending ? "पठाउँदै..." : "पठाउनुहोस्"}
+              पठाउनुहोस्
             </Button>
           </div>
         </div>
