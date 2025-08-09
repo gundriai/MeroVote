@@ -1,0 +1,563 @@
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeroVote - नेपालको पहिलो डिजिटल मतदान प्लेटफर्म</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nepal-red': '#DC143C',
+                        'nepal-blue': '#003893',
+                        'nepal-orange': '#FF6B35'
+                    },
+                    fontFamily: {
+                        'nepali': ['Noto Sans Devanagari', 'sans-serif'],
+                        'english': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="bg-gray-50 font-nepali">
+    <!-- @COMPONENT: Header [navigation and user status] -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-nepal-red rounded-lg flex items-center justify-center">
+                            <i class="fas fa-vote-yea text-white text-sm"></i>
+                        </div>
+                        <h1 class="text-xl font-bold text-gray-900">MeroVote</h1>
+                    </div>
+                    <span class="text-sm text-gray-600 font-english">गुणस्तर मतदान</span>
+                </div>
+                
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="#" class="text-gray-700 hover:text-nepal-red transition-colors">होम</a>
+                    <a href="#" class="text-gray-700 hover:text-nepal-red transition-colors">नयाँ पोस्ट</a>
+                    <a href="#" class="text-gray-700 hover:text-nepal-red transition-colors">एडमिन</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 text-sm">
+                        <span class="w-3 h-3 bg-nepal-red rounded-full"></span>
+                        <span class="text-gray-600" data-bind="votes.online">५३२</span>
+                        <span class="text-gray-500">सुरक्षित</span>
+                        <span class="w-3 h-3 bg-green-500 rounded-full ml-2"></span>
+                        <span class="text-gray-600" data-bind="votes.verified">सत्यापित</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: Header -->
+
+    <!-- @COMPONENT: MainContent [voting interface and features] -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Hero Section -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">MeroVote</h1>
+            <p class="text-lg text-gray-600 mb-8">नेपालको पहिलो सुरक्षित गुणस्तर मतदान प्लेटफर्म। तपाईंको राय दिनुहोस्, गुणस्तर रहनुहोस्।</p>
+            
+            <!-- Vote Type Selector -->
+            <div class="flex justify-center items-center space-x-4 mb-8">
+                <button class="flex items-center space-x-2 bg-nepal-red text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors">
+                    <i class="fas fa-poll"></i>
+                    <span>नेपाली पोलकर्म</span>
+                </button>
+                <button class="flex items-center space-x-2 bg-white text-gray-700 px-6 py-3 rounded-lg border border-gray-300 font-medium hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-percentage"></i>
+                    <span>१००% सुरक्षित</span>
+                </button>
+                <button class="flex items-center space-x-2 bg-white text-gray-700 px-6 py-3 rounded-lg border border-gray-300 font-medium hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-shield-check"></i>
+                    <span>गुणस्तर मतदान</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">कुल मतदान</p>
+                        <p class="text-3xl font-bold text-nepal-red" data-bind="stats.totalVotes">२,८४७</p>
+                    </div>
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-arrow-trend-up text-nepal-red text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">सक्रिय मतदाता</p>
+                        <p class="text-3xl font-bold text-green-600" data-bind="stats.activeVoters">१,२३४</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-users text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">मतदान प्रकार</p>
+                        <p class="text-3xl font-bold text-nepal-blue" data-bind="stats.pollTypes">७</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-check-square text-nepal-blue text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Poll Categories -->
+        <div class="flex justify-center items-center space-x-6 mb-8">
+            <button class="flex items-center space-x-2 text-nepal-red border-b-2 border-nepal-red pb-2 font-medium" data-event="click:showCategory" data-category="daily">
+                <i class="fas fa-bolt"></i>
+                <span>मतदान कार्यक्रम</span>
+            </button>
+            <button class="flex items-center space-x-2 text-gray-600 hover:text-nepal-red pb-2 font-medium transition-colors" data-event="click:showCategory" data-category="political">
+                <i class="fas fa-landmark"></i>
+                <span>राजनैतिक</span>
+            </button>
+            <button class="flex items-center space-x-2 text-gray-600 hover:text-nepal-red pb-2 font-medium transition-colors" data-event="click:showCategory" data-category="comparison">
+                <i class="fas fa-balance-scale"></i>
+                <span>तथ्यांक</span>
+            </button>
+        </div>
+
+        <!-- Featured Polls Section -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">विभिन्न मतदान प्रकारहरू</h2>
+            
+            <!-- Daily Rating Poll -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="bg-nepal-orange text-white text-xs px-2 py-1 rounded-full">दैनिक मूल्याङ्कन</span>
+                            <span class="text-sm text-gray-500" data-bind="poll.timeRemaining">२ घण्टा बाँकी</span>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2" data-mock="true">आजको मौसम कस्तो छ?</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-mock="true">काठमाडौंको आजको मौसम र वातावरणको बारेमा तपाईंको अनुभव साझा गर्नुहोस्।</p>
+                    </div>
+                    <!-- Beautiful landscape image depicting weather in Kathmandu with mountains in background -->
+                    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=120" alt="Kathmandu weather landscape" class="rounded-lg w-32 h-20 object-cover ml-4" data-mock-image="true" />
+                </div>
+                
+                <!-- Three-tier Voting System -->
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <button class="flex flex-col items-center p-4 rounded-lg border-2 border-green-200 hover:border-green-500 hover:bg-green-50 transition-all" data-event="click:vote" data-vote-type="gajjab">
+                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mb-2">
+                            <i class="fas fa-thumbs-up text-white text-lg"></i>
+                        </div>
+                        <span class="font-medium text-green-700">गजब</span>
+                        <span class="text-sm text-gray-500" data-bind="votes.gajjab">४२३</span>
+                    </button>
+                    
+                    <button class="flex flex-col items-center p-4 rounded-lg border-2 border-red-200 hover:border-red-500 hover:bg-red-50 transition-all" data-event="click:vote" data-vote-type="bekar">
+                        <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mb-2">
+                            <i class="fas fa-thumbs-down text-white text-lg"></i>
+                        </div>
+                        <span class="font-medium text-red-700">बेकार</span>
+                        <span class="text-sm text-gray-500" data-bind="votes.bekar">१२७</span>
+                    </button>
+                    
+                    <button class="flex flex-col items-center p-4 rounded-lg border-2 border-orange-200 hover:border-orange-500 hover:bg-orange-50 transition-all" data-event="click:vote" data-vote-type="furious">
+                        <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mb-2">
+                            <i class="fas fa-fire text-white text-lg"></i>
+                        </div>
+                        <span class="font-medium text-orange-700">यस्तो नी हुन्छ गथे</span>
+                        <span class="text-sm text-gray-500" data-bind="votes.furious">८९</span>
+                    </button>
+                </div>
+
+                <!-- Comments Section -->
+                <div class="border-t border-gray-200 pt-4">
+                    <h4 class="font-medium text-gray-900 mb-3">टिप्पणीहरू (२० शब्द सीमा)</h4>
+                    <div class="space-y-3">
+                        <!-- @MAP: comments.map(comment => ( -->
+                        <div class="bg-gray-50 rounded-lg p-3" data-mock="true">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-800" data-bind="comment.text">आज धेरै राम्रो मौसम छ। हावा र घाम दुवै मिल्दो छ।</p>
+                                    <div class="flex items-center space-x-4 mt-2">
+                                        <span class="text-xs text-gray-500" data-bind="comment.author">राम बहादुर</span>
+                                        <span class="text-xs text-gray-500" data-bind="comment.time">५ मिनेट अगाडि</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2 ml-4">
+                                    <button class="text-green-500 hover:text-green-700 text-xs" data-event="click:reactToComment" data-reaction="gajjab">
+                                        <i class="fas fa-thumbs-up"></i> ३
+                                    </button>
+                                    <button class="text-red-500 hover:text-red-700 text-xs" data-event="click:reactToComment" data-reaction="bekar">
+                                        <i class="fas fa-thumbs-down"></i> १
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                    
+                    <div class="mt-4">
+                        <div class="flex space-x-2">
+                            <input type="text" placeholder="तपाईंको टिप्पणी यहाँ लेख्नुहोस् (२० शब्द मात्र)..." class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-nepal-red focus:border-transparent" data-implementation="Implement 20-word limit counter" />
+                            <button class="bg-nepal-red text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors" data-event="click:submitComment">
+                                पठाउनुहोस्
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">शब्द गणना: <span data-bind="comment.wordCount">०</span>/२०</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Voting Poll -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="bg-nepal-blue text-white text-xs px-2 py-1 rounded-full">तुलना मतदान</span>
+                            <span class="text-sm text-gray-500" data-bind="poll.timeRemaining">१ दिन बाँकी</span>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900" data-mock="true">नेपालको सबैभन्दा राम्रो पर्यटन गन्तव्य कुन हो?</h3>
+                    </div>
+                </div>
+                
+                <!-- Comparison Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="group cursor-pointer" data-event="click:vote" data-candidate="everest">
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-transparent group-hover:border-nepal-blue transition-all">
+                            <!-- Stunning view of Mount Everest with clear blue sky and snow-capped peaks -->
+                            <img src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=200" alt="Mount Everest view" class="w-full h-32 object-cover rounded-lg mb-4" data-mock-image="true" />
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2" data-mock="true">सगरमाथा आधार शिविर</h4>
+                            <p class="text-sm text-gray-600 mb-4" data-mock="true">विश्वको सर्वोच्च शिखरको दर्शन र हिमालयी सुन्दरता</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-nepal-blue" data-bind="votes.everest">६७८ मत</span>
+                                <div class="w-24 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-nepal-blue h-2 rounded-full" style="width: 45%" data-bind="percentage.everest"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="group cursor-pointer" data-event="click:vote" data-candidate="pokhara">
+                        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-transparent group-hover:border-green-500 transition-all">
+                            <!-- Beautiful serene lake view of Pokhara with mountains reflected in water -->
+                            <img src="https://images.unsplash.com/photo-1605640840605-14ac1855827b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=200" alt="Pokhara lake view" class="w-full h-32 object-cover rounded-lg mb-4" data-mock-image="true" />
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2" data-mock="true">पोखरा फेवा ताल</h4>
+                            <p class="text-sm text-gray-600 mb-4" data-mock="true">शान्त ताल र अन्नपूर्ण हिमालको मनमोहक दृश्य</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-green-600" data-bind="votes.pokhara">५४२ मत</span>
+                                <div class="w-24 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 36%" data-bind="percentage.pokhara"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional candidates for 4-way comparison -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div class="group cursor-pointer" data-event="click:vote" data-candidate="chitwan">
+                        <div class="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-6 border-2 border-transparent group-hover:border-orange-500 transition-all">
+                            <!-- Lush green jungle landscape of Chitwan with wildlife elements -->
+                            <img src="https://pixabay.com/get/ga5198ac7bf332f0a10df87a74018cd6ec9e80707fd7d40859d8f86643cd401a6bb6dcc4e9180f934699b3e69f3a1c4cfe2ce2de31b4878144d7abc3b8615628e_1280.jpg" alt="Chitwan jungle view" class="w-full h-32 object-cover rounded-lg mb-4" data-mock-image="true" />
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2" data-mock="true">चितवन राष्ट्रिय निकुञ्ज</h4>
+                            <p class="text-sm text-gray-600 mb-4" data-mock="true">दुर्लभ वन्यजन्तु र प्राकृतिक सुन्दरताको खजाना</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-orange-600" data-bind="votes.chitwan">२८९ मत</span>
+                                <div class="w-24 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-orange-500 h-2 rounded-full" style="width: 19%" data-bind="percentage.chitwan"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="group cursor-pointer" data-event="click:vote" data-candidate="lumbini">
+                        <div class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-6 border-2 border-transparent group-hover:border-purple-500 transition-all">
+                            <!-- Peaceful Buddhist temple complex in Lumbini with prayer flags -->
+                            <img src="https://images.unsplash.com/photo-1528127269322-539801943592?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=200" alt="Lumbini temple view" class="w-full h-32 object-cover rounded-lg mb-4" data-mock-image="true" />
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2" data-mock="true">लुम्बिनी बुद्ध जन्मस्थल</h4>
+                            <p class="text-sm text-gray-600 mb-4" data-mock="true">विश्व शान्ति र आध्यात्मिक यात्राको केन्द्र</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-purple-600" data-bind="votes.lumbini">१८५ मत</span>
+                                <div class="w-24 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-purple-500 h-2 rounded-full" style="width: 12%" data-bind="percentage.lumbini"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Political Rating Poll -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="bg-purple-600 text-white text-xs px-2 py-1 rounded-full">राजनैतिक मूल्याङ्कन</span>
+                            <span class="text-sm text-gray-500" data-bind="poll.timeRemaining">३ दिन बाँकी</span>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2" data-mock="true">सरकारको बजेट नीति कस्तो लाग्यो?</h3>
+                        <p class="text-gray-600 text-sm mb-4" data-mock="true">आर्थिक वर्ष २०८०-८१ को बजेटको बारेमा तपाईंको धारणा व्यक्त गर्नुहोस्।</p>
+                    </div>
+                    <!-- Professional government building or parliament house representing political context -->
+                    <img src="https://pixabay.com/get/ge59d14a5b9ea7419db2f744117d40012760d9f8c38d4f1e322a182cd418b4c291dbbb50eac8c8871f5dd3cfafbe763b2005b6f253bc8d93a564f20cb6d4fdeb7_1280.jpg" alt="Government building" class="rounded-lg w-32 h-20 object-cover ml-4" data-mock-image="true" />
+                </div>
+                
+                <!-- Extended Voting Options for Political -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <button class="flex flex-col items-center p-4 rounded-lg border-2 border-green-200 hover:border-green-500 hover:bg-green-50 transition-all" data-event="click:vote" data-vote-type="excellent">
+                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mb-2">
+                            <i class="fas fa-star text-white"></i>
+                        </div>
+                        <span class="font-medium text-green-700 text-sm">उत्कृष्ट</span>
+                        <span class="text-xs text-gray-500" data-bind="votes.excellent">१२३</span>
+                    </button>
+                    
+                    <button class="flex flex-col items-center p-4 rounded-lg border-2 border-blue-200 hover:border-blue-500 hover:bg-blue-50 transition-all" data-event="click:vote" data-vote-type="good">
+                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mb-2">
+                            <i class="fas fa-thumbs-up text-white"></i>
+                        </div>
+                        <span class="font-medium text-blue-700 text-sm">राम्रो</span>
+                        <span class="text-xs text-gray-500" data-bind="votes.good">२८९</span>
+                    </button>
+                    
+                    <button class="flex flex-col items-center p-4 rounded-lg border-2 border-yellow-200 hover:border-yellow-500 hover:bg-yellow-50 transition-all" data-event="click:vote" data-vote-type="average">
+                        <div class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center mb-2">
+                            <i class="fas fa-minus text-white"></i>
+                        </div>
+                        <span class="font-medium text-yellow-700 text-sm">औसत</span>
+                        <span class="text-xs text-gray-500" data-bind="votes.average">४५६</span>
+                    </button>
+                    
+                    <button class="flex flex-col items-center p-4 rounded-lg border-2 border-red-200 hover:border-red-500 hover:bg-red-50 transition-all" data-event="click:vote" data-vote-type="poor">
+                        <div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center mb-2">
+                            <i class="fas fa-thumbs-down text-white"></i>
+                        </div>
+                        <span class="font-medium text-red-700 text-sm">खराब</span>
+                        <span class="text-xs text-gray-500" data-bind="votes.poor">७८</span>
+                    </button>
+                </div>
+
+                <!-- Vote Tracking Info -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-600">तपाईंको मत सुरक्षित छ</span>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-fingerprint text-nepal-blue"></i>
+                                <span class="text-gray-600">ब्राउजर पहिचान</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-globe text-green-500"></i>
+                                <span class="text-gray-600">IP ट्र्याकिङ</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-shield-check text-orange-500"></i>
+                                <span class="text-gray-600">स्थानीय भण्डारण</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-900">एडमिन ड्यासबोर्ड</h2>
+                <button class="bg-nepal-red text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors" data-event="click:createPoll">
+                    <i class="fas fa-plus mr-2"></i>नयाँ पोल बनाउनुहोस्
+                </button>
+            </div>
+            
+            <!-- Admin Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-blue-50 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-nepal-blue" data-bind="admin.totalPolls">२३</div>
+                    <div class="text-sm text-gray-600">कुल पोलहरू</div>
+                </div>
+                <div class="bg-green-50 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-green-600" data-bind="admin.activePolls">७</div>
+                    <div class="text-sm text-gray-600">सक्रिय पोलहरू</div>
+                </div>
+                <div class="bg-orange-50 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-orange-600" data-bind="admin.totalUsers">१,५६७</div>
+                    <div class="text-sm text-gray-600">कुल प्रयोगकर्ता</div>
+                </div>
+                <div class="bg-purple-50 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-purple-600" data-bind="admin.pendingComments">४२</div>
+                    <div class="text-sm text-gray-600">पेन्डिङ टिप्पणीहरू</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button class="flex items-center justify-center space-x-2 bg-gray-50 hover:bg-gray-100 rounded-lg p-4 transition-colors" data-event="click:manageUsers">
+                    <i class="fas fa-users text-gray-600"></i>
+                    <span class="font-medium text-gray-700">प्रयोगकर्ता व्यवस्थापन</span>
+                </button>
+                <button class="flex items-center justify-center space-x-2 bg-gray-50 hover:bg-gray-100 rounded-lg p-4 transition-colors" data-event="click:viewAnalytics">
+                    <i class="fas fa-chart-bar text-gray-600"></i>
+                    <span class="font-medium text-gray-700">विश्लेषण हेर्नुहोस्</span>
+                </button>
+                <button class="flex items-center justify-center space-x-2 bg-gray-50 hover:bg-gray-100 rounded-lg p-4 transition-colors" data-event="click:moderateComments">
+                    <i class="fas fa-comments text-gray-600"></i>
+                    <span class="font-medium text-gray-700">टिप्पणी मोडरेशन</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+    <!-- @END_COMPONENT: MainContent -->
+
+    <!-- @COMPONENT: Footer [site information and links] -->
+    <footer class="bg-white border-t border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-nepal-red rounded-lg flex items-center justify-center">
+                            <i class="fas fa-vote-yea text-white text-sm"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-900">MeroVote</h3>
+                    </div>
+                    <p class="text-sm text-gray-600">नेपालको पहिलो डिजिटल मतदान प्लेटफर्म। सुरक्षित, पारदर्शी र गुणस्तरीय।</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">सुविधाहरू</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#" class="hover:text-nepal-red transition-colors">मतदान कार्यक्रम</a></li>
+                        <li><a href="#" class="hover:text-nepal-red transition-colors">राजनैतिक पोल</a></li>
+                        <li><a href="#" class="hover:text-nepal-red transition-colors">तुलना मतदान</a></li>
+                        <li><a href="#" class="hover:text-nepal-red transition-colors">एडमिन प्यानल</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">सहायता</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#" class="hover:text-nepal-red transition-colors">कसरी प्रयोग गर्ने</a></li>
+                        <li><a href="#" class="hover:text-nepal-red transition-colors">सुरक्षा नीति</a></li>
+                        <li><a href="#" class="hover:text-nepal-red transition-colors">सम्पर्क</a></li>
+                        <li><a href="#" class="hover:text-nepal-red transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">सुरक्षा जानकारी</h4>
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-shield-check text-green-500"></i>
+                            <span>एन्क्रिप्टेड मतदान</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-fingerprint text-nepal-blue"></i>
+                            <span>पहिचान प्रमाणीकरण</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-lock text-nepal-red"></i>
+                            <span>डाटा सुरक्षा</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 mt-8 pt-6 text-center">
+                <p class="text-sm text-gray-500">© २०२४ MeroVote. सबै अधिकार सुरक्षित। नेपाल सरकारद्वारा प्रमाणित।</p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <!-- @FUNCTIONALITY: This voting platform should implement browser fingerprinting, IP tracking, and local storage for vote uniqueness -->
+    <script>
+        // TODO: Implement browser fingerprinting, IP tracking, and local storage for vote uniqueness
+        // TODO: Implement real-time vote counting and display
+        // TODO: Implement comment word limit enforcement (20 words for daily rating posts)
+        // TODO: Implement time-based auto-close functionality for polls
+        // TODO: Implement admin moderation tools and analytics dashboard
+        // TODO: Implement media upload handling for candidate photos
+        // TODO: Implement responsive Nepali interface with proper font rendering
+        
+        (function() {
+            // Vote tracking system placeholder
+            const voteTracker = {
+                // Browser fingerprinting implementation
+                generateFingerprint: function() {
+                    // Implementation needed for browser fingerprinting
+                },
+                
+                // Vote submission with tracking
+                submitVote: function(pollId, voteType) {
+                    // Implementation needed for vote submission with tracking
+                },
+                
+                // Check if user has already voted
+                hasVoted: function(pollId) {
+                    // Implementation needed for vote checking
+                }
+            };
+            
+            // Comment system with word limit
+            const commentSystem = {
+                // Word count enforcement
+                enforceWordLimit: function(text, limit = 20) {
+                    // Implementation needed for word limit enforcement
+                },
+                
+                // Comment submission
+                submitComment: function(pollId, text) {
+                    // Implementation needed for comment submission
+                }
+            };
+            
+            // Admin functionality
+            const adminPanel = {
+                // Poll creation
+                createPoll: function(pollData) {
+                    // Implementation needed for poll creation
+                },
+                
+                // Analytics dashboard
+                loadAnalytics: function() {
+                    // Implementation needed for analytics loading
+                },
+                
+                // Comment moderation
+                moderateComments: function() {
+                    // Implementation needed for comment moderation
+                }
+            };
+            
+            // Real-time updates
+            const realTimeUpdates = {
+                // Vote count updates
+                updateVoteCounts: function() {
+                    // Implementation needed for real-time vote count updates
+                },
+                
+                // Comment updates
+                updateComments: function() {
+                    // Implementation needed for real-time comment updates
+                }
+            };
+        })();
+    </script>
+</body>
+</html>
