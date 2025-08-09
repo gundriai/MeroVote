@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { BarChart3, Users, MessageSquare, Grid3X3, Edit3, Pause, Trash2, LogOut, Home, Shield, Settings, PieChart } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
+import Header from "@/components/header";
 
 // Mock data for admin dashboard
 const mockStats = {
@@ -48,6 +49,7 @@ const mockPolls = [
 export default function Admin() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("posts");
+  const stats = { activeVoters: 1234 };
 
   const handleEdit = (pollId: string) => {
     toast({
@@ -237,107 +239,93 @@ export default function Admin() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">एडमिन ड्यासबोर्ड</h1>
-        <div className="flex items-center space-x-4">
-          <Link href="/">
-            <Button variant="outline" className="flex items-center space-x-2 text-blue-600 border-blue-600 hover:bg-blue-50">
-              <Home className="w-4 h-4" />
-              <span>सामान्य खण्डमा जानुहोस्</span>
-            </Button>
-          </Link>
-          <Button variant="outline" className="flex items-center space-x-2 text-nepal-red border-nepal-red hover:bg-nepal-red hover:text-white">
-            <LogOut className="w-4 h-4" />
-            <span>व्यवस्थापक मोड</span>
-          </Button>
+    <div className="min-h-screen bg-gray-50">
+      <Header stats={stats} />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-red-100 rounded-lg">
+                  <BarChart3 className="w-6 h-6 text-nepal-red" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{mockStats.totalPolls}</p>
+                  <p className="text-sm text-gray-600">कुल मत</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-blue-100 rounded-lg">
+                  <Users className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{mockStats.activePolls}</p>
+                  <p className="text-sm text-gray-600">सक्रिय पोस्ट</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-green-100 rounded-lg">
+                  <MessageSquare className="w-6 h-6 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{mockStats.totalComments}</p>
+                  <p className="text-sm text-gray-600">कुल टिप्पणी</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-purple-100 rounded-lg">
+                  <Grid3X3 className="w-6 h-6 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{mockStats.totalCards}</p>
+                  <p className="text-sm text-gray-600">कार्ड प्रकार</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card className="bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-red-100 rounded-lg">
-                <BarChart3 className="w-6 h-6 text-nepal-red" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{mockStats.totalPolls}</p>
-                <p className="text-sm text-gray-600">कुल मत</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Tabs */}
+        <div className="flex flex-wrap gap-2 mb-8 p-1 bg-white rounded-lg border border-gray-200">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <Button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                variant={activeTab === tab.id ? "default" : "ghost"}
+                className={`flex items-center space-x-2 px-4 py-2 ${
+                  activeTab === tab.id
+                    ? "bg-nepal-red text-white hover:bg-red-700"
+                    : "text-gray-600 hover:text-nepal-red hover:bg-gray-50"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="text-sm font-medium">{tab.label}</span>
+              </Button>
+            );
+          })}
+        </div>
 
-        <Card className="bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <Users className="w-6 h-6 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{mockStats.activePolls}</p>
-                <p className="text-sm text-gray-600">सक्रिय पोस्ट</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-green-100 rounded-lg">
-                <MessageSquare className="w-6 h-6 text-green-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{mockStats.totalComments}</p>
-                <p className="text-sm text-gray-600">कुल टिप्पणी</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <Grid3X3 className="w-6 h-6 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{mockStats.totalCards}</p>
-                <p className="text-sm text-gray-600">कार्ड प्रकार</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-2 mb-8 p-1 bg-white rounded-lg border border-gray-200">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <Button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              variant={activeTab === tab.id ? "default" : "ghost"}
-              className={`flex items-center space-x-2 px-4 py-2 ${
-                activeTab === tab.id
-                  ? "bg-nepal-red text-white hover:bg-red-700"
-                  : "text-gray-600 hover:text-nepal-red hover:bg-gray-50"
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              <span className="text-sm font-medium">{tab.label}</span>
-            </Button>
-          );
-        })}
-      </div>
-
-      {/* Tab Content */}
-      {renderTabContent()}
+        {/* Tab Content */}
+        {renderTabContent()}
+      </main>
     </div>
   );
 }
