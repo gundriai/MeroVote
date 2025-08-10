@@ -2,7 +2,7 @@
 
 import { useTranslation } from "react-i18next";
 import bannerData from "@/data/banner-carousel.json";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Banner = {
   id: string;
@@ -28,6 +28,15 @@ export default function BannerCarousel() {
 
   const [current, setCurrent] = useState(0);
   const banner = banners[current] || banners[0];
+
+  // Auto-advance every 10 seconds
+  useEffect(() => {
+    if (banners.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % banners.length);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [banners.length]);
 
   const goTo = (idx: number) => setCurrent(idx);
   const prev = () => setCurrent((prev) => (prev - 1 + banners.length) % banners.length);
