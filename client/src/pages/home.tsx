@@ -6,6 +6,7 @@ import ComparisonCard from "@/components/comparison-card";
 import CommentSection from "@/components/comment-section";
 import { Vote, TrendingUp, Users, CheckSquare, Zap, Landmark, Scale } from "lucide-react";
 import Header from "@/components/header";
+import BannerCarousel from "@/components/BannerCarousel";
 import { useState } from "react";
 import { Link } from "wouter";
 import { mockPolls, MockPoll } from "@/data/mock-polls";
@@ -38,79 +39,9 @@ export default function Home() {
       <Header stats={stats} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('home.title')}</h1>
-          <p className="text-lg text-gray-600 mb-8">
-            {t('home.subtitle')}
-          </p>
-          
-          {/* Vote Type Selector */}
-          <div className="flex justify-center items-center space-x-4 mb-8">
-            <Button className="bg-nepal-red hover:bg-red-700 text-white">
-              <Vote className="w-4 h-4 mr-2" />
-              {t('home.vote_button')}
-            </Button>
-            <Button variant="outline">
-              <span className="mr-2">{t('home.secure_badge')}</span>
-            </Button>
-            <Button variant="outline">
-              <CheckSquare className="w-4 h-4 mr-2" />
-              {t('home.quality_voting')}
-            </Button>
-          </div>
-        </div>
+        {/* Banner Carousel */}
+        <BannerCarousel />
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">{t('home.stats.total_votes')}</p>
-                  <p className="text-3xl font-bold text-nepal-red">
-                    {stats.totalVotes.toLocaleString()}
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="text-nepal-red w-6 h-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">{t('home.stats.active_voters')}</p>
-                  <p className="text-3xl font-bold text-green-600">
-                    {stats.activeVoters.toLocaleString()}
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Users className="text-green-600 w-6 h-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">{t('home.stats.poll_types')}</p>
-                  <p className="text-3xl font-bold text-nepal-blue">
-                    {stats.activePolls}
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <CheckSquare className="text-nepal-blue w-6 h-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Poll Categories */}
         <div className="flex justify-center items-center space-x-6 mb-8">

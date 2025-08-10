@@ -4,9 +4,6 @@ export default function LanguageSwitcher() {
   const { i18n, t } = useTranslation();
   return (
     <div className="flex items-center space-x-2">
-      <label htmlFor="lang-select" className="text-xs text-gray-600 font-medium">
-        {t('select_language')}
-      </label>
       <select
         id="lang-select"
         className="border border-gray-300 rounded px-2 py-1 text-xs"

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "banner-1",
+    "imageUrl": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308",
+    "imageAlt": "Nepal voting banner",
+    "title": "home.banner.title",
+    "subtitle": "home.banner.subtitle",
+    "button": {
+      "text": "home.banner.cta_primary",
+      "href": "/vote"
+    },
+    "order": 1,
+    "likeCount": 120,
+    "isActive": true
+  },
+  {
+    "id": "banner-2",
+    "imageUrl": "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+    "imageAlt": "People holding hands for unity",
+    "title": "home.banner.unity_title",
+    "subtitle": "home.banner.unity_subtitle",
+    "button": {
+      "text": "home.banner.cta_unity",
+      "href": "/unity"
+    },
+    "order": 2,
+    "likeCount": 87,
+    "isActive": true
+  },
+  {
+    "id": "banner-3",
+    "imageUrl": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca",
+    "imageAlt": "Democracy in action",
+    "title": "home.banner.democracy_title",
+    "subtitle": "home.banner.democracy_subtitle",
+    "button": {
+      "text": "home.banner.cta_democracy",
+      "href": "/democracy"
+    },
+    "order": 3,
+    "likeCount": 45,
+    "isActive": false
+  }
+]
