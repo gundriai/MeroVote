@@ -138,31 +138,98 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
 
   <CardContent className="space-y-4 w-full h-full">
     {/* Comparison Cards */}
-    <div className="flex flex-wrap justify-between gap-2 md:gap-4">
-      {candidates.map((candidate: Candidate, index: number) => {
-        const colorScheme = getCandidateColor(index);
-        const isDisabled = hasVoted || isExpired;
-        return (
-          <div
-            key={candidate.id}
-            className={`comparison-card group cursor-pointer ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-            onClick={() => !isDisabled && handleVote(candidate.id)}
-          >
-            <div
-              className={`bg-gradient-to-br ${colorScheme.bg} rounded-xl border-2 border-transparent group-hover:${colorScheme.border} transition-all flex items-center justify-center overflow-hidden`}
-              style={{ width: 128, height: 128 }}
-            >
-              {candidate.imageUrl && (
-                <img 
-                  src={candidate.imageUrl} 
-                  alt={candidate.name}
-                  className="w-full h-full object-contain"
-                />
-              )}
-            </div>
+    <div className="flex flex-wrap justify-between gap-2 md:gap-4 items-center">
+      {candidates.length === 2 ? (
+        <>
+          {/* First candidate */}
+          <div className="flex-1 flex justify-end">
+            {(() => {
+              const candidate = candidates[0];
+              const colorScheme = getCandidateColor(0);
+              const isDisabled = hasVoted || isExpired;
+              return (
+                <div
+                  key={candidate.id}
+                  className={`comparison-card group cursor-pointer ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  onClick={() => !isDisabled && handleVote(candidate.id)}
+                >
+                  <div
+                    className={`bg-gradient-to-br ${colorScheme.bg} rounded-xl border-2 border-transparent group-hover:${colorScheme.border} transition-all flex items-center justify-center overflow-hidden`}
+                    style={{ width: 128, height: 128 }}
+                  >
+                    {candidate.imageUrl && (
+                      <img 
+                        src={candidate.imageUrl} 
+                        alt={candidate.name}
+                        className="w-full h-full object-contain"
+                      />
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
-        );
-      })}
+          {/* VS Icon only on md+ screens */}
+          <div className="hidden md:flex flex-col items-center mx-2 select-none">
+            <span className="text-3xl font-extrabold text-yellow-500 drop-shadow-lg">⚡</span>
+            <span className="text-lg font-bold text-gray-700 -mt-2 mb-1">VS</span>
+            <span className="text-3xl font-extrabold text-yellow-500 drop-shadow-lg">⚡</span>
+          </div>
+          <div className="flex-1 flex justify-start">
+            {/* Second candidate */}
+            {(() => {
+              const candidate = candidates[1];
+              const colorScheme = getCandidateColor(1);
+              const isDisabled = hasVoted || isExpired;
+              return (
+                <div
+                  key={candidate.id}
+                  className={`comparison-card group cursor-pointer ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  onClick={() => !isDisabled && handleVote(candidate.id)}
+                >
+                  <div
+                    className={`bg-gradient-to-br ${colorScheme.bg} rounded-xl border-2 border-transparent group-hover:${colorScheme.border} transition-all flex items-center justify-center overflow-hidden`}
+                    style={{ width: 128, height: 128 }}
+                  >
+                    {candidate.imageUrl && (
+                      <img 
+                        src={candidate.imageUrl} 
+                        alt={candidate.name}
+                        className="w-full h-full object-contain"
+                      />
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        </>
+      ) : (
+        candidates.map((candidate: Candidate, index: number) => {
+          const colorScheme = getCandidateColor(index);
+          const isDisabled = hasVoted || isExpired;
+          return (
+            <div
+              key={candidate.id}
+              className={`comparison-card group cursor-pointer ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+              onClick={() => !isDisabled && handleVote(candidate.id)}
+            >
+              <div
+                className={`bg-gradient-to-br ${colorScheme.bg} rounded-xl border-2 border-transparent group-hover:${colorScheme.border} transition-all flex items-center justify-center overflow-hidden`}
+                style={{ width: 128, height: 128 }}
+              >
+                {candidate.imageUrl && (
+                  <img 
+                    src={candidate.imageUrl} 
+                    alt={candidate.name}
+                    className="w-full h-full object-contain"
+                  />
+                )}
+              </div>
+            </div>
+          );
+        })
+      )}
     </div>
 
     {/* Candidate Details Cards */}
