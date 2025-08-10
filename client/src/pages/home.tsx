@@ -5,8 +5,11 @@ import VotingCard from "@/components/voting-card";
 import ComparisonCard from "@/components/comparison-card";
 import CommentSection from "@/components/comment-section";
 import { Vote, TrendingUp, Users, CheckSquare, Zap, Landmark, Scale } from "lucide-react";
+import { FaceToFaceIcon } from "@/components/icons/FaceToFaceIcon";
+import pollCategoriesData from "@/data/poll-categories.json";
 import Header from "@/components/header";
 import BannerCarousel from "@/components/BannerCarousel";
+import PollCategories from "@/components/PollCategories";
 import { useState } from "react";
 import { Link } from "wouter";
 import { mockPolls, MockPoll } from "@/data/mock-polls";
@@ -28,11 +31,21 @@ export default function Home() {
   const polls = mockPolls.filter(poll => poll.type === selectedCategory);
   const isLoading = false;
 
-  const categories = [
-    { id: "daily_rating", label: t('home.categories.daily_rating'), icon: Zap },
-    { id: "political_rating", label: t('home.categories.political_rating'), icon: Landmark },
-    { id: "comparison_voting", label: t('home.categories.comparison_voting'), icon: Scale },
-  ];
+  // Map icon string to actual component
+  const iconMap: Record<string, any> = { 
+    Zap, 
+    Landmark, 
+    Scale, 
+    FaceToFace: FaceToFaceIcon 
+  };
+  
+  // Load categories from JSON, map icon, label, and sort by order
+  const categories = (Array.isArray(pollCategoriesData) ? pollCategoriesData : []).map((cat) => ({
+    id: cat.id,
+    label: t(cat.labelKey),
+    icon: iconMap[cat.icon] || Zap,
+    order: cat.order ?? 0
+  })).sort((a, b) => a.order - b.order);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -44,27 +57,11 @@ export default function Home() {
 
 
         {/* Poll Categories */}
-        <div className="flex justify-center items-center space-x-6 mb-8">
-          {categories.map((category) => {
-            const Icon = category.icon;
-            const isActive = selectedCategory === category.id;
-            
-            return (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`flex items-center space-x-2 pb-2 font-medium transition-colors ${
-                  isActive 
-                    ? "text-nepal-red border-b-2 border-nepal-red" 
-                    : "text-gray-600 hover:text-nepal-red"
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                <span>{category.label}</span>
-              </button>
-            );
-          })}
-        </div>
+        <PollCategories
+          categories={categories}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
 
         {/* Polls Section */}
         <div className="flex flex-wrap -mx-3">
@@ -79,7 +76,7 @@ export default function Home() {
           ) : (
             polls.map((poll: any) => (
               <div key={poll.id} className="w-full md:w-1/2 px-3 mb-6 flex">
-                {poll.type === "comparison_voting" ? (
+                {poll.type === "comparison_voting" || poll.type === "face_to_face" ? (
                   <ComparisonCard poll={poll} />
                 ) : (
                   <VotingCard poll={poll} />

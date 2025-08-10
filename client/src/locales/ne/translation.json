@@ -95,6 +95,8 @@
       "poll_types": "मतदान प्रकार"
     },
     "categories": {
+      "face_to_face": "आमने सामने",
+      "activities": "गतिविधि",
       "daily_rating": "मतदान कार्यक्रम",
       "political_rating": "राजनैतिक",
       "comparison_voting": "तथ्यांक"

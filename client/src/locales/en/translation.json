@@ -94,6 +94,8 @@
       "poll_types": "Poll Types"
     },
     "categories": {
+      "face_to_face": "Face to Face",
+      "activities": "Activities",
       "daily_rating": "Voting Program",
       "political_rating": "Political",
       "comparison_voting": "Statistics"

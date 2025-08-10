@@ -1,0 +1,32 @@
+[
+  {
+    "id": "face_to_face",
+    "labelKey": "home.categories.face_to_face",
+    "icon": "FaceToFace",
+    "order": 1
+  },
+  {
+    "id": "activities",
+    "labelKey": "home.categories.activities",
+    "icon": "Activity",
+    "order": 2
+  },
+  {
+    "id": "daily_rating",
+    "labelKey": "home.categories.daily_rating",
+    "icon": "Zap",
+    "order": 3
+  },
+  {
+    "id": "political_rating",
+    "labelKey": "home.categories.political_rating",
+    "icon": "Landmark",
+    "order": 4
+  },
+  {
+    "id": "comparison_voting",
+    "labelKey": "home.categories.comparison_voting",
+    "icon": "Scale",
+    "order": 5
+  }
+]

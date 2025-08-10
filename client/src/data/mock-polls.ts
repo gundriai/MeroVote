@@ -4,7 +4,7 @@ export interface MockPoll {
   id: string;
   title: string;
   description: string | null;
-  type: "daily_rating" | "political_rating" | "comparison_voting";
+  type: "daily_rating" | "political_rating" | "comparison_voting" | "face_to_face" | "activities";
   duration: number;
   mediaUrl: string | null;
   createdBy: string;
@@ -29,7 +29,7 @@ export const mockPolls: MockPoll[] = [
     id: "1",
     title: "नेपालको अर्को प्रधानमन्त्री को होला?",
     description: "अर्को चुनावमा को प्रधानमन्त्री बन्ला भन्ने तपाईंको राय",
-    type: "comparison_voting",
+    type: "face_to_face",
     duration: 24,
     mediaUrl: null,
     createdBy: "admin",
