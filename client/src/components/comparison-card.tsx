@@ -122,103 +122,101 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
   const isExpired = new Date() > new Date(poll.expiresAt);
 
   return (
-    <Card className="bg-white shadow-sm border border-gray-200 p-2 w-auto">
-      <CardHeader className="pb-2">
-        <div>
-          <div className="flex items-center space-x-2 mb-2">
-            <Badge className="bg-nepal-blue text-white text-xs">तुलना मतदान</Badge>
-            <span className="text-sm text-gray-500">{timeRemaining}</span>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900">{poll.title}</h3>
-          {poll.description && (
-            <p className="text-gray-600 text-sm mt-2">{poll.description}</p>
-          )}
-        </div>
-      </CardHeader>
+    <Card className="bg-white shadow-sm border border-gray-200 p-2 w-full h-full">
+  <CardHeader className="pb-2">
+    <div>
+      <div className="flex items-center space-x-2 mb-2">
+        <Badge className="bg-nepal-blue text-white text-xs">तुलना मतदान</Badge>
+        <span className="text-sm text-gray-500">{timeRemaining}</span>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900">{poll.title}</h3>
+      {poll.description && (
+        <p className="text-gray-600 text-sm mt-2">{poll.description}</p>
+      )}
+    </div>
+  </CardHeader>
 
-      <CardContent>
-        {/* Comparison Cards */}
-        <div className="flex flex-col justify-start items-start">
-          <div className={`flex flex-row md:flex-row gap-4 items-start justify-start`}>
-            {candidates.map((candidate: Candidate, index: number) => {
-              const colorScheme = getCandidateColor(index);
-              const isDisabled = hasVoted || isExpired;
-              return (
-                <div
-                  key={candidate.id}
-                  className={`comparison-card group cursor-pointer ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  onClick={() => !isDisabled && handleVote(candidate.id)}
-                >
-                  <div className={`bg-gradient-to-br ${colorScheme.bg} rounded-xl p-0 border-2 border-transparent group-hover:${colorScheme.border} transition-all flex items-center justify-center overflow-hidden`} style={{ width: 128, height: 128 }}>
-                    {candidate.imageUrl && (
-                      <img 
-                        src={candidate.imageUrl} 
-                        alt={candidate.name}
-                        className="w-full h-full object-contain"
-                      />
-                    )}
-                  </div>
+  <CardContent className="space-y-4 w-full h-full">
+    {/* Comparison Cards */}
+    <div className="flex flex-wrap justify-between gap-2 md:gap-4">
+      {candidates.map((candidate: Candidate, index: number) => {
+        const colorScheme = getCandidateColor(index);
+        const isDisabled = hasVoted || isExpired;
+        return (
+          <div
+            key={candidate.id}
+            className={`comparison-card group cursor-pointer ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+            onClick={() => !isDisabled && handleVote(candidate.id)}
+          >
+            <div
+              className={`bg-gradient-to-br ${colorScheme.bg} rounded-xl border-2 border-transparent group-hover:${colorScheme.border} transition-all flex items-center justify-center overflow-hidden`}
+              style={{ width: 128, height: 128 }}
+            >
+              {candidate.imageUrl && (
+                <img 
+                  src={candidate.imageUrl} 
+                  alt={candidate.name}
+                  className="w-full h-full object-contain"
+                />
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    {/* Candidate Details Cards */}
+    {/* <div className="bg-gray-50 rounded-lg py-2"> */}
+      <div className="flex flex-wrap justify-between gap-2 md:gap-4">
+        {candidates.map((candidate: Candidate, index: number) => {
+          const colorScheme = getCandidateColor(index);
+          const percentage = getPercentage(candidate.voteCount);
+          return (
+            <div
+              key={candidate.id}
+              className="bg-white rounded-lg border border-gray-200 flex flex-col items-center justify-center w-32 h-32"
+            >
+              <h4 className="text-base font-semibold text-gray-900 mb-1 text-center truncate w-full px-2">
+                {candidate.name}
+              </h4>
+              {candidate.description && (
+                <p className="text-xs text-gray-600 mb-1 text-center px-2 truncate w-full">
+                  {candidate.description}
+                </p>
+              )}
+              <span className={`text-sm font-medium ${colorScheme.text} mb-1`}>
+                {candidate.voteCount} मत
+              </span>
+              <div className="flex items-center justify-center w-full px-2">
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className={`${colorScheme.progress} h-2 rounded-full transition-all duration-500`}
+                    style={{ width: `${percentage}%` }}
+                  ></div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+                <span className="text-xs text-gray-600 ml-2">{percentage}%</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    {/* </div> */}
 
-        {candidates.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-gray-500">कुनै उम्मेदवार भेटिएन</p>
-          </div>
-        )}
+    {/* Comment Toggle Button */}
+    <Button
+      onClick={() => setShowComments(!showComments)}
+      variant="outline"
+      className="flex items-center gap-2 hover:bg-gray-50 px-3 py-2 w-fit"
+    >
+      <MessageSquare className="w-4 h-4" />
+      <span>{showComments ? "टिप्पणी लुकाउनुहोस्" : "टिप्पणी देखाउनुहोस्"}</span>
+      {showComments ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+    </Button>
 
-        {/* Candidate Details Cards */}
-        <div className="bg-gray-50 rounded-lg py-1 mt-4">
-          <div className="flex flex-row md:flex-row gap-4 items-start justify-start">
-            {candidates.map((candidate: Candidate, index: number) => {
-              const colorScheme = getCandidateColor(index);
-              const percentage = getPercentage(candidate.voteCount);
-              return (
-                <div
-                  key={candidate.id}
-                  className="bg-white rounded-lg border border-gray-200 flex flex-col items-center justify-center"
-                  style={{ width: 128, height: 128, minWidth: 0 }}
-                >
-                  <h4 className="text-base font-semibold text-gray-900 mb-1 text-center truncate w-full px-2">{candidate.name}</h4>
-                  {candidate.description && (
-                    <p className="text-xs text-gray-600 mb-1 text-center px-2 truncate w-full">{candidate.description}</p>
-                  )}
-                  <span className={`text-sm font-medium ${colorScheme.text} mb-1`}>{candidate.voteCount} मत</span>
-                  <div className="flex items-center justify-center w-full px-2">
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className={`${colorScheme.progress} h-2 rounded-full transition-all duration-500`}
-                        style={{ width: `${percentage}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-xs text-gray-600 ml-2">{percentage}%</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+    {/* Comment Section */}
+    {showComments && <CommentSection pollId={poll.id} showWordLimit={false} />}
+  </CardContent>
+</Card>
 
-        {/* Comment Toggle Button */}
-        <Button
-          onClick={() => setShowComments(!showComments)}
-          variant="outline"
-          className="mb-4 flex items-center justify-center space-x-2 hover:bg-gray-50 px-3 py-2"
-          style={{ width: "auto", alignSelf: "flex-start" }}
-        >
-          <MessageSquare className="w-4 h-4" />
-          <span>{showComments ? "टिप्पणी लुकाउनुहोस्" : "टिप्पणी देखाउनुहोस्"}</span>
-          {showComments ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        </Button>
-
-        {/* Comment Section */}
-        {showComments && (
-          <CommentSection pollId={poll.id} showWordLimit={false} />
-        )}
-      </CardContent>
-    </Card>
   );
 }

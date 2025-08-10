@@ -134,24 +134,24 @@ export default function Home() {
         </div>
 
         {/* Polls Section */}
-        <div className="space-y-6">
+        <div className="flex flex-wrap -mx-3">
           {isLoading ? (
-            <div className="text-center py-8">
+            <div className="text-center py-8 w-full">
               <p className="text-gray-500">पोलहरू लोड गर्दै...</p>
             </div>
           ) : !polls || !Array.isArray(polls) || polls.length === 0 ? (
-            <div className="text-center py-8">
+            <div className="text-center py-8 w-full">
               <p className="text-gray-500">कुनै पोल भेटिएन</p>
             </div>
           ) : (
             polls.map((poll: any) => (
-              <div key={poll.id}>
+              <div key={poll.id} className="w-full md:w-1/2 px-3 mb-6 flex">
                 {poll.type === "comparison_voting" ? (
                   <ComparisonCard poll={poll} />
                 ) : (
                   <VotingCard poll={poll} />
                 )}
-                <CommentSection pollId={poll.id} showWordLimit={poll.type === "daily_rating"} />
+                {/* <CommentSection pollId={poll.id} showWordLimit={poll.type === "daily_rating"} /> */}
               </div>
             ))
           )}

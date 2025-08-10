@@ -54,6 +54,36 @@ export const mockPolls: MockPoll[] = [
       }
     ]
   },
+  // Singer comparison poll
+  {
+    id: "6",
+    title: "तपाईंलाई बढी मनपर्ने गायक/गायिका को हो?",
+    description: "तपाईंको मनपर्ने नेपाली गायक/गायिका छान्नुहोस्",
+    type: "comparison_voting",
+    duration: 24,
+    mediaUrl: null,
+    createdBy: "admin",
+    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+    expiresAt: new Date(Date.now() + 22 * 60 * 60 * 1000).toISOString(), // 22 hours from now
+    candidates: [
+      {
+        id: "11",
+        pollId: "6",
+        name: "राजेश पायल राई",
+        description: "लोकप्रिय गायक",
+        imageUrl: "https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=150&h=150&fit=crop&crop=face",
+        voteCount: 120
+      },
+      {
+        id: "12",
+        pollId: "6",
+        name: "अनीता चलाउने",
+        description: "लोकप्रिय गायिका",
+        imageUrl: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=150&h=150&fit=crop&crop=face",
+        voteCount: 98
+      }
+    ]
+  },
 
   // Quick Poll (like second image)
   {
