@@ -1,0 +1,20 @@
+{
+  "welcome": "Welcome to MeroVote",
+  "vote": "Vote",
+  "comparison_voting": "Comparison Voting",
+  "comment": "Comment",
+  "show_comments": "Show Comments",
+  "hide_comments": "Hide Comments",
+  "success": "Success",
+  "already_voted": "You have already voted in this poll",
+  "poll_ended": "This poll has ended",
+  "select_language": "Select Language",
+  "days_left": "{{count}} day left",
+  "days_left_plural": "{{count}} days left",
+  "hours_left": "{{count}} hour left",
+  "hours_left_plural": "{{count}} hours left",
+  "minutes_left": "{{count}} minute left",
+  "minutes_left_plural": "{{count}} minutes left",
+  "vote_success": "Your vote has been recorded successfully!",
+  "info": "Info"
+}

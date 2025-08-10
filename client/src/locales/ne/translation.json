@@ -1,0 +1,20 @@
+{
+  "welcome": "मेरोभोटमा स्वागत छ",
+  "vote": "मत",
+  "comparison_voting": "तुलना मतदान",
+  "comment": "टिप्पणी",
+  "show_comments": "टिप्पणी देखाउनुहोस्",
+  "hide_comments": "टिप्पणी लुकाउनुहोस्",
+  "success": "सफलता",
+  "already_voted": "तपाईंले यस पोलमा पहिले नै मत दिनुभएको छ",
+  "poll_ended": "यो पोल समाप्त भएको छ",
+  "select_language": "भाषा चयन गर्नुहोस्",
+  "days_left": "{{count}} दिन बाँकी",
+  "days_left_plural": "{{count}} दिन बाँकी",
+  "hours_left": "{{count}} घण्टा बाँकी",
+  "hours_left_plural": "{{count}} घण्टा बाँकी",
+  "minutes_left": "{{count}} मिनेट बाँकी",
+  "minutes_left_plural": "{{count}} मिनेट बाँकी",
+  "vote_success": "तपाईंको मत सफलतापूर्वक दर्ता भयो!",
+  "info": "जानकारी"
+}

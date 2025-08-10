@@ -5,6 +5,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { voteTracker } from "@/lib/vote-tracker";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CommentSection from "./comment-section";
@@ -30,6 +31,7 @@ interface Candidate {
 }
 
 export default function ComparisonCard({ poll }: ComparisonCardProps) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [hasVoted, setHasVoted] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState("");
@@ -48,7 +50,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
       const diff = expires.getTime() - now.getTime();
 
       if (diff <= 0) {
-        setTimeRemaining("समाप्त");
+        setTimeRemaining(t('poll_ended'));
         return;
       }
 
@@ -57,11 +59,11 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
 
       if (hours > 24) {
         const days = Math.floor(hours / 24);
-        setTimeRemaining(`${days} दिन बाँकी`);
+        setTimeRemaining(t('days_left', { count: days }));
       } else if (hours > 0) {
-        setTimeRemaining(`${hours} घण्टा बाँकी`);
+        setTimeRemaining(t('hours_left', { count: hours }));
       } else {
-        setTimeRemaining(`${minutes} मिनेट बाँकी`);
+        setTimeRemaining(t('minutes_left', { count: minutes }));
       }
     };
 
@@ -80,24 +82,24 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
     voteTracker.recordVote(poll.id);
     setHasVoted(true);
     toast({
-      title: "सफलता",
-      description: "तपाईंको मत सफलतापूर्वक दर्ता भयो",
+      title: t('success'),
+      description: t('vote_success'),
     });
   };
 
   const handleVote = (candidateId: string) => {
     if (hasVoted) {
       toast({
-        title: "जानकारी",
-        description: "तपाईंले यस पोलमा पहिले नै मत दिनुभएको छ",
+        title: t('info'),
+        description: t('already_voted'),
       });
       return;
     }
 
     if (!poll.isActive || new Date() > new Date(poll.expiresAt)) {
       toast({
-        title: "जानकारी",
-        description: "यो पोल समाप्त भएको छ",
+        title: t('info'),
+        description: t('poll_ended'),
       });
       return;
     }
@@ -126,7 +128,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
   <CardHeader className="pb-2">
     <div>
       <div className="flex items-center space-x-2 mb-2">
-        <Badge className="bg-nepal-blue text-white text-xs">तुलना मतदान</Badge>
+        <Badge className="bg-nepal-blue text-white text-xs">{t('comparison_voting')}</Badge>
         <span className="text-sm text-gray-500">{timeRemaining}</span>
       </div>
       <h3 className="text-lg font-semibold text-gray-900">{poll.title}</h3>
@@ -172,7 +174,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
           {/* VS Icon only on md+ screens */}
           <div className="hidden md:flex flex-col items-center mx-2 select-none">
             <span className="text-3xl font-extrabold text-yellow-500 drop-shadow-lg">⚡</span>
-            <span className="text-lg font-bold text-gray-700 -mt-2 mb-1">VS</span>
+      <span className="text-lg font-bold text-gray-700 -mt-2 mb-1">VS</span>
             <span className="text-3xl font-extrabold text-yellow-500 drop-shadow-lg">⚡</span>
           </div>
           <div className="flex-1 flex justify-start">
@@ -252,7 +254,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
                 </p>
               )}
               <span className={`text-sm font-medium ${colorScheme.text} mb-1`}>
-                {candidate.voteCount} मत
+                {candidate.voteCount} {t('vote')}
               </span>
               <div className="flex items-center justify-center w-full px-2">
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -276,7 +278,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
       className="flex items-center gap-2 hover:bg-gray-50 px-3 py-2 w-fit"
     >
       <MessageSquare className="w-4 h-4" />
-      <span>{showComments ? "टिप्पणी लुकाउनुहोस्" : "टिप्पणी देखाउनुहोस्"}</span>
+      <span>{showComments ? t('hide_comments') : t('show_comments')}</span>
       {showComments ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
     </Button>
 
