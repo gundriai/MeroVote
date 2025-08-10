@@ -160,11 +160,13 @@ export default function VotingCard({ poll }: VotingCardProps) {
             )}
           </div>
           {poll.mediaUrl && (
-            <img 
-              src={poll.mediaUrl} 
-              alt="Poll media" 
-              className="rounded-lg w-32 h-20 object-cover ml-4"
-            />
+            <div className="rounded-lg overflow-hidden ml-4 flex items-center justify-center" style={{ width: 128, height: 128 }}>
+              <img 
+                src={poll.mediaUrl} 
+                alt="Poll media" 
+                className="w-full h-full object-contain"
+              />
+            </div>
           )}
         </div>
       </CardHeader>
@@ -195,26 +197,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
           })}
         </div>
 
-        {/* Vote Tracking Info */}
-        <div className="bg-gray-50 rounded-lg p-4">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">तपाईंको मत सुरक्षित छ</span>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-nepal-blue rounded-full"></div>
-                <span className="text-gray-600">ब्राउजर पहिचान</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-gray-600">IP ट्र्याकिङ</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <span className="text-gray-600">स्थानीय भण्डारण</span>
-              </div>
-            </div>
-          </div>
-        </div>
+
 
         {/* Comment Toggle Button */}
         <Button

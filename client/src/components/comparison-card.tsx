@@ -122,66 +122,46 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
   const isExpired = new Date() > new Date(poll.expiresAt);
 
   return (
-    <Card className="bg-white shadow-sm border border-gray-200">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center space-x-2 mb-2">
-              <Badge className="bg-nepal-blue text-white text-xs">तुलना मतदान</Badge>
-              <span className="text-sm text-gray-500">{timeRemaining}</span>
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900">{poll.title}</h3>
-            {poll.description && (
-              <p className="text-gray-600 text-sm mt-2">{poll.description}</p>
-            )}
+    <Card className="bg-white shadow-sm border border-gray-200 p-2 w-auto">
+      <CardHeader className="pb-2">
+        <div>
+          <div className="flex items-center space-x-2 mb-2">
+            <Badge className="bg-nepal-blue text-white text-xs">तुलना मतदान</Badge>
+            <span className="text-sm text-gray-500">{timeRemaining}</span>
           </div>
+          <h3 className="text-lg font-semibold text-gray-900">{poll.title}</h3>
+          {poll.description && (
+            <p className="text-gray-600 text-sm mt-2">{poll.description}</p>
+          )}
         </div>
       </CardHeader>
 
       <CardContent>
         {/* Comparison Cards */}
-        <div className={`grid gap-6 ${candidates.length <= 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2'}`}>
-          {candidates.map((candidate: Candidate, index: number) => {
-            const colorScheme = getCandidateColor(index);
-            const percentage = getPercentage(candidate.voteCount);
-            const isDisabled = hasVoted || isExpired;
-
-            return (
-              <div
-                key={candidate.id}
-                className={`comparison-card group cursor-pointer ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-                onClick={() => !isDisabled && handleVote(candidate.id)}
-              >
-                <div className={`bg-gradient-to-br ${colorScheme.bg} rounded-xl p-6 border-2 border-transparent group-hover:${colorScheme.border} transition-all`}>
-                  {candidate.imageUrl && (
-                    <img 
-                      src={candidate.imageUrl} 
-                      alt={candidate.name}
-                      className="w-full h-32 object-cover rounded-lg mb-4"
-                    />
-                  )}
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">{candidate.name}</h4>
-                  {candidate.description && (
-                    <p className="text-sm text-gray-600 mb-4">{candidate.description}</p>
-                  )}
-                  <div className="flex items-center justify-between">
-                    <span className={`text-sm font-medium ${colorScheme.text}`}>
-                      {candidate.voteCount} मत
-                    </span>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-24 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className={`${colorScheme.progress} h-2 rounded-full transition-all duration-500`}
-                          style={{ width: `${percentage}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-sm text-gray-600">{percentage}%</span>
-                    </div>
+        <div className="flex flex-col justify-start items-start">
+          <div className={`flex flex-row md:flex-row gap-4 items-start justify-start`}>
+            {candidates.map((candidate: Candidate, index: number) => {
+              const colorScheme = getCandidateColor(index);
+              const isDisabled = hasVoted || isExpired;
+              return (
+                <div
+                  key={candidate.id}
+                  className={`comparison-card group cursor-pointer ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  onClick={() => !isDisabled && handleVote(candidate.id)}
+                >
+                  <div className={`bg-gradient-to-br ${colorScheme.bg} rounded-xl p-0 border-2 border-transparent group-hover:${colorScheme.border} transition-all flex items-center justify-center overflow-hidden`} style={{ width: 128, height: 128 }}>
+                    {candidate.imageUrl && (
+                      <img 
+                        src={candidate.imageUrl} 
+                        alt={candidate.name}
+                        className="w-full h-full object-contain"
+                      />
+                    )}
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
         {candidates.length === 0 && (
@@ -190,24 +170,35 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
           </div>
         )}
 
-        {/* Vote Tracking Info */}
-        <div className="bg-gray-50 rounded-lg p-4 mt-6">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">तपाईंको मत सुरक्षित छ</span>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-nepal-blue rounded-full"></div>
-                <span className="text-gray-600">ब्राउजर पहिचान</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-gray-600">IP ट्र्याकिङ</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <span className="text-gray-600">स्थानीय भण्डारण</span>
-              </div>
-            </div>
+        {/* Candidate Details Cards */}
+        <div className="bg-gray-50 rounded-lg py-1 mt-4">
+          <div className="flex flex-row md:flex-row gap-4 items-start justify-start">
+            {candidates.map((candidate: Candidate, index: number) => {
+              const colorScheme = getCandidateColor(index);
+              const percentage = getPercentage(candidate.voteCount);
+              return (
+                <div
+                  key={candidate.id}
+                  className="bg-white rounded-lg border border-gray-200 flex flex-col items-center justify-center"
+                  style={{ width: 128, height: 128, minWidth: 0 }}
+                >
+                  <h4 className="text-base font-semibold text-gray-900 mb-1 text-center truncate w-full px-2">{candidate.name}</h4>
+                  {candidate.description && (
+                    <p className="text-xs text-gray-600 mb-1 text-center px-2 truncate w-full">{candidate.description}</p>
+                  )}
+                  <span className={`text-sm font-medium ${colorScheme.text} mb-1`}>{candidate.voteCount} मत</span>
+                  <div className="flex items-center justify-center w-full px-2">
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className={`${colorScheme.progress} h-2 rounded-full transition-all duration-500`}
+                        style={{ width: `${percentage}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-xs text-gray-600 ml-2">{percentage}%</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -215,7 +206,8 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
         <Button
           onClick={() => setShowComments(!showComments)}
           variant="outline"
-          className="w-full mb-4 flex items-center justify-center space-x-2 hover:bg-gray-50"
+          className="mb-4 flex items-center justify-center space-x-2 hover:bg-gray-50 px-3 py-2"
+          style={{ width: "auto", alignSelf: "flex-start" }}
         >
           <MessageSquare className="w-4 h-4" />
           <span>{showComments ? "टिप्पणी लुकाउनुहोस्" : "टिप्पणी देखाउनुहोस्"}</span>
