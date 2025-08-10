@@ -6,6 +6,7 @@ import { BarChart3, Users, MessageSquare, Grid3X3, Edit3, Pause, Trash2, LogOut,
 import { useState } from "react";
 import { Link } from "wouter";
 import Header from "@/components/header";
+import { useTranslation } from "react-i18next";
 
 // Mock data for admin dashboard
 const mockStats = {
@@ -47,37 +48,38 @@ const mockPolls = [
 ];
 
 export default function Admin() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("posts");
   const stats = { activeVoters: 1234 };
 
   const handleEdit = (pollId: string) => {
     toast({
-      title: "संशोधन",
-      description: "पोल संशोधन गर्ने सुविधा छिट्टै आउँदैछ",
+      title: t('admin.polls.actions.edit'),
+      description: t('admin.polls.messages.edit_coming_soon', 'Poll editing feature coming soon'),
     });
   };
 
   const handlePause = (pollId: string) => {
     toast({
-      title: "रोकियो",
-      description: "पोल अस्थायी रूपमा रोकियो",
+      title: t('admin.polls.status.paused'),
+      description: t('admin.polls.messages.paused', 'Poll has been paused'),
     });
   };
 
   const handleDelete = (pollId: string) => {
     toast({
-      title: "मेटाइयो",
-      description: "पोल सफलतापूर्वक मेटाइयो",
+      title: t('admin.polls.actions.delete'),
+      description: t('admin.polls.messages.deleted', 'Poll has been deleted successfully'),
       variant: "destructive",
     });
   };
 
   const getTypeLabel = (type: string): string => {
     switch (type) {
-      case "daily_rating": return "Daily Rating";
-      case "political_rating": return "Politician Rating";
-      default: return "मतदान";
+      case "daily_rating": return t('admin.polls.types.daily_rating', 'Daily Rating');
+      case "political_rating": return t('admin.polls.types.political_rating', 'Politician Rating');
+      default: return t('admin.polls.types.default', 'Vote');
     }
   };
 
@@ -90,10 +92,10 @@ export default function Admin() {
   };
 
   const tabs = [
-    { id: "cards", label: "मत्तदात कार्डहरू", icon: Grid3X3 },
-    { id: "posts", label: "पोस्ट व्यवस्थापन", icon: Settings },
-    { id: "analytics", label: "विश्लेषण", icon: PieChart },
-    { id: "security", label: "सुरक्षा", icon: Shield },
+    { id: "cards", label: t('admin.navigation.cards', 'Voter Cards'), icon: Grid3X3 },
+    { id: "posts", label: t('admin.navigation.polls', 'Poll Management'), icon: Settings },
+    { id: "analytics", label: t('admin.navigation.analytics', 'Analytics'), icon: PieChart },
+    { id: "security", label: t('admin.navigation.security', 'Security'), icon: Shield },
   ];
 
   const renderTabContent = () => {
@@ -102,12 +104,12 @@ export default function Admin() {
         return (
           <Card className="bg-white">
             <CardHeader>
-              <CardTitle className="text-xl font-semibold text-gray-900">मत्तदात कार्डहरू</CardTitle>
+              <CardTitle className="text-xl font-semibold text-gray-900">{t('admin.navigation.cards')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-12">
                 <Grid3X3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">कार्ड व्यवस्थापन सुविधा छिट्टै आउँदैछ</p>
+                <p className="text-gray-600">{t('admin.messages.feature_coming_soon', 'Card management feature coming soon')}</p>
               </div>
             </CardContent>
           </Card>
@@ -116,12 +118,12 @@ export default function Admin() {
         return (
           <Card className="bg-white">
             <CardHeader>
-              <CardTitle className="text-xl font-semibold text-gray-900">विश्लेषण</CardTitle>
+              <CardTitle className="text-xl font-semibold text-gray-900">{t('admin.navigation.analytics')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-12">
                 <PieChart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">विस्तृत विश्लेषण सुविधा छिट्टै आउँदैछ</p>
+                <p className="text-gray-600">{t('admin.messages.analytics_coming_soon', 'Detailed analytics feature coming soon')}</p>
               </div>
             </CardContent>
           </Card>
@@ -130,12 +132,12 @@ export default function Admin() {
         return (
           <Card className="bg-white">
             <CardHeader>
-              <CardTitle className="text-xl font-semibold text-gray-900">सुरक्षा</CardTitle>
+              <CardTitle className="text-xl font-semibold text-gray-900">{t('admin.navigation.security')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-12">
                 <Shield className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">सुरक्षा सेटिङ सुविधा छिट्टै आउँदैछ</p>
+                <p className="text-gray-600">{t('admin.messages.security_coming_soon', 'Security settings feature coming soon')}</p>
               </div>
             </CardContent>
           </Card>
@@ -145,7 +147,7 @@ export default function Admin() {
         return (
           <Card className="bg-white">
             <CardHeader>
-              <CardTitle className="text-xl font-semibold text-gray-900">सबै पोस्टहरू</CardTitle>
+              <CardTitle className="text-xl font-semibold text-gray-900">{t('admin.polls.all_posts', 'All Posts')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {mockPolls.map((poll) => (
@@ -160,8 +162,8 @@ export default function Admin() {
                             {getTypeLabel(poll.type)}
                           </Badge>
                           <span className="text-xs text-gray-500">{poll.createdAt}</span>
-                          <span className="text-xs text-gray-500">{poll.totalVotes} मत</span>
-                          <span className="text-xs text-gray-500">{poll.totalComments} टिप्पणी</span>
+                          <span className="text-xs text-gray-500">{poll.totalVotes} {t('admin.polls.votes', 'votes')}</span>
+                          <span className="text-xs text-gray-500">{poll.totalComments} {t('admin.polls.comments', 'comments')}</span>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -172,7 +174,7 @@ export default function Admin() {
                           className="text-blue-600 border-blue-600 hover:bg-blue-50"
                         >
                           <Edit3 className="w-4 h-4 mr-1" />
-                          संशोधन
+                          {t('admin.polls.actions.edit')}
                         </Button>
                         <Button
                           onClick={() => handlePause(poll.id)}
@@ -181,7 +183,7 @@ export default function Admin() {
                           className="text-orange-600 border-orange-600 hover:bg-orange-50"
                         >
                           <Pause className="w-4 h-4 mr-1" />
-                          पज
+                          {t('admin.polls.actions.pause')}
                         </Button>
                         <Button
                           onClick={() => handleDelete(poll.id)}
@@ -190,7 +192,7 @@ export default function Admin() {
                           className="text-red-600 border-red-600 hover:bg-red-50"
                         >
                           <Trash2 className="w-4 h-4 mr-1" />
-                          डिलिट
+                          {t('admin.polls.actions.delete')}
                         </Button>
                       </div>
                     </div>
@@ -201,30 +203,30 @@ export default function Admin() {
                         <>
                           <div className="text-center">
                             <p className="text-2xl font-bold text-green-600">{poll.voteCounts.excellent}</p>
-                            <p className="text-sm text-gray-600">गजब</p>
+                            <p className="text-sm text-gray-600">{t('admin.polls.ratings.excellent', 'Excellent')}</p>
                           </div>
                           <div className="text-center">
                             <p className="text-2xl font-bold text-orange-600">{poll.voteCounts.good}</p>
-                            <p className="text-sm text-gray-600">बेकार</p>
+                            <p className="text-sm text-gray-600">{t('admin.polls.ratings.good', 'Good')}</p>
                           </div>
                           <div className="text-center">
                             <p className="text-2xl font-bold text-red-600">{poll.voteCounts.poor}</p>
-                            <p className="text-sm text-gray-600">यस्तो नी हुन्छ गथे</p>
+                            <p className="text-sm text-gray-600">{t('admin.polls.ratings.poor', 'Poor')}</p>
                           </div>
                         </>
                       ) : (
                         <>
                           <div className="text-center">
                             <p className="text-2xl font-bold text-green-600">{poll.voteCounts.gajjab}</p>
-                            <p className="text-sm text-gray-600">गजब</p>
+                            <p className="text-sm text-gray-600">{t('admin.polls.ratings.excellent', 'Excellent')}</p>
                           </div>
                           <div className="text-center">
                             <p className="text-2xl font-bold text-orange-600">{poll.voteCounts.bekar}</p>
-                            <p className="text-sm text-gray-600">बेकार</p>
+                            <p className="text-sm text-gray-600">{t('admin.polls.ratings.good', 'Good')}</p>
                           </div>
                           <div className="text-center">
                             <p className="text-2xl font-bold text-red-600">{poll.voteCounts.furious}</p>
-                            <p className="text-sm text-gray-600">यस्तो नी हुन्छ गथे</p>
+                            <p className="text-sm text-gray-600">{t('admin.polls.ratings.poor', 'Poor')}</p>
                           </div>
                         </>
                       )}
@@ -252,7 +254,7 @@ export default function Admin() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{mockStats.totalPolls}</p>
-                  <p className="text-sm text-gray-600">कुल मत</p>
+                  <p className="text-sm text-gray-600">{t('admin.stats.total_votes', 'Total Votes')}</p>
                 </div>
               </div>
             </CardContent>
@@ -266,7 +268,7 @@ export default function Admin() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{mockStats.activePolls}</p>
-                  <p className="text-sm text-gray-600">सक्रिय पोस्ट</p>
+                  <p className="text-sm text-gray-600">{t('admin.stats.active_polls', 'Active Polls')}</p>
                 </div>
               </div>
             </CardContent>
@@ -280,7 +282,7 @@ export default function Admin() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{mockStats.totalComments}</p>
-                  <p className="text-sm text-gray-600">कुल टिप्पणी</p>
+                  <p className="text-sm text-gray-600">{t('admin.stats.total_comments', 'Total Comments')}</p>
                 </div>
               </div>
             </CardContent>
@@ -294,7 +296,7 @@ export default function Admin() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{mockStats.totalCards}</p>
-                  <p className="text-sm text-gray-600">कार्ड प्रकार</p>
+                  <p className="text-sm text-gray-600">{t('admin.stats.card_types', 'Card Types')}</p>
                 </div>
               </div>
             </CardContent>

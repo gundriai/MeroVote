@@ -16,5 +16,193 @@
   "minutes_left": "{{count}} मिनेट बाँकी",
   "minutes_left_plural": "{{count}} मिनेट बाँकी",
   "vote_success": "तपाईंको मत सफलतापूर्वक दर्ता भयो!",
-  "info": "जानकारी"
+  "info": "जानकारी",
+  
+  "not_found": {
+    "title": "पृष्ठ भेटिएन",
+    "message": "तपाईंले खोज्नुभएको पृष्ठ भेटिएन।"
+  },
+  "not-found": {
+    "title": "४०४ पृष्ठ भेटिएन",
+    "message": "के तपाईंले राउटरमा पृष्ठ थप्न बिर्सनुभयो?"
+  },
+  "voting": {
+    "types": {
+      "daily_rating": "दैनिक मूल्याङ्कन",
+      "political_rating": "राजनैतिक मूल्याङ्कन",
+      "default": "मतदान"
+    },
+    "ratings": {
+      "excellent": "उत्कृष्ट",
+      "good": "राम्रो",
+      "average": "औसत",
+      "poor": "खराब",
+      "gajjab": "गजब",
+      "bekar": "बेकार",
+      "furious": "यस्तो नी हुन्छ गथे"
+    },
+    "ended": "समाप्त",
+    "days_remaining": "{{count}} दिन बाँकी",
+    "hours_remaining": "{{count}} घण्टा बाँकी",
+    "minutes_remaining": "{{count}} मिनेट बाँकी"
+  },
+  "comments": {
+    "title": "टिप्पणीहरू",
+    "empty": "अहिले सम्म कुनै टिप्पणी छैन",
+    "loading": "लोड गर्दै...",
+    "placeholders": {
+      "name": "तपाईंको नाम",
+      "comment": "आफ्नो टिप्पणी लेख्नुहोस्...",
+      "comment_with_limit": "तपाईंको टिप्पणी (२० शब्द मात्र)"
+    },
+    "actions": {
+      "post_comment": "टिप्पणी पोस्ट गर्नुहोस्",
+      "react": "प्रतिक्रिया दिनुहोस्"
+    },
+    "errors": {
+      "fill_fields": "कृपया टिप्पणी र नाम दुवै भर्नुहोस्",
+      "word_limit": "टिप्पणी २० शब्द भन्दा बढी हुन सक्दैन"
+    },
+    "success": {
+      "comment_posted": "तपाईंको टिप्पणी पोस्ट भयो",
+      "reaction_added": "प्रतिक्रिया दिइयो"
+    },
+    "word_count": "शब्द गणना"
+  },
+  "time": {
+    "just_now": "अहिले",
+    "minutes_ago": "{{count}} मिनेट अगाडि",
+    "hours_ago": "{{count}} घण्टा अगाडि",
+    "days_ago": "{{count}} दिन अगाडि"
+  },
+  "error": "त्रुटि",
+  "success": "सफलता",
+  "loading": "लोड गर्दै...",
+  
+  "home": {
+    "title": "मेरोभोट",
+    "subtitle": "नेपालको पहिलो सुरक्षित गुणस्तर मतदान प्लेटफर्म। तपाईंको राय दिनुहोस्, गुणस्तर रहनुहोस्।",
+    "vote_button": "नेपाली पोलकर्म",
+    "secure_badge": "१००% सुरक्षित",
+    "quality_voting": "गुणस्तर मतदान",
+    "stats": {
+      "total_votes": "कुल मतदान",
+      "active_voters": "सक्रिय मतदाता",
+      "poll_types": "मतदान प्रकार"
+    },
+    "categories": {
+      "daily_rating": "मतदान कार्यक्रम",
+      "political_rating": "राजनैतिक",
+      "comparison_voting": "तथ्यांक"
+    },
+    "loading": "पोलहरू लोड गर्दै...",
+    "no_polls": "कुनै पोल भेटिएन",
+    "footer": {
+      "tagline": "नेपालको पहिलो डिजिटल मतदान प्लेटफर्म। सुरक्षित, पारदर्शी र गुणस्तरीय।",
+      "features": "सुविधाहरू",
+      "feature_items": [
+        "मतदान कार्यक्रम",
+        "राजनैतिक पोल",
+        "तुलना मतदान",
+        "एडमिन प्यानल"
+      ],
+      "help": "सहायता",
+      "help_items": [
+        "कसरी प्रयोग गर्ने",
+        "सुरक्षा नीति",
+        "सम्पर्क",
+        "बारम्बार सोधिने प्रश्नहरू"
+      ],
+      "security_info": "सुरक्षा जानकारी",
+      "security_items": [
+        "एन्क्रिप्टेड मतदान",
+        "पहिचान प्रमाणीकरण",
+        "डाटा सुरक्षा"
+      ],
+      "copyright": "© २०२४ मेरोभोट। सबै अधिकार सुरक्षित। नेपाल सरकारद्वारा प्रमाणित।"
+    }
+  },
+  
+  "header": {
+    "app_name": "मेरोभोट",
+    "quality_voting": "गुणस्तर मतदान",
+    "nav": {
+      "home": "होम",
+      "admin": "एडमिन"
+    },
+    "status": {
+      "secure": "सुरक्षित",
+      "verified": "सत्यापित"
+    }
+  },
+  
+  "admin": {
+    "dashboard": "ड्यासबोर्ड",
+    "stats": {
+      "total_votes": "कुल मत",
+      "total_polls": "कुल पोलहरू",
+      "active_polls": "सक्रिय पोस्ट",
+      "total_comments": "कुल टिप्पणी",
+      "card_types": "कार्ड प्रकार"
+    },
+    "ratings": {
+      "excellent": "गजब",
+      "good": "बेकार",
+      "poor": "यस्तो नी हुन्छ गथे",
+      "gajjab": "गजब",
+      "bekar": "बेकार",
+      "furious": "यस्तो नी हुन्छ गथे"
+    },
+    "navigation": {
+      "dashboard": "ड्यासबोर्ड",
+      "polls": "पोलहरू",
+      "cards": "मतदाता कार्डहरू",
+      "users": "प्रयोगकर्ताहरू",
+      "comments": "टिप्पणीहरू",
+      "analytics": "विश्लेषण",
+      "security": "सुरक्षा",
+      "settings": "सेटिङहरू",
+      "logout": "लगआउट"
+    },
+    "polls": {
+      "title": "पोलहरू",
+      "new_poll": "नयाँ पोल",
+      "columns": {
+        "title": "शीर्षक",
+        "type": "प्रकार",
+        "created": "सिर्जना गरिएको",
+        "votes": "मतहरू",
+        "comments": "टिप्पणीहरू",
+        "status": "स्थिति",
+        "actions": "कार्यहरू"
+      },
+      "status": {
+        "active": "सक्रिय",
+        "paused": "पज गरिएको",
+        "draft": "ड्राफ्ट"
+      },
+      "types": {
+        "daily_rating": "दैनिक मूल्यांकन",
+        "political_rating": "राजनीतिज्ञ मूल्यांकन",
+        "default": "मतदान"
+      },
+      "actions": {
+        "edit": "सम्पादन गर्नुहोस्",
+        "pause": "पज गर्नुहोस्",
+        "delete": "हटाउनुहोस्"
+      },
+      "messages": {
+        "edit_coming_soon": "पोल सम्पादन सुविधा चाँडै आउँदैछ",
+        "paused": "पोल अस्थायी रूपमा रोकियो",
+        "deleted": "पोल सफलतापूर्वक मेटाइयो",
+        "feature_coming_soon": "कार्ड व्यवस्थापन सुविधा छिट्टै आउँदैछ",
+        "analytics_coming_soon": "विस्तृत विश्लेषण सुविधा छिट्टै आउँदैछ",
+        "security_coming_soon": "सुरक्षा सेटिङ सुविधा छिट्टै आउँदैछ"
+      },
+      "all_posts": "सबै पोस्टहरू",
+      "votes": "मत",
+      "comments": "टिप्पणीहरू",
+      "no_polls": "कुनै पोल भेटिएन"
+    }
+  }
 }

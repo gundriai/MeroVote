@@ -7,6 +7,7 @@ import { voteTracker } from "@/lib/vote-tracker";
 import { useToast } from "@/hooks/use-toast";
 import { ThumbsUp, ThumbsDown, Flame, Star, Minus, MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import CommentSection from "./comment-section";
 
 interface VotingCardProps {
@@ -30,29 +31,29 @@ interface VoteOption {
   hoverColor: string;
 }
 
-const getVoteOptions = (pollType: string): VoteOption[] => {
+const getVoteOptions = (pollType: string, t: any): VoteOption[] => {
   if (pollType === "daily_rating") {
     return [
-      { type: "gajjab", label: "गजब", icon: ThumbsUp, color: "text-green-700", bgColor: "bg-green-500", hoverColor: "hover:bg-green-50 hover:border-green-500" },
-      { type: "bekar", label: "बेकार", icon: ThumbsDown, color: "text-red-700", bgColor: "bg-red-500", hoverColor: "hover:bg-red-50 hover:border-red-500" },
-      { type: "furious", label: "यस्तो नी हुन्छ गथे", icon: Flame, color: "text-orange-700", bgColor: "bg-orange-500", hoverColor: "hover:bg-orange-50 hover:border-orange-500" },
+      { type: "gajjab", label: t('voting.ratings.gajjab', 'Gajjab'), icon: ThumbsUp, color: "text-green-700", bgColor: "bg-green-500", hoverColor: "hover:bg-green-50 hover:border-green-500" },
+      { type: "bekar", label: t('voting.ratings.bekar', 'Bekar'), icon: ThumbsDown, color: "text-red-700", bgColor: "bg-red-500", hoverColor: "hover:bg-red-50 hover:border-red-500" },
+      { type: "furious", label: t('voting.ratings.furious', 'Furious'), icon: Flame, color: "text-orange-700", bgColor: "bg-orange-500", hoverColor: "hover:bg-orange-50 hover:border-orange-500" },
     ];
   } else if (pollType === "political_rating") {
     return [
-      { type: "excellent", label: "उत्कृष्ट", icon: Star, color: "text-green-700", bgColor: "bg-green-500", hoverColor: "hover:bg-green-50 hover:border-green-500" },
-      { type: "good", label: "राम्रो", icon: ThumbsUp, color: "text-blue-700", bgColor: "bg-blue-500", hoverColor: "hover:bg-blue-50 hover:border-blue-500" },
-      { type: "average", label: "औसत", icon: Minus, color: "text-yellow-700", bgColor: "bg-yellow-500", hoverColor: "hover:bg-yellow-50 hover:border-yellow-500" },
-      { type: "poor", label: "खराब", icon: ThumbsDown, color: "text-red-700", bgColor: "bg-red-500", hoverColor: "hover:bg-red-50 hover:border-red-500" },
+      { type: "excellent", label: t('voting.ratings.excellent', 'Excellent'), icon: Star, color: "text-green-700", bgColor: "bg-green-500", hoverColor: "hover:bg-green-50 hover:border-green-500" },
+      { type: "good", label: t('voting.ratings.good', 'Good'), icon: ThumbsUp, color: "text-blue-700", bgColor: "bg-blue-500", hoverColor: "hover:bg-blue-50 hover:border-blue-500" },
+      { type: "average", label: t('voting.ratings.average', 'Average'), icon: Minus, color: "text-yellow-700", bgColor: "bg-yellow-500", hoverColor: "hover:bg-yellow-50 hover:border-yellow-500" },
+      { type: "poor", label: t('voting.ratings.poor', 'Poor'), icon: ThumbsDown, color: "text-red-700", bgColor: "bg-red-500", hoverColor: "hover:bg-red-50 hover:border-red-500" },
     ];
   }
   return [];
 };
 
-const getTypeLabel = (type: string): string => {
+const getTypeLabel = (type: string, t: any): string => {
   switch (type) {
-    case "daily_rating": return "दैनिक मूल्याङ्कन";
-    case "political_rating": return "राजनैतिक मूल्याङ्कन";
-    default: return "मतदान";
+    case "daily_rating": return t('voting.types.daily_rating', 'Daily Rating');
+    case "political_rating": return t('voting.types.political_rating', 'Political Rating');
+    default: return t('voting.types.default', 'Vote');
   }
 };
 
@@ -70,7 +71,8 @@ export default function VotingCard({ poll }: VotingCardProps) {
   const [timeRemaining, setTimeRemaining] = useState("");
   const [showComments, setShowComments] = useState(false);
 
-  const voteOptions = getVoteOptions(poll.type);
+  const { t } = useTranslation();
+  const voteOptions = getVoteOptions(poll.type, t);
 
   // Check if user has voted locally
   useEffect(() => {
@@ -85,7 +87,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
       const diff = expires.getTime() - now.getTime();
 
       if (diff <= 0) {
-        setTimeRemaining("समाप्त");
+        setTimeRemaining(t('voting.ended', 'Ended'));
         return;
       }
 
@@ -94,11 +96,11 @@ export default function VotingCard({ poll }: VotingCardProps) {
 
       if (hours > 24) {
         const days = Math.floor(hours / 24);
-        setTimeRemaining(`${days} दिन बाँकी`);
+        setTimeRemaining(t('voting.days_remaining', { count: days, defaultValue: '{{count}} days left' }));
       } else if (hours > 0) {
-        setTimeRemaining(`${hours} घण्टा बाँकी`);
+        setTimeRemaining(t('voting.hours_remaining', { count: hours, defaultValue: '{{count}} hours left' }));
       } else {
-        setTimeRemaining(`${minutes} मिनेट बाँकी`);
+        setTimeRemaining(t('voting.minutes_remaining', { count: minutes, defaultValue: '{{count}} minutes left' }));
       }
     };
 
@@ -150,7 +152,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-2">
               <Badge className={`${getTypeBadgeColor(poll.type)} text-white text-xs`}>
-                {getTypeLabel(poll.type)}
+                {getTypeLabel(poll.type, t)}
               </Badge>
               <span className="text-sm text-gray-500">{timeRemaining}</span>
             </div>

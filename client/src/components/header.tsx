@@ -19,27 +19,27 @@ export default function Header({ stats }: HeaderProps) {
               <div className="w-8 h-8 bg-nepal-red rounded-lg flex items-center justify-center">
                 <Vote className="text-white w-4 h-4" />
               </div>
-              <h1 className="text-xl font-bold text-gray-900">MeroVote</h1>
+              <h1 className="text-xl font-bold text-gray-900">{t('header.app_name')}</h1>
             </div>
-            <span className="text-sm text-gray-600 font-english">{t('quality_voting', 'गुणस्तर मतदान')}</span>
+            <span className="text-sm text-gray-600 font-english">{t('header.quality_voting')}</span>
           </div>
           <nav className="hidden md:flex items-center space-x-6">
             <Link href="/" className={`text-gray-700 hover:text-nepal-red transition-colors${location === "/" ? " font-bold text-nepal-red" : ""}`}>
-              {t('home', 'होम')}
+              {t('header.nav.home')}
             </Link>
             <Link href="/admin" className={`text-gray-700 hover:text-nepal-red transition-colors${location === "/admin" ? " font-bold text-nepal-red" : ""}`}>
-              {t('admin', 'एडमिन')}
+              {t('header.nav.admin')}
             </Link>
           </nav>
-          <div className="flex items-center space-x-4">
+          {/* <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-sm">
               <span className="w-3 h-3 bg-nepal-red rounded-full"></span>
               <span className="text-gray-600">{stats?.activeVoters ?? 0}</span>
-              <span className="text-gray-500">{t('secure', 'सुरक्षित')}</span>
+              <span className="text-gray-500">{t('header.status.secure')}</span>
               <span className="w-3 h-3 bg-green-500 rounded-full ml-2"></span>
-              <span className="text-gray-600">{t('verified', 'सत्यापित')}</span>
+              <span className="text-gray-600">{t('header.status.verified')}</span>
             </div>
-          </div>
+          </div> */}
           <LanguageSwitcher />
         </div>
       </div>

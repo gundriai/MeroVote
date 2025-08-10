@@ -7,6 +7,7 @@ import { voteTracker } from "@/lib/vote-tracker";
 import { useToast } from "@/hooks/use-toast";
 import { ThumbsUp, ThumbsDown, Flame, MessageSquare } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface CommentSectionProps {
   pollId: string;
@@ -24,6 +25,7 @@ interface Comment {
 }
 
 export default function CommentSection({ pollId, showWordLimit = false }: CommentSectionProps) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [comment, setComment] = useState("");
   const [author, setAuthor] = useState("");
@@ -56,8 +58,8 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
   const handleSubmitComment = () => {
     if (!comment.trim() || !author.trim()) {
       toast({
-        title: "त्रुटि",
-        description: "कृपया टिप्पणी र नाम दुवै भर्नुहोस्",
+        title: t('error', 'Error'),
+        description: t('comments.errors.fill_fields', 'Please fill in both comment and name'),
         variant: "destructive",
       });
       return;
@@ -66,8 +68,8 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
     const wordCount = getWordCount(comment);
     if (showWordLimit && wordCount > 20) {
       toast({
-        title: "त्रुटि",
-        description: "टिप्पणी २० शब्द भन्दा बढी हुन सक्दैन",
+        title: t('error', 'Error'),
+        description: t('comments.errors.word_limit', 'Comment cannot be more than 20 words'),
         variant: "destructive",
       });
       return;
@@ -76,16 +78,16 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
     setComment("");
     setAuthor("");
     toast({
-      title: "सफलता",
-      description: "तपाईंको टिप्पणी पोस्ट भयो",
+      title: t('success', 'Success'),
+      description: t('comments.success.comment_posted', 'Your comment has been posted'),
     });
   };
 
   // Simulate comment reaction without API
   const handleReactToComment = (commentId: string, reactionType: string) => {
     toast({
-      title: "सफलता",
-      description: "प्रतिक्रिया दिइयो",
+      title: t('success', 'Success'),
+      description: t('comments.success.reaction_added', 'Reaction added'),
     });
   };
 
@@ -97,15 +99,15 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
     const now = new Date();
     const commentDate = new Date(dateString);
     const diffInMinutes = Math.floor((now.getTime() - commentDate.getTime()) / (1000 * 60));
-
-    if (diffInMinutes < 1) return "अहिले";
-    if (diffInMinutes < 60) return `${diffInMinutes} मिनेट अगाडि`;
+    
+    if (diffInMinutes < 1) return t('time.just_now', 'just now');
+    if (diffInMinutes < 60) return t('time.minutes_ago', { count: diffInMinutes, defaultValue: '{{count}} minutes ago' });
     
     const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours} घण्टा अगाडि`;
+    if (diffInHours < 24) return t('time.hours_ago', { count: diffInHours, defaultValue: '{{count}} hours ago' });
     
     const diffInDays = Math.floor(diffInHours / 24);
-    return `${diffInDays} दिन अगाडि`;
+    return t('time.days_ago', { count: diffInDays, defaultValue: '{{count}} days ago' });
   };
 
   const wordCount = getWordCount(comment);
@@ -126,11 +128,12 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
         <div className="space-y-3 mb-6">
           {isLoading ? (
             <div className="text-center py-4">
-              <p className="text-gray-500">टिप्पणीहरू लोड गर्दै...</p>
+              <h3 className="text-lg font-semibold">{t('comments.title', 'Comments')}</h3>
+              <p className="text-gray-500">{t('loading', 'Loading...')}</p>
             </div>
           ) : !comments || !Array.isArray(comments) || comments.length === 0 ? (
             <div className="text-center py-4">
-              <p className="text-gray-500">कुनै टिप्पणी छैन</p>
+              <p className="text-gray-500">{t('comments.empty', 'No comments')}</p>
             </div>
           ) : (
             (comments as Comment[]).map((comment: Comment) => (
@@ -140,7 +143,7 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
                     <p className="text-sm text-gray-800">{comment.content}</p>
                     <div className="flex items-center space-x-4 mt-2">
                       <span className="text-xs text-gray-500">{comment.author}</span>
-                      <span className="text-xs text-gray-500">{formatTimeAgo(comment.createdAt)}</span>
+                      <p className="text-sm text-gray-500">{comment.author} • {formatTimeAgo(comment.createdAt)}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2 ml-4">
@@ -176,14 +179,14 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
         <div className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
             <Input
-              placeholder="तपाईंको नाम"
+              placeholder={t('comments.placeholders.name', 'Your name')}
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              className="md:col-span-1"
+              className="mb-2"
             />
             <div className="md:col-span-2">
               <Input
-                placeholder={showWordLimit ? "तपाईंको टिप्पणी यहाँ लेख्नुहोस् (२० शब्द मात्र)..." : "तपाईंको टिप्पणी यहाँ लेख्नुहोस्..."}
+                placeholder={showWordLimit ? t('comments.placeholders.comment_with_limit', 'Your comment (20 words limit)') : t('comments.placeholders.comment', 'Your comment')}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 className={isOverLimit ? "border-red-500" : ""}
@@ -194,7 +197,7 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
           <div className="flex items-center justify-between">
             {showWordLimit && (
               <p className={`text-xs ${isOverLimit ? 'text-red-500' : 'text-gray-500'}`}>
-                शब्द गणना: {wordCount}/२०
+                {t('comments.word_count', 'Word count')}: {wordCount}/२०
               </p>
             )}
             <Button
@@ -203,7 +206,7 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
               className="bg-nepal-red hover:bg-red-700 text-white ml-auto"
               size="sm"
             >
-              पठाउनुहोस्
+              {t('comments.actions.post_comment', 'Post Comment')}
             </Button>
           </div>
         </div>

@@ -9,10 +9,13 @@ import Header from "@/components/header";
 import { useState } from "react";
 import { Link } from "wouter";
 import { mockPolls, MockPoll } from "@/data/mock-polls";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string>("daily_rating");
 
+  const { t } = useTranslation();
+  
   // Use hardcoded data instead of API calls
   const stats = {
     totalVotes: 2847,
@@ -25,9 +28,9 @@ export default function Home() {
   const isLoading = false;
 
   const categories = [
-    { id: "daily_rating", label: "मतदान कार्यक्रम", icon: Zap },
-    { id: "political_rating", label: "राजनैतिक", icon: Landmark },
-    { id: "comparison_voting", label: "तथ्यांक", icon: Scale },
+    { id: "daily_rating", label: t('home.categories.daily_rating'), icon: Zap },
+    { id: "political_rating", label: t('home.categories.political_rating'), icon: Landmark },
+    { id: "comparison_voting", label: t('home.categories.comparison_voting'), icon: Scale },
   ];
 
   return (
@@ -37,24 +40,23 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">MeroVote</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('home.title')}</h1>
           <p className="text-lg text-gray-600 mb-8">
-            नेपालको पहिलो सुरक्षित गुणस्तर मतदान प्लेटफर्म। तपाईंको राय दिनुहोस्, गुणस्तर रहनुहोस्।
+            {t('home.subtitle')}
           </p>
           
           {/* Vote Type Selector */}
           <div className="flex justify-center items-center space-x-4 mb-8">
             <Button className="bg-nepal-red hover:bg-red-700 text-white">
               <Vote className="w-4 h-4 mr-2" />
-              नेपाली पोलकर्म
+              {t('home.vote_button')}
             </Button>
             <Button variant="outline">
-              <span className="mr-2">१००%</span>
-              सुरक्षित
+              <span className="mr-2">{t('home.secure_badge')}</span>
             </Button>
             <Button variant="outline">
               <CheckSquare className="w-4 h-4 mr-2" />
-              गुणस्तर मतदान
+              {t('home.quality_voting')}
             </Button>
           </div>
         </div>
@@ -65,7 +67,7 @@ export default function Home() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">कुल मतदान</p>
+                  <p className="text-sm text-gray-600 mb-1">{t('home.stats.total_votes')}</p>
                   <p className="text-3xl font-bold text-nepal-red">
                     {stats.totalVotes.toLocaleString()}
                   </p>
@@ -81,7 +83,7 @@ export default function Home() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">सक्रिय मतदाता</p>
+                  <p className="text-sm text-gray-600 mb-1">{t('home.stats.active_voters')}</p>
                   <p className="text-3xl font-bold text-green-600">
                     {stats.activeVoters.toLocaleString()}
                   </p>
@@ -97,7 +99,7 @@ export default function Home() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">मतदान प्रकार</p>
+                  <p className="text-sm text-gray-600 mb-1">{t('home.stats.poll_types')}</p>
                   <p className="text-3xl font-bold text-nepal-blue">
                     {stats.activePolls}
                   </p>
@@ -137,11 +139,11 @@ export default function Home() {
         <div className="flex flex-wrap -mx-3">
           {isLoading ? (
             <div className="text-center py-8 w-full">
-              <p className="text-gray-500">पोलहरू लोड गर्दै...</p>
+              <p className="text-gray-500">{t('home.loading')}</p>
             </div>
           ) : !polls || !Array.isArray(polls) || polls.length === 0 ? (
             <div className="text-center py-8 w-full">
-              <p className="text-gray-500">कुनै पोल भेटिएन</p>
+              <p className="text-gray-500">{t('home.no_polls')}</p>
             </div>
           ) : (
             polls.map((poll: any) => (
@@ -170,51 +172,45 @@ export default function Home() {
                 <h3 className="font-bold text-gray-900">MeroVote</h3>
               </div>
               <p className="text-sm text-gray-600">
-                नेपालको पहिलो डिजिटल मतदान प्लेटफर्म। सुरक्षित, पारदर्शी र गुणस्तरीय।
+                {t('home.footer.tagline')}
               </p>
             </div>
             
             <div>
-              <h4 className="font-semibold text-gray-900 mb-3">सुविधाहरू</h4>
+              <h4 className="font-semibold text-gray-900 mb-3">{t('home.footer.features')}</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li>मतदान कार्यक्रम</li>
-                <li>राजनैतिक पोल</li>
-                <li>तुलना मतदान</li>
-                <li>एडमिन प्यानल</li>
+                {(t('home.footer.feature_items', { returnObjects: true }) as string[]).map((item: string, index: number) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold text-gray-900 mb-3">सहायता</h4>
+              <h4 className="font-semibold text-gray-900 mb-3">{t('home.footer.help')}</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li>कसरी प्रयोग गर्ने</li>
-                <li>सुरक्षा नीति</li>
-                <li>सम्पर्क</li>
-                <li>FAQ</li>
+                {(t('home.footer.help_items', { returnObjects: true }) as string[]).map((item: string, index: number) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold text-gray-900 mb-3">सुरक्षा जानकारी</h4>
+              <h4 className="font-semibold text-gray-900 mb-3">{t('home.footer.security_info')}</h4>
               <div className="space-y-2 text-sm text-gray-600">
-                <div className="flex items-center space-x-2">
-                  <CheckSquare className="w-4 h-4 text-green-500" />
-                  <span>एन्क्रिप्टेड मतदान</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Users className="w-4 h-4 text-nepal-blue" />
-                  <span>पहिचान प्रमाणीकरण</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Vote className="w-4 h-4 text-nepal-red" />
-                  <span>डाटा सुरक्षा</span>
-                </div>
+                {(t('home.footer.security_items', { returnObjects: true }) as string[]).map((item: string, index: number) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    {index === 0 && <CheckSquare className="w-4 h-4 text-green-500" />}
+                    {index === 1 && <Users className="w-4 h-4 text-nepal-blue" />}
+                    {index === 2 && <Vote className="w-4 h-4 text-nepal-red" />}
+                    <span>{item}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
           
           <div className="border-t border-gray-200 mt-8 pt-6 text-center">
-            <p className="text-sm text-gray-500">© २०२४ MeroVote. सबै अधिकार सुरक्षित। नेपाल सरकारद्वारा प्रमाणित।</p>
+            <p className="text-sm text-gray-500">{t('home.footer.copyright')}</p>
           </div>
         </div>
       </footer>

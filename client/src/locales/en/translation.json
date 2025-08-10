@@ -5,7 +5,6 @@
   "comment": "Comment",
   "show_comments": "Show Comments",
   "hide_comments": "Hide Comments",
-  "success": "Success",
   "already_voted": "You have already voted in this poll",
   "poll_ended": "This poll has ended",
   "select_language": "Select Language",
@@ -16,5 +15,193 @@
   "minutes_left": "{{count}} minute left",
   "minutes_left_plural": "{{count}} minutes left",
   "vote_success": "Your vote has been recorded successfully!",
-  "info": "Info"
+  "info": "Info",
+  
+  "not_found": {
+    "title": "404 Page Not Found",
+    "message": "The page you are looking for does not exist."
+  },
+  "not-found": {
+    "title": "404 Page Not Found",
+    "message": "Did you forget to add the page to the router?"
+  },
+  "voting": {
+    "types": {
+      "daily_rating": "Daily Rating",
+      "political_rating": "Political Rating",
+      "default": "Vote"
+    },
+    "ratings": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "average": "Average",
+      "poor": "Poor",
+      "gajjab": "Gajjab",
+      "bekar": "Bekar",
+      "furious": "Furious"
+    },
+    "ended": "Ended",
+    "days_remaining": "{{count}} days left",
+    "hours_remaining": "{{count}} hours left",
+    "minutes_remaining": "{{count}} minutes left"
+  },
+  "comments": {
+    "title": "Comments",
+    "empty": "No comments yet",
+    "loading": "Loading...",
+    "placeholders": {
+      "name": "Your name",
+      "comment": "Write your comment...",
+      "comment_with_limit": "Your comment (20 words limit)"
+    },
+    "actions": {
+      "post_comment": "Post Comment",
+      "react": "React"
+    },
+    "errors": {
+      "fill_fields": "Please fill in both comment and name fields",
+      "word_limit": "Comment cannot be more than 20 words"
+    },
+    "success": {
+      "comment_posted": "Your comment has been posted",
+      "reaction_added": "Reaction added"
+    },
+    "word_count": "Word count"
+  },
+  "time": {
+    "just_now": "just now",
+    "minutes_ago": "{{count}} minutes ago",
+    "hours_ago": "{{count}} hours ago",
+    "days_ago": "{{count}} days ago"
+  },
+  "error": "Error",
+  "success": "Success",
+  "loading": "Loading...",
+  
+  "home": {
+    "title": "MeroVote",
+    "subtitle": "Nepal's first secure quality voting platform. Share your opinion, stay informed.",
+    "vote_button": "Nepali Polling",
+    "secure_badge": "100% Secure",
+    "quality_voting": "Quality Voting",
+    "stats": {
+      "total_votes": "Total Votes",
+      "active_voters": "Active Voters",
+      "poll_types": "Poll Types"
+    },
+    "categories": {
+      "daily_rating": "Voting Program",
+      "political_rating": "Political",
+      "comparison_voting": "Statistics"
+    },
+    "loading": "Loading polls...",
+    "no_polls": "No polls found",
+    "footer": {
+      "tagline": "Nepal's first digital voting platform. Secure, transparent and quality.",
+      "features": "Features",
+      "feature_items": [
+        "Voting Program",
+        "Political Polls",
+        "Comparison Voting",
+        "Admin Panel"
+      ],
+      "help": "Help",
+      "help_items": [
+        "How to use",
+        "Security Policy",
+        "Contact",
+        "FAQ"
+      ],
+      "security_info": "Security Information",
+      "security_items": [
+        "Encrypted Voting",
+        "Identity Verification",
+        "Data Security"
+      ],
+      "copyright": "© 2024 MeroVote. All rights reserved. Certified by the Government of Nepal."
+    }
+  },
+  
+  "header": {
+    "app_name": "MeroVote",
+    "quality_voting": "Quality Voting",
+    "nav": {
+      "home": "Home",
+      "admin": "Admin"
+    },
+    "status": {
+      "secure": "Secure",
+      "verified": "Verified"
+    }
+  },
+  
+  "admin": {
+    "dashboard": "Dashboard",
+    "stats": {
+      "total_votes": "Total Votes",
+      "total_polls": "Total Polls",
+      "active_polls": "Active Polls",
+      "total_comments": "Total Comments",
+      "card_types": "Card Types"
+    },
+    "ratings": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "poor": "Poor",
+      "gajjab": "Gajjab",
+      "bekar": "Bekar",
+      "furious": "Furious"
+    },
+    "navigation": {
+      "dashboard": "Dashboard",
+      "polls": "Polls",
+      "cards": "Voter Cards",
+      "users": "Users",
+      "comments": "Comments",
+      "analytics": "Analytics",
+      "security": "Security",
+      "settings": "Settings",
+      "logout": "Logout"
+    },
+    "polls": {
+      "title": "Polls",
+      "new_poll": "New Poll",
+      "columns": {
+        "title": "Title",
+        "type": "Type",
+        "created": "Created",
+        "votes": "Votes",
+        "comments": "Comments",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "paused": "Paused",
+        "draft": "Draft"
+      },
+      "types": {
+        "daily_rating": "Daily Rating",
+        "political_rating": "Politician Rating",
+        "default": "Vote"
+      },
+      "actions": {
+        "edit": "Edit",
+        "pause": "Pause",
+        "delete": "Delete"
+      },
+      "messages": {
+        "edit_coming_soon": "Poll editing feature coming soon",
+        "paused": "Poll has been paused",
+        "deleted": "Poll has been deleted successfully",
+        "feature_coming_soon": "Card management feature coming soon",
+        "analytics_coming_soon": "Detailed analytics feature coming soon",
+        "security_coming_soon": "Security settings feature coming soon"
+      },
+      "all_posts": "All Posts",
+      "votes": "votes",
+      "comments": "comments",
+      "no_polls": "No polls found"
+    }
+  }
 }
