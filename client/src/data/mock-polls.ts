@@ -10,6 +10,7 @@ export interface MockPoll {
   createdBy: string;
   createdAt: string;
   expiresAt: string;
+  isActive: boolean;
   candidates?: MockCandidate[];
   voteCounts?: { [key: string]: number };
 }
@@ -35,6 +36,7 @@ export const mockPolls: MockPoll[] = [
     createdBy: "admin",
     createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(), // 3 hours ago
     expiresAt: new Date(Date.now() + 21 * 60 * 60 * 1000).toISOString(), // 21 hours from now
+    isActive: true,
     candidates: [
       {
         id: "1",
@@ -63,8 +65,9 @@ export const mockPolls: MockPoll[] = [
     duration: 24,
     mediaUrl: null,
     createdBy: "admin",
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
     expiresAt: new Date(Date.now() + 22 * 60 * 60 * 1000).toISOString(), // 22 hours from now
+    isActive: true,
     candidates: [
       {
         id: "11",
@@ -96,6 +99,7 @@ export const mockPolls: MockPoll[] = [
     createdBy: "admin",
     createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
     expiresAt: new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString(), // 7 hours from now
+    isActive: true,
     candidates: [
       {
         id: "3",
@@ -125,6 +129,7 @@ export const mockPolls: MockPoll[] = [
     duration: 24,
     mediaUrl: "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=400&h=200&fit=crop",
     createdBy: "admin",
+    isActive: true,
     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     expiresAt: new Date(Date.now() + 22 * 60 * 60 * 1000).toISOString(),
     voteCounts: {
@@ -145,6 +150,7 @@ export const mockPolls: MockPoll[] = [
     createdBy: "admin",
     createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
     expiresAt: new Date(Date.now() + 60 * 60 * 60 * 1000).toISOString(),
+    isActive: true,
     voteCounts: {
       "excellent": 23,
       "good": 67,
@@ -164,6 +170,7 @@ export const mockPolls: MockPoll[] = [
     createdBy: "admin", 
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     expiresAt: new Date(Date.now() + 144 * 60 * 60 * 1000).toISOString(),
+    isActive: true,
     candidates: [
       {
         id: "5",

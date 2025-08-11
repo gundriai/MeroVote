@@ -4,13 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import VotingCard from "@/components/voting-card";
 import ComparisonCard from "@/components/comparison-card";
 import CommentSection from "@/components/comment-section";
-import { Vote, TrendingUp, Users, CheckSquare, Zap, Landmark, Scale } from "lucide-react";
+import { Vote, TrendingUp, Users, CheckSquare, Zap, Landmark, Scale, Activity } from "lucide-react";
 import { FaceToFaceIcon } from "@/components/icons/FaceToFaceIcon";
 import pollCategoriesData from "@/data/poll-categories.json";
 import Header from "@/components/header";
 import BannerCarousel from "@/components/BannerCarousel";
-import PollCategories from "@/components/PollCategories";
-import { useState } from "react";
+import ScrollablePolls from "@/components/ScrollablePolls";
+import { useState, useMemo } from "react";
 import { Link } from "wouter";
 import { mockPolls, MockPoll } from "@/data/mock-polls";
 import { useTranslation } from "react-i18next";
@@ -36,16 +36,26 @@ export default function Home() {
     Zap, 
     Landmark, 
     Scale, 
-    FaceToFace: FaceToFaceIcon 
+    FaceToFace: FaceToFaceIcon,
+    Activity
   };
   
   // Load categories from JSON, map icon, label, and sort by order
-  const categories = (Array.isArray(pollCategoriesData) ? pollCategoriesData : []).map((cat) => ({
+  const categories = useMemo(() => (Array.isArray(pollCategoriesData) ? pollCategoriesData : []).map((cat) => ({
     id: cat.id,
     label: t(cat.labelKey),
     icon: iconMap[cat.icon] || Zap,
     order: cat.order ?? 0
-  })).sort((a, b) => a.order - b.order);
+  })).sort((a, b) => a.order - b.order), [pollCategoriesData, t]);
+
+  // Group polls by category
+  const pollsByCategory = useMemo(() => {
+    const grouped: Record<string, MockPoll[]> = {};
+    categories.forEach(cat => {
+      grouped[cat.id] = mockPolls.filter(poll => poll.type === cat.id);
+    });
+    return grouped;
+  }, [categories]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -56,36 +66,21 @@ export default function Home() {
         <BannerCarousel />
 
 
-        {/* Poll Categories */}
-        <PollCategories
-          categories={categories}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-        />
-
-        {/* Polls Section */}
-        <div className="flex flex-wrap -mx-3">
-          {isLoading ? (
-            <div className="text-center py-8 w-full">
-              <p className="text-gray-500">{t('home.loading')}</p>
-            </div>
-          ) : !polls || !Array.isArray(polls) || polls.length === 0 ? (
-            <div className="text-center py-8 w-full">
-              <p className="text-gray-500">{t('home.no_polls')}</p>
-            </div>
-          ) : (
-            polls.map((poll: any) => (
-              <div key={poll.id} className="w-full md:w-1/2 px-3 mb-6 flex">
-                {poll.type === "comparison_voting" || poll.type === "face_to_face" ? (
-                  <ComparisonCard poll={poll} />
-                ) : (
-                  <VotingCard poll={poll} />
-                )}
-                {/* <CommentSection pollId={poll.id} showWordLimit={poll.type === "daily_rating"} /> */}
-              </div>
-            ))
-          )}
-        </div>
+        {/* Scrollable Polls Section */}
+      <div className="mt-8 min-h-screen">
+        {isLoading ? (
+          <div className="text-center py-8 w-full">
+            <p className="text-gray-500">{t('home.loading')}</p>
+          </div>
+        ) : (
+          <ScrollablePolls
+            categories={categories}
+            polls={pollsByCategory}
+            activeCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+          />
+        )}
+      </div>
       </main>
 
       {/* Footer */}
