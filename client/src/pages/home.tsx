@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import VotingCard from "@/components/voting-card";
 import ComparisonCard from "@/components/comparison-card";
 import CommentSection from "@/components/comment-section";
-import { Vote, TrendingUp, Users, CheckSquare, Zap, Landmark, Scale } from "lucide-react";
+import { Vote, TrendingUp, Users, CheckSquare, Zap, Landmark, Scale, Earth, EarthIcon } from "lucide-react";
 import { FaceToFaceIcon } from "@/components/icons/FaceToFaceIcon";
 import pollCategoriesData from "@/data/poll-categories.json";
 import Header from "@/components/header";
@@ -27,8 +27,10 @@ export default function Home() {
     activePolls: 3
   };
 
-  // Filter polls by selected category
-  const polls = mockPolls.filter(poll => poll.type === selectedCategory);
+  // Filter polls by selected category, show all if 'all' is selected
+  const polls = selectedCategory === 'all' 
+    ? mockPolls 
+    : mockPolls.filter(poll => poll.type === selectedCategory);
   const isLoading = false;
 
   // Map icon string to actual component
@@ -36,6 +38,7 @@ export default function Home() {
     Zap, 
     Landmark, 
     Scale, 
+    EarthIcon, 
     FaceToFace: FaceToFaceIcon 
   };
   

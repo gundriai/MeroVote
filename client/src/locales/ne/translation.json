@@ -99,7 +99,8 @@
       "activities": "गतिविधि",
       "daily_rating": "मतदान कार्यक्रम",
       "political_rating": "राजनैतिक",
-      "comparison_voting": "तथ्यांक"
+      "comparison_voting": "तथ्यांक",
+      "all": "सबै"
     },
     "loading": "पोलहरू लोड गर्दै...",
     "no_polls": "कुनै पोल भेटिएन",
@@ -131,7 +132,6 @@
   
   "header": {
     "app_name": "मेरोभोट",
-    "quality_voting": "गुणस्तर मतदान",
     "nav": {
       "home": "होम",
       "admin": "एडमिन"

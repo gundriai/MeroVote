@@ -21,7 +21,7 @@ export default function Header({ stats }: HeaderProps) {
               </div>
               <h1 className="text-xl font-bold text-gray-900">{t('header.app_name')}</h1>
             </div>
-            <span className="text-sm text-gray-600 font-english">{t('header.quality_voting')}</span>
+            
           </div>
           <nav className="hidden md:flex items-center space-x-6">
             <Link href="/" className={`text-gray-700 hover:text-nepal-red transition-colors${location === "/" ? " font-bold text-nepal-red" : ""}`}>

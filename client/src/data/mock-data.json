@@ -16,7 +16,7 @@
       "id": "2",
       "title": "वर्तमान प्रधानमन्त्रीको कामको मूल्याङ्कन",
       "description": "वर्तमान प्रधानमन्त्रीको कामको तपाईंको मूल्याङ्कन के छ?",
-      "type": "political_rating",
+      "type": "comparison_voting",
       "mediaUrl": null,
       "duration": 48,
       "isActive": true,

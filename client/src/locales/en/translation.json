@@ -98,7 +98,8 @@
       "activities": "Activities",
       "daily_rating": "Voting Program",
       "political_rating": "Political",
-      "comparison_voting": "Statistics"
+      "comparison_voting": "Statistics",
+        "all": "All"
     },
     "loading": "Loading polls...",
     "no_polls": "No polls found",
@@ -130,7 +131,6 @@
   
   "header": {
     "app_name": "MeroVote",
-    "quality_voting": "Quality Voting",
     "nav": {
       "home": "Home",
       "admin": "Admin"
