@@ -146,7 +146,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
   const isExpired = new Date() > new Date(poll.expiresAt);
 
   return (
-    <Card className="bg-white shadow-sm border border-gray-200">
+    <Card className="bg-white shadow-sm border border-gray-200 w-full">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex-1">
