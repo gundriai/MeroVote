@@ -58,7 +58,7 @@ const [, navigate] = useLocation();
         navigate('/login');
       }
     })();
-  }, [login]);
+  }, [login,]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">
