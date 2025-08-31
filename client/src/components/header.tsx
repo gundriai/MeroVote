@@ -30,6 +30,9 @@ export default function Header({ stats }: HeaderProps) {
             <Link href="/admin" className={`text-gray-700 hover:text-nepal-red transition-colors${location === "/admin" ? " font-bold text-nepal-red" : ""}`}>
               {t('header.nav.admin')}
             </Link>
+            <Link href="/login" className={`text-gray-700 hover:text-nepal-red transition-colors${location === "/login" ? " font-bold text-nepal-red" : ""}`}>
+              {t('header.nav.login')}
+            </Link>
           </nav>
           {/* <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-sm">
