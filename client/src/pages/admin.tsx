@@ -2,11 +2,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { BarChart3, Users, MessageSquare, Grid3X3, Edit3, Pause, Trash2, LogOut, Home, Shield, Settings, PieChart } from "lucide-react";
+import { BarChart3, Users, MessageSquare, Grid3X3, Edit3, Pause, Trash2, LogOut, Home, Shield, Settings, PieChart, Plus } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
 import Header from "@/components/header";
 import { useTranslation } from "react-i18next";
+import PollCreationWizard from "@/components/poll-creation/PollCreationWizard";
 
 // Mock data for admin dashboard
 const mockStats = {
@@ -51,6 +52,7 @@ export default function Admin() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("posts");
+  const [showPollCreation, setShowPollCreation] = useState(false);
   const stats = { activeVoters: 1234 };
 
   const handleEdit = (pollId: string) => {
@@ -147,7 +149,16 @@ export default function Admin() {
         return (
           <Card className="bg-white">
             <CardHeader>
-              <CardTitle className="text-xl font-semibold text-gray-900">{t('admin.polls.all_posts', 'All Posts')}</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl font-semibold text-gray-900">{t('admin.polls.all_posts', 'All Posts')}</CardTitle>
+                <Button
+                  onClick={() => setShowPollCreation(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  {t('admin.polls.new_poll', 'New Poll')}
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {mockPolls.map((poll) => (
@@ -328,6 +339,17 @@ export default function Admin() {
         {/* Tab Content */}
         {renderTabContent()}
       </main>
+
+      {/* Poll Creation Wizard */}
+      {showPollCreation && (
+        <PollCreationWizard
+          onClose={() => setShowPollCreation(false)}
+          onPollCreated={(poll) => {
+            console.log('Poll created:', poll);
+            // You can add logic here to refresh the polls list
+          }}
+        />
+      )}
     </div>
   );
 }

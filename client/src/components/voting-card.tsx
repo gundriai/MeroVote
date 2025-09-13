@@ -9,6 +9,7 @@ import { ThumbsUp, ThumbsDown, Flame, Star, Minus, MessageSquare, ChevronDown, C
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CommentSection from "./comment-section";
+import { PollType } from "@/data/mock-polls";
 
 interface VotingCardProps {
   poll: {
@@ -32,13 +33,15 @@ interface VoteOption {
 }
 
 const getVoteOptions = (pollType: string, t: any): VoteOption[] => {
-  if (pollType === "daily_rating") {
+  if (pollType === PollType.REACTION_BASED) {
     return [
       { type: "gajjab", label: t('voting.ratings.gajjab', 'Gajjab'), icon: ThumbsUp, color: "text-green-700", bgColor: "bg-green-500", hoverColor: "hover:bg-green-50 hover:border-green-500" },
       { type: "bekar", label: t('voting.ratings.bekar', 'Bekar'), icon: ThumbsDown, color: "text-red-700", bgColor: "bg-red-500", hoverColor: "hover:bg-red-50 hover:border-red-500" },
       { type: "furious", label: t('voting.ratings.furious', 'Furious'), icon: Flame, color: "text-orange-700", bgColor: "bg-orange-500", hoverColor: "hover:bg-orange-50 hover:border-orange-500" },
     ];
-  } else if (pollType === "political_rating") {
+  } 
+  // TODO: Need to think if it is needed or not.
+  else if (pollType === "political_rating") {
     return [
       { type: "excellent", label: t('voting.ratings.excellent', 'Excellent'), icon: Star, color: "text-green-700", bgColor: "bg-green-500", hoverColor: "hover:bg-green-50 hover:border-green-500" },
       { type: "good", label: t('voting.ratings.good', 'Good'), icon: ThumbsUp, color: "text-blue-700", bgColor: "bg-blue-500", hoverColor: "hover:bg-blue-50 hover:border-blue-500" },
