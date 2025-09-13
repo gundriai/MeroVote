@@ -112,7 +112,7 @@ export default function Home() {
           ) : (
             polls.map((poll: any) => (
               <div key={poll.id} className="w-full md:w-1/2 px-3 mb-6 flex">
-                {poll.type === PollType.COMPARISON_VOTING || poll.type === PollType.FACE_TO_FACE ? (
+                {poll.type === PollType.ONE_VS_ONE ? (
                   <ComparisonCard {...poll} />
                 ) : (
                   <VotingCard poll={poll} />

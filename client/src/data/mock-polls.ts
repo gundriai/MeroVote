@@ -17,11 +17,8 @@ export enum PollCategories {
 }
 
 export enum PollType {
-  DAILY_RATING = "daily_rating",
-  POLITICAL_RATING = "political_rating",
-  COMPARISON_VOTING = "comparison_voting",
-  FACE_TO_FACE = "face_to_face",
-  ACTIVITIES = "activities"
+  ONE_VS_ONE = "ONE_VS_ONE",       
+  REACTION_BASED = "REACTION_BASED" 
 }
 
 export interface MockPoll {
@@ -58,7 +55,7 @@ export const mockPolls: MockPoll[] = [
     id: "1",
     title: "नेपालको अर्को प्रधानमन्त्री को होला?",
     description: "अर्को चुनावमा को प्रधानमन्त्री बन्ला भन्ने तपाईंको राय",
-    type: PollType.FACE_TO_FACE,
+    type: PollType.ONE_VS_ONE,
     category: [PollCategories.FACE_TO_FACE, PollCategories.POLITICAL],
     startDate: new Date(Date.now() - 3 * 60 * 60 * 1000),
     endDate: new Date(Date.now() + 21 * 60 * 60 * 1000),
@@ -114,8 +111,8 @@ export const mockPolls: MockPoll[] = [
     id: "6",
     title: "तपाईंलाई बढी मनपर्ने गायक/गायिका को हो?",
     description: "तपाईंको मनपर्ने नेपाली गायक/गायिका छान्नुहोस्",
-    type: PollType.COMPARISON_VOTING,
-    category: [PollCategories.POLITICAL],
+    type: PollType.ONE_VS_ONE,
+    category: [PollCategories.FACE_TO_FACE],
     startDate: new Date(Date.now() - 2 * 60 * 60 * 1000),
     endDate: new Date(Date.now() + 22 * 60 * 60 * 1000),
     mediaUrl: "",
@@ -149,7 +146,7 @@ export const mockPolls: MockPoll[] = [
     id: "2",
     title: "नेपालको मनपर्ने खाना के हो?",
     description: "तपाईंको मनपर्ने नेपाली खाना छान्नुहोस्",
-    type: PollType.COMPARISON_VOTING,
+    type: PollType.ONE_VS_ONE,
     category: [PollCategories.POLITICAL],
     startDate: new Date(Date.now() - 1 * 60 * 60 * 1000),
     endDate: new Date(Date.now() + 7 * 60 * 60 * 1000),
@@ -195,7 +192,7 @@ export const mockPolls: MockPoll[] = [
     id: "3",
     title: "आजको मौसम कस्तो लाग्यो?",
     description: "आजको मौसमको बारेमा तपाईंको राय दिनुहोस्",
-    type: PollType.DAILY_RATING,
+    type: PollType.REACTION_BASED,
     category: [PollCategories.DAILY],
     startDate: new Date(Date.now() - 2 * 60 * 60 * 1000),
     endDate: new Date(Date.now() + 22 * 60 * 60 * 1000),
@@ -217,7 +214,7 @@ export const mockPolls: MockPoll[] = [
     id: "4",
     title: "सरकारको कामकाज कस्तो छ?",
     description: "हालको सरकारको प्रदर्शनलाई मूल्याङ्कन गर्नुहोस्",
-    type: PollType.POLITICAL_RATING,
+    type: PollType.REACTION_BASED,
     category: [PollCategories.POLITICAL],
     startDate: new Date(Date.now() - 12 * 60 * 60 * 1000),
     endDate: new Date(Date.now() + 60 * 60 * 60 * 1000),
@@ -240,7 +237,7 @@ export const mockPolls: MockPoll[] = [
     id: "5",
     title: "को बेस्ट फुटबलर हो?",
     description: "विश्वका उत्कृष्ट फुटबलर को हो भन्ने तपाईंको राय",
-    type: PollType.COMPARISON_VOTING,
+    type: PollType.ONE_VS_ONE,
     category: [PollCategories.POLITICAL],
     startDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
     endDate: new Date(Date.now() + 144 * 60 * 60 * 1000),
