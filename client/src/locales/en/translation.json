@@ -96,12 +96,14 @@
       "poll_types": "Poll Types"
     },
     "categories": {
+      "all": "All",
       "face_to_face": "Face to Face",
+      "daily": "Daily",
+      "political": "Political",
       "activities": "Activities",
       "daily_rating": "Voting Program",
       "political_rating": "Political",
-      "comparison_voting": "Statistics",
-        "all": "All"
+      "comparison_voting": "Statistics"
     },
     "loading": "Loading polls...",
     "no_polls": "No polls found",

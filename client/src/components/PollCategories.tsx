@@ -1,15 +1,17 @@
+import { PollCategories as PollCateogyEnum } from "@/data/mock-polls";
 import { FC } from "react";
 
 interface PollCategory {
-  id: string;
+  id: PollCateogyEnum;
   label: string;
   icon: React.ElementType;
+  order: number;
 }
 
 interface PollCategoriesProps {
   categories: PollCategory[];
-  selectedCategory: string;
-  setSelectedCategory: (id: string) => void;
+  selectedCategory: PollCategory;
+  setSelectedCategory: (pollCategory: PollCategory) => void;
 }
 
 const PollCategories: FC<PollCategoriesProps> = ({ categories, selectedCategory, setSelectedCategory }) => {
@@ -17,11 +19,11 @@ const PollCategories: FC<PollCategoriesProps> = ({ categories, selectedCategory,
     <div className="flex justify-center items-center space-x-6 mb-8">
       {categories.map((category) => {
         const Icon = category.icon;
-        const isActive = selectedCategory === category.id;
+        const isActive = selectedCategory.id === category.id;
         return (
           <button
             key={category.id}
-            onClick={() => setSelectedCategory(category.id)}
+            onClick={() => setSelectedCategory(category)}
             className={`flex items-center space-x-2 pb-2 font-medium transition-colors ${
               isActive
                 ? "text-nepal-red border-b-2 border-nepal-red"

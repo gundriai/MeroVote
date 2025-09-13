@@ -1,22 +1,27 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+// --- PollCategory Model ---
+import { ElementType } from "react";
+
+
+export interface PollCategory {
+  id: PollCategoriesEnum;
+  label: string;
+  icon: ElementType;
+  order: number;
+}
 import VotingCard from "@/components/voting-card";
 import ComparisonCard from "@/components/comparison-card";
-import CommentSection from "@/components/comment-section";
-import { Vote, TrendingUp, Users, CheckSquare, Zap, Landmark, Scale, Earth, EarthIcon } from "lucide-react";
+import { Vote, Users, CheckSquare, Zap, Landmark, Scale, Earth, EarthIcon } from "lucide-react";
 import { FaceToFaceIcon } from "@/components/icons/FaceToFaceIcon";
 import pollCategoriesData from "@/data/poll-categories.json";
 import Header from "@/components/header";
 import BannerCarousel from "@/components/BannerCarousel";
-import PollCategories from "@/components/PollCategories";
-import { useState } from "react";
-import { Link } from "wouter";
-import { mockPolls, MockPoll } from "@/data/mock-polls";
+import PollCategoryNavModel from "@/components/PollCategories";
+import { useState, useEffect } from "react";
+import { mockPolls, PollType, PollCategories as PollCategoriesEnum } from "@/data/mock-polls";
 import { useTranslation } from "react-i18next";
 
 export default function Home() {
-  const [selectedCategory, setSelectedCategory] = useState<string>("daily_rating");
+  const [selectedCategory, setSelectedCategory] = useState<PollCategory>({} as PollCategory);
 
   const { t } = useTranslation();
   
@@ -27,28 +32,47 @@ export default function Home() {
     activePolls: 3
   };
 
-  // Filter polls by selected category, show all if 'all' is selected
-  const polls = selectedCategory === 'all' 
-    ? mockPolls 
-    : mockPolls.filter(poll => poll.type === selectedCategory);
+  // Filter polls by selected category, show all if 'All' is selected or no category selected
+  const polls = !selectedCategory.id || selectedCategory.id === PollCategoriesEnum.ALL
+    ? mockPolls
+    : mockPolls.filter(poll => poll.category.includes(selectedCategory.id));
   const isLoading = false;
 
+  // Debug logging
+  console.log('Selected Category:', selectedCategory);
+  console.log('Filtered Polls:', polls);
+  console.log('Mock Polls:', mockPolls);
+
   // Map icon string to actual component
-  const iconMap: Record<string, any> = { 
+  const iconMap: Record<string, ElementType> = { 
     Zap, 
     Landmark, 
     Scale, 
     EarthIcon, 
-    FaceToFace: FaceToFaceIcon 
+    FaceToFace: FaceToFaceIcon, 
+    Activity: Users // fallback for Activity, replace with actual icon if available
   };
-  
-  // Load categories from JSON, map icon, label, and sort by order
-  const categories = (Array.isArray(pollCategoriesData) ? pollCategoriesData : []).map((cat) => ({
-    id: cat.id,
+
+  // Transform pollCategoriesData to PollCategory[]
+  const categories: PollCategory[] = pollCategoriesData
+  .map<PollCategory>((cat) => ({
+    id: cat.id as PollCategoriesEnum,
     label: t(cat.labelKey),
-    icon: iconMap[cat.icon] || Zap,
-    order: cat.order ?? 0
-  })).sort((a, b) => a.order - b.order);
+    icon: (iconMap[cat.icon] ?? Zap) as ElementType,
+    order: cat.order ?? 0,
+  }))
+  .sort((a, b) => a.order - b.order);
+
+  // Set default category to "All" if none selected
+  useEffect(() => {
+    if (!selectedCategory.id && categories.length > 0) {
+      const defaultCategory = categories.find(cat => cat.id === PollCategoriesEnum.ALL);
+      if (defaultCategory) {
+        setSelectedCategory(defaultCategory);
+      }
+    }
+  }, [categories, selectedCategory.id]);
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -60,11 +84,20 @@ export default function Home() {
 
 
         {/* Poll Categories */}
-        <PollCategories
+        <PollCategoryNavModel
           categories={categories}
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
         />
+
+        {/* Debug Info */}
+        <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
+          <h3 className="font-bold text-yellow-800">Debug Info:</h3>
+          <p><strong>Selected Category:</strong> {selectedCategory.id || 'None'}</p>
+          <p><strong>Total Polls:</strong> {mockPolls.length}</p>
+          <p><strong>Filtered Polls:</strong> {polls.length}</p>
+          <p><strong>Available Categories:</strong> {categories.map(c => c.id).join(', ')}</p>
+        </div>
 
         {/* Polls Section */}
         <div className="flex flex-wrap -mx-3">
@@ -79,8 +112,8 @@ export default function Home() {
           ) : (
             polls.map((poll: any) => (
               <div key={poll.id} className="w-full md:w-1/2 px-3 mb-6 flex">
-                {poll.type === "comparison_voting" || poll.type === "face_to_face" ? (
-                  <ComparisonCard poll={poll} />
+                {poll.type === PollType.COMPARISON_VOTING || poll.type === PollType.FACE_TO_FACE ? (
+                  <ComparisonCard {...poll} />
                 ) : (
                   <VotingCard poll={poll} />
                 )}
