@@ -9,18 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { MessageSquare, ChevronDown, ChevronUp, Clock, Users, TrendingUp, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CommentSection from "./comment-section";
-
-interface ComparisonCardProps {
-  poll: {
-    id: string;
-    title: string;
-    description?: string;
-    type: string;
-    mediaUrl?: string;
-    expiresAt: string;
-    isActive: boolean;
-  };
-}
+import { MockPoll } from "@/data/mock-polls";
 
 interface Candidate {
   id: string;
@@ -30,7 +19,7 @@ interface Candidate {
   voteCount: number;
 }
 
-export default function ComparisonCard({ poll }: ComparisonCardProps) {
+export default function ComparisonCard(poll: MockPoll) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [hasVoted, setHasVoted] = useState(false);
@@ -46,7 +35,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
   useEffect(() => {
     const updateTimeRemaining = () => {
       const now = new Date();
-      const expires = new Date(poll.expiresAt);
+      const expires = new Date(poll?.endDate);
       const diff = expires.getTime() - now.getTime();
 
       if (diff <= 0) {
@@ -72,7 +61,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
     const interval = setInterval(updateTimeRemaining, 1000);
 
     return () => clearInterval(interval);
-  }, [poll.expiresAt]);
+  }, [poll?.endDate]);
 
   // Use candidates directly from poll data
   const candidates = (poll as any)?.candidates || [];
@@ -97,7 +86,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
       return;
     }
 
-    if (!poll.isActive || new Date() > new Date(poll.expiresAt)) {
+    if (!poll?.isHidden || new Date() > new Date(poll?.endDate)) {
       toast({
         title: t('info'),
         description: t('poll_ended'),
@@ -150,7 +139,7 @@ export default function ComparisonCard({ poll }: ComparisonCardProps) {
     return colors[index % colors.length];
   };
 
-  const isExpired = new Date() > new Date(poll.expiresAt);
+  const isExpired = new Date() > new Date(poll?.endDate);
 
   return (
     <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden w-full">
