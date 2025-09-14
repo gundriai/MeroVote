@@ -2,11 +2,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { BarChart3, Users, MessageSquare, Grid3X3, Edit3, Pause, Trash2, LogOut, Home, Shield, Settings, PieChart } from "lucide-react";
+import { BarChart3, Users, MessageSquare, Grid3X3, Edit3, Pause, Trash2, LogOut, Home, Shield, Settings, PieChart, Plus } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
 import Header from "@/components/header";
 import { useTranslation } from "react-i18next";
+import PollCreationWizard from "@/components/poll-creation/PollCreationWizard";
 
 // Mock data for admin dashboard
 const mockStats = {
@@ -21,7 +22,7 @@ const mockPolls = [
     id: "1",
     title: "नयाँ सरकारी नीति कस्तो लाग्यो?",
     description: "सरकारले ल्याएको नयाँ शिक्षा नीति बारे तपाईंको राय दिनुहोस्।",
-    type: "political_rating",
+    type: "REACTION_BASED",
     createdAt: "August 5, 2025 at 07:17 PM",
     totalVotes: 490,
     totalComments: 23,
@@ -35,7 +36,7 @@ const mockPolls = [
     id: "2", 
     title: "आजको मौसम कस्तो छ?",
     description: "काठमाडौंको आजको मौसम कस्तो लाग्यो तपाईंलाई?",
-    type: "daily_rating",
+    type: "REACTION_BASED",
     createdAt: "August 5, 2025 at 05:17 PM",
     totalVotes: 635,
     totalComments: 45,
@@ -51,6 +52,7 @@ export default function Admin() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("posts");
+  const [showPollCreation, setShowPollCreation] = useState(false);
   const stats = { activeVoters: 1234 };
 
   const handleEdit = (pollId: string) => {
@@ -77,16 +79,16 @@ export default function Admin() {
 
   const getTypeLabel = (type: string): string => {
     switch (type) {
-      case "daily_rating": return t('admin.polls.types.daily_rating', 'Daily Rating');
-      case "political_rating": return t('admin.polls.types.political_rating', 'Politician Rating');
+      case "REACTION_BASED": return t('admin.polls.types.reaction_based', 'Reaction-Based');
+      case "ONE_VS_ONE": return t('admin.polls.types.one_vs_one', 'One vs One');
       default: return t('admin.polls.types.default', 'Vote');
     }
   };
 
   const getTypeBadgeColor = (type: string): string => {
     switch (type) {
-      case "daily_rating": return "bg-nepal-orange";
-      case "political_rating": return "bg-purple-600";
+      case "REACTION_BASED": return "bg-green-600";
+      case "ONE_VS_ONE": return "bg-blue-600";
       default: return "bg-gray-600";
     }
   };
@@ -147,7 +149,16 @@ export default function Admin() {
         return (
           <Card className="bg-white">
             <CardHeader>
-              <CardTitle className="text-xl font-semibold text-gray-900">{t('admin.polls.all_posts', 'All Posts')}</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl font-semibold text-gray-900">{t('admin.polls.all_posts', 'All Posts')}</CardTitle>
+                <Button
+                  onClick={() => setShowPollCreation(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  {t('admin.polls.new_poll', 'New Poll')}
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {mockPolls.map((poll) => (
@@ -199,7 +210,7 @@ export default function Admin() {
 
                     {/* Vote Statistics */}
                     <div className="grid grid-cols-3 gap-4">
-                      {poll.type === "political_rating" ? (
+                      {poll.type === "REACTION_BASED" ? (
                         <>
                           <div className="text-center">
                             <p className="text-2xl font-bold text-green-600">{poll.voteCounts.excellent}</p>
@@ -328,6 +339,17 @@ export default function Admin() {
         {/* Tab Content */}
         {renderTabContent()}
       </main>
+
+      {/* Poll Creation Wizard */}
+      {showPollCreation && (
+        <PollCreationWizard
+          onClose={() => setShowPollCreation(false)}
+          onPollCreated={(poll) => {
+            console.log('Poll created:', poll);
+            // You can add logic here to refresh the polls list
+          }}
+        />
+      )}
     </div>
   );
 }
