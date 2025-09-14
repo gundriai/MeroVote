@@ -1,13 +1,13 @@
 // --- PollCategory Model ---
 import { ElementType } from "react";
 
-
 export interface PollCategory {
   id: PollCategoriesEnum;
   label: string;
   icon: ElementType;
   order: number;
 }
+
 import VotingCard from "@/components/voting-card";
 import ComparisonCard from "@/components/comparison-card";
 import { Vote, Users, CheckSquare, Zap, Landmark, Scale, Earth, EarthIcon } from "lucide-react";
@@ -17,31 +17,27 @@ import Header from "@/components/header";
 import BannerCarousel from "@/components/BannerCarousel";
 import PollCategoryNavModel from "@/components/PollCategories";
 import { useState, useEffect } from "react";
-import { mockPolls, PollType, PollCategories as PollCategoriesEnum } from "@/data/mock-polls";
+import { PollType, PollCategories as PollCategoriesEnum } from "@/data/mock-polls";
 import { useTranslation } from "react-i18next";
+import { usePolls } from "@/hooks/use-polls";
+import { AggregatedPoll } from "@/services/polls.service";
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<PollCategory>({} as PollCategory);
-
   const { t } = useTranslation();
   
-  // Use hardcoded data instead of API calls
-  const stats = {
-    totalVotes: 2847,
-    activeVoters: 1234, 
-    activePolls: 3
-  };
-
-  // Filter polls by selected category, show all if 'All' is selected or no category selected
-  const polls = !selectedCategory.id || selectedCategory.id === PollCategoriesEnum.ALL
-    ? mockPolls
-    : mockPolls.filter(poll => poll.category.includes(selectedCategory.id));
-  const isLoading = false;
+  // Use API data with category filtering
+  const { polls, stats, isLoading, error, refetch } = usePolls({
+    category: selectedCategory.id === PollCategoriesEnum.ALL ? undefined : selectedCategory.id,
+    autoFetch: true
+  });
 
   // Debug logging
   console.log('Selected Category:', selectedCategory);
-  console.log('Filtered Polls:', polls);
-  console.log('Mock Polls:', mockPolls);
+  console.log('API Polls:', polls);
+  console.log('Stats:', stats);
+  console.log('Loading:', isLoading);
+  console.log('Error:', error);
 
   // Map icon string to actual component
   const iconMap: Record<string, ElementType> = { 
@@ -73,6 +69,12 @@ export default function Home() {
     }
   }, [categories, selectedCategory.id]);
 
+  // Handle category change
+  const handleCategoryChange = (category: PollCategory) => {
+    setSelectedCategory(category);
+    // The usePolls hook will automatically refetch when category changes
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -87,32 +89,44 @@ export default function Home() {
         <PollCategoryNavModel
           categories={categories}
           selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
+          setSelectedCategory={handleCategoryChange}
         />
 
         {/* Debug Info */}
         <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
           <h3 className="font-bold text-yellow-800">Debug Info:</h3>
           <p><strong>Selected Category:</strong> {selectedCategory.id || 'None'}</p>
-          <p><strong>Total Polls:</strong> {mockPolls.length}</p>
-          <p><strong>Filtered Polls:</strong> {polls.length}</p>
-          <p><strong>Available Categories:</strong> {categories.map(c => c.id).join(', ')}</p>
+          <p><strong>Total Polls:</strong> {polls.length}</p>
+          <p><strong>Loading:</strong> {isLoading ? 'Yes' : 'No'}</p>
+          <p><strong>Error:</strong> {error || 'None'}</p>
+          <p><strong>Stats:</strong> {JSON.stringify(stats)}</p>
         </div>
 
         {/* Polls Section */}
         <div className="flex flex-wrap -mx-3">
           {isLoading ? (
             <div className="text-center py-8 w-full">
-              <p className="text-gray-500">{t('home.loading')}</p>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <p className="text-gray-500 mt-2">{t('home.loading')}</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-8 w-full">
+              <p className="text-red-500 mb-4">{t('home.error_loading_polls', 'Error loading polls')}</p>
+              <button 
+                onClick={refetch}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                {t('home.retry', 'Retry')}
+              </button>
             </div>
           ) : !polls || !Array.isArray(polls) || polls.length === 0 ? (
             <div className="text-center py-8 w-full">
               <p className="text-gray-500">{t('home.no_polls')}</p>
             </div>
           ) : (
-            polls.map((poll: any) => (
+            polls.map((poll: AggregatedPoll) => (
               <div key={poll.id} className="w-full md:w-1/2 px-3 mb-6 flex">
-                {poll.type === PollType.ONE_VS_ONE ? (
+                {poll.type === 'ONE_VS_ONE' ? (
                   <ComparisonCard {...poll} />
                 ) : (
                   <VotingCard poll={poll} />

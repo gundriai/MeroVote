@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { MessageSquare, ChevronDown, ChevronUp, Clock, Users, TrendingUp, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CommentSection from "./comment-section";
-import { MockPoll } from "@/data/mock-polls";
+import { AggregatedPoll } from "@/services/polls.service";
 
 interface Candidate {
   id: string;
@@ -19,7 +19,7 @@ interface Candidate {
   voteCount: number;
 }
 
-export default function ComparisonCard(poll: MockPoll) {
+export default function ComparisonCard(poll: AggregatedPoll) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [hasVoted, setHasVoted] = useState(false);

@@ -10,17 +10,10 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CommentSection from "./comment-section";
 import { PollType } from "@/data/mock-polls";
+import { AggregatedPoll } from "@/services/polls.service";
 
 interface VotingCardProps {
-  poll: {
-    id: string;
-    title: string;
-    description?: string | null;
-    type: string;
-    mediaUrl?: string | null;
-    expiresAt: string;
-    voteCounts?: { [key: string]: number };
-  };
+  poll: AggregatedPoll;
 }
 
 interface VoteOption {
@@ -86,7 +79,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
   useEffect(() => {
     const updateTimeRemaining = () => {
       const now = new Date();
-      const expires = new Date(poll.expiresAt);
+      const expires = new Date(poll.endDate);
       const diff = expires.getTime() - now.getTime();
 
       if (diff <= 0) {
@@ -111,7 +104,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
     const interval = setInterval(updateTimeRemaining, 60000); // Update every minute
 
     return () => clearInterval(interval);
-  }, [poll.expiresAt]);
+  }, [poll.endDate]);
 
   // Use hardcoded vote counts from poll data
   const voteCounts = (poll as any).voteCounts || {};
@@ -135,7 +128,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
       return;
     }
 
-    if (new Date() > new Date(poll.expiresAt)) {
+    if (new Date() > new Date(poll.endDate)) {
       toast({
         title: "जानकारी",
         description: "यो पोल समाप्त भएको छ",
@@ -146,7 +139,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
     handleVoteAction(voteType);
   };
 
-  const isExpired = new Date() > new Date(poll.expiresAt);
+  const isExpired = new Date() > new Date(poll.endDate);
 
   return (
     <Card className="bg-white shadow-sm border border-gray-200 w-full">

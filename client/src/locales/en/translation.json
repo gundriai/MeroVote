@@ -107,6 +107,8 @@
     },
     "loading": "Loading polls...",
     "no_polls": "No polls found",
+    "error_loading_polls": "Error loading polls",
+    "retry": "Retry",
     "footer": {
       "tagline": "Nepal's first digital voting platform. Secure, transparent and quality.",
       "features": "Features",
