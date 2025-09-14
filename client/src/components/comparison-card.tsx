@@ -10,6 +10,7 @@ import { MessageSquare, ChevronDown, ChevronUp, Clock, Users, TrendingUp, Zap } 
 import { Button } from "@/components/ui/button";
 import CommentSection from "./comment-section";
 import { AggregatedPoll } from "@/services/polls.service";
+import { pollsService } from "@/services/polls.service";
 
 interface Candidate {
   id: string;
@@ -67,14 +68,33 @@ export default function ComparisonCard(poll: AggregatedPoll) {
   const candidates = (poll as any)?.candidates || [];
   const totalVotes = candidates.reduce((sum: number, candidate: any) => sum + candidate.voteCount, 0);
 
-  // Simulate voting without API call
-  const handleVoteAction = (candidateId: string) => {
-    voteTracker.recordVote(poll.id);
-    setHasVoted(true);
-    toast({
-      title: t('success'),
-      description: t('vote_success'),
-    });
+  // Real voting with API call
+  const handleVoteAction = async (candidateId: string) => {
+    try {
+      // Find the poll option ID for this candidate
+      const candidate = candidates.find((c: any) => c.id === candidateId);
+      if (!candidate) {
+        throw new Error('Candidate not found');
+      }
+
+      // For now, we'll use the candidate ID as option ID
+      // In a real implementation, you'd need to map candidates to poll options
+      await pollsService.voteOnPoll(poll.id, candidateId);
+      
+      voteTracker.recordVote(poll.id);
+      setHasVoted(true);
+      toast({
+        title: t('success'),
+        description: t('vote_success'),
+      });
+    } catch (error) {
+      console.error('Error voting:', error);
+      toast({
+        title: t('error'),
+        description: error instanceof Error ? error.message : t('vote_failed'),
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleVote = (candidateId: string) => {
@@ -86,7 +106,7 @@ export default function ComparisonCard(poll: AggregatedPoll) {
       return;
     }
 
-    if (!poll?.isHidden || new Date() > new Date(poll?.endDate)) {
+    if (new Date() > new Date(poll?.endDate)) {
       toast({
         title: t('info'),
         description: t('poll_ended'),

@@ -4,7 +4,11 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from "./LanguageSwitcher";
 
 interface HeaderProps {
-  stats?: { activeVoters?: number };
+  stats?: { 
+    activeVoters?: number;
+    totalVotes?: number;
+    activePolls?: number;
+  };
 }
 
 export default function Header({ stats }: HeaderProps) {

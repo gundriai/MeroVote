@@ -8,6 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import { ThumbsUp, ThumbsDown, Flame, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { pollsService } from "@/services/polls.service";
+import { isAuthenticated, getUserName } from "@/lib/auth";
 
 interface CommentSectionProps {
   pollId: string;
@@ -28,7 +30,6 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
   const { t } = useTranslation();
   const { toast } = useToast();
   const [comment, setComment] = useState("");
-  const [author, setAuthor] = useState("");
 
   // Use hardcoded comments data
   const mockComments = [
@@ -51,15 +52,30 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
       furiousCount: 0,
     }
   ];
-  const comments = mockComments;
-  const isLoading = false;
+  // Fetch real comments from API
+  const { data: pollData, isLoading } = useQuery({
+    queryKey: ['poll', pollId],
+    queryFn: () => pollsService.getAggregatedPoll(pollId),
+    enabled: !!pollId,
+  });
 
-  // Simulate comment submission without API
-  const handleSubmitComment = () => {
-    if (!comment.trim() || !author.trim()) {
+  const comments = pollData?.comments || [];
+
+  // Real comment submission with API
+  const handleSubmitComment = async () => {
+    if (!comment.trim()) {
       toast({
         title: t('error', 'Error'),
-        description: t('comments.errors.fill_fields', 'Please fill in both comment and name'),
+        description: t('comments.errors.fill_comment', 'Please enter a comment'),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isAuthenticated()) {
+      toast({
+        title: t('error', 'Error'),
+        description: t('comments.errors.login_required', 'You must be logged in to comment'),
         variant: "destructive",
       });
       return;
@@ -75,20 +91,58 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
       return;
     }
 
-    setComment("");
-    setAuthor("");
-    toast({
-      title: t('success', 'Success'),
-      description: t('comments.success.comment_posted', 'Your comment has been posted'),
-    });
+    try {
+      await pollsService.addComment(pollId, comment.trim());
+      
+      // Invalidate and refetch poll data to show new comment
+      queryClient.invalidateQueries({ queryKey: ['poll', pollId] });
+      queryClient.invalidateQueries({ queryKey: ['aggregated-polls'] });
+      
+      setComment("");
+      toast({
+        title: t('success', 'Success'),
+        description: t('comments.success.comment_posted', 'Your comment has been posted'),
+      });
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      toast({
+        title: t('error', 'Error'),
+        description: error instanceof Error ? error.message : t('comments.errors.failed', 'Failed to add comment'),
+        variant: "destructive",
+      });
+    }
   };
 
-  // Simulate comment reaction without API
-  const handleReactToComment = (commentId: string, reactionType: string) => {
-    toast({
-      title: t('success', 'Success'),
-      description: t('comments.success.reaction_added', 'Reaction added'),
-    });
+  // Real comment reaction with API
+  const handleReactToComment = async (commentId: string, reactionType: string) => {
+    if (!isAuthenticated()) {
+      toast({
+        title: t('error', 'Error'),
+        description: t('comments.errors.login_required', 'You must be logged in to react to comments'),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await pollsService.addCommentReaction(pollId, commentId, reactionType as 'gajjab' | 'bekar' | 'furious');
+      
+      // Invalidate and refetch poll data to show updated reaction counts
+      queryClient.invalidateQueries({ queryKey: ['poll', pollId] });
+      queryClient.invalidateQueries({ queryKey: ['aggregated-polls'] });
+      
+      toast({
+        title: t('success', 'Success'),
+        description: t('comments.success.reaction_added', 'Reaction added'),
+      });
+    } catch (error) {
+      console.error('Error adding reaction:', error);
+      toast({
+        title: t('error', 'Error'),
+        description: error instanceof Error ? error.message : t('comments.errors.reaction_failed', 'Failed to add reaction'),
+        variant: "destructive",
+      });
+    }
   };
 
   const getWordCount = (text: string): number => {
@@ -177,21 +231,18 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
 
         {/* Comment Form */}
         <div className="space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <div className="space-y-2">
+            {isAuthenticated() && (
+              <p className="text-sm text-gray-600">
+                {t('comments.posting_as', 'Posting as')}: <span className="font-medium">{getUserName()}</span>
+              </p>
+            )}
             <Input
-              placeholder={t('comments.placeholders.name', 'Your name')}
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-              className="mb-2"
+              placeholder={showWordLimit ? t('comments.placeholders.comment_with_limit', 'Your comment (20 words limit)') : t('comments.placeholders.comment', 'Your comment')}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className={isOverLimit ? "border-red-500" : ""}
             />
-            <div className="md:col-span-2">
-              <Input
-                placeholder={showWordLimit ? t('comments.placeholders.comment_with_limit', 'Your comment (20 words limit)') : t('comments.placeholders.comment', 'Your comment')}
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                className={isOverLimit ? "border-red-500" : ""}
-              />
-            </div>
           </div>
           
           <div className="flex items-center justify-between">
@@ -202,7 +253,7 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
             )}
             <Button
               onClick={handleSubmitComment}
-              disabled={!comment.trim() || !author.trim() || isOverLimit}
+              disabled={!comment.trim() || isOverLimit || !isAuthenticated()}
               className="bg-nepal-red hover:bg-red-700 text-white ml-auto"
               size="sm"
             >

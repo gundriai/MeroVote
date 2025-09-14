@@ -109,6 +109,21 @@
     "no_polls": "No polls found",
     "error_loading_polls": "Error loading polls",
     "retry": "Retry",
+    "vote_failed": "Failed to vote",
+    "comments": {
+      "errors": {
+        "fill_comment": "Please enter a comment",
+        "login_required": "You must be logged in to comment",
+        "word_limit": "Comment cannot be more than 20 words",
+        "failed": "Failed to add comment",
+        "reaction_failed": "Failed to add reaction"
+      },
+      "success": {
+        "comment_posted": "Your comment has been posted",
+        "reaction_added": "Reaction added"
+      },
+      "posting_as": "Posting as"
+    },
     "footer": {
       "tagline": "Nepal's first digital voting platform. Secure, transparent and quality.",
       "features": "Features",
@@ -149,6 +164,11 @@
   },
   
   "admin": {
+    "title": "Admin Dashboard",
+    "loading": "Loading polls...",
+    "no_polls": "No polls found",
+    "refresh": "Refresh",
+    "create_poll": "Create Poll",
     "dashboard": "Dashboard",
     "stats": {
       "total_votes": "Total Votes",
@@ -201,19 +221,25 @@
       "actions": {
         "edit": "Edit",
         "pause": "Pause",
-        "delete": "Delete"
+        "delete": "Delete",
+        "success": "Success",
+        "error": "Error"
       },
       "messages": {
         "edit_coming_soon": "Poll editing feature coming soon",
         "paused": "Poll has been paused",
         "deleted": "Poll has been deleted successfully",
+        "created": "Poll created successfully",
+        "toggle_failed": "Failed to toggle poll visibility",
+        "delete_failed": "Failed to delete poll",
         "feature_coming_soon": "Card management feature coming soon",
         "analytics_coming_soon": "Detailed analytics feature coming soon",
         "security_coming_soon": "Security settings feature coming soon"
       },
       "all_posts": "All Posts",
-      "votes": "votes",
-      "comments": "comments",
+        "votes": "votes",
+        "comments": "comments",
+        "no_votes": "No votes yet",
       "no_polls": "No polls found"
     },
     "poll_creation": {

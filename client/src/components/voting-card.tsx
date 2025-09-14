@@ -5,12 +5,13 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { voteTracker } from "@/lib/vote-tracker";
 import { useToast } from "@/hooks/use-toast";
-import { ThumbsUp, ThumbsDown, Flame, Star, Minus, MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Flame, Star, Minus, MessageSquare, ChevronDown, ChevronUp, Heart, Zap } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CommentSection from "./comment-section";
 import { PollType } from "@/data/mock-polls";
-import { AggregatedPoll } from "@/services/polls.service";
+import { AggregatedPoll, AggregatedPollOption } from "@/services/polls.service";
+import { pollsService } from "@/services/polls.service";
 
 interface VotingCardProps {
   poll: AggregatedPoll;
@@ -24,6 +25,59 @@ interface VoteOption {
   bgColor: string;
   hoverColor: string;
 }
+
+// Helper functions for icon and color mapping
+const getIconFromName = (iconName: string) => {
+  const iconMap: { [key: string]: any } = {
+    'thumbs-up': ThumbsUp,
+    'thumbs-down': ThumbsDown,
+    'flame': Flame,
+    'star': Star,
+    'minus': Minus,
+    'heart': Heart,
+    'zap': Zap,
+  };
+  return iconMap[iconName] || ThumbsUp;
+};
+
+const getColorClass = (color: string) => {
+  const colorMap: { [key: string]: string } = {
+    'green': 'text-green-700',
+    'red': 'text-red-700',
+    'blue': 'text-blue-700',
+    'yellow': 'text-yellow-700',
+    'purple': 'text-purple-700',
+    'orange': 'text-orange-700',
+    'pink': 'text-pink-700',
+  };
+  return colorMap[color] || 'text-gray-700';
+};
+
+const getBgColorClass = (color: string) => {
+  const colorMap: { [key: string]: string } = {
+    'green': 'bg-green-500',
+    'red': 'bg-red-500',
+    'blue': 'bg-blue-500',
+    'yellow': 'bg-yellow-500',
+    'purple': 'bg-purple-500',
+    'orange': 'bg-orange-500',
+    'pink': 'bg-pink-500',
+  };
+  return colorMap[color] || 'bg-gray-500';
+};
+
+const getHoverColorClass = (color: string) => {
+  const colorMap: { [key: string]: string } = {
+    'green': 'hover:bg-green-50 hover:border-green-500',
+    'red': 'hover:bg-red-50 hover:border-red-500',
+    'blue': 'hover:bg-blue-50 hover:border-blue-500',
+    'yellow': 'hover:bg-yellow-50 hover:border-yellow-500',
+    'purple': 'hover:bg-purple-50 hover:border-purple-500',
+    'orange': 'hover:bg-orange-50 hover:border-orange-500',
+    'pink': 'hover:bg-pink-50 hover:border-pink-500',
+  };
+  return colorMap[color] || 'hover:bg-gray-50 hover:border-gray-500';
+};
 
 const getVoteOptions = (pollType: string, t: any): VoteOption[] => {
   if (pollType === PollType.REACTION_BASED) {
@@ -68,7 +122,18 @@ export default function VotingCard({ poll }: VotingCardProps) {
   const [showComments, setShowComments] = useState(false);
 
   const { t } = useTranslation();
-  const voteOptions = getVoteOptions(poll.type, t);
+  
+  // Use poll options from API if available, otherwise fallback to hardcoded options
+  const voteOptions = poll.pollOptions && poll.pollOptions.length > 0 
+    ? poll.pollOptions.map(option => ({
+        type: option.label || 'unknown',
+        label: option.label || 'Unknown',
+        icon: getIconFromName(option.icon || 'thumbs-up'),
+        color: getColorClass(option.color || 'blue'),
+        bgColor: getBgColorClass(option.color || 'blue'),
+        hoverColor: getHoverColorClass(option.color || 'blue'),
+      }))
+    : getVoteOptions(poll.type, t);
 
   // Check if user has voted locally
   useEffect(() => {
@@ -106,17 +171,37 @@ export default function VotingCard({ poll }: VotingCardProps) {
     return () => clearInterval(interval);
   }, [poll.endDate]);
 
-  // Use hardcoded vote counts from poll data
-  const voteCounts = (poll as any).voteCounts || {};
+  // Use vote counts from poll options data
+  const voteCounts = poll.pollOptions?.reduce((acc, option) => {
+    acc[option.label || 'unknown'] = option.voteCount;
+    return acc;
+  }, {} as { [key: string]: number }) || {};
 
-  // Simulate voting without API call
-  const handleVoteAction = (voteType: string) => {
-    voteTracker.recordVote(poll.id);
-    setHasVoted(true);
-    toast({
-      title: "सफलता",
-      description: "तपाईंको मत सफलतापूर्वक दर्ता भयो",
-    });
+  // Real voting with API call
+  const handleVoteAction = async (voteType: string) => {
+    try {
+      // Find the poll option ID for this vote type
+      const pollOption = poll.pollOptions?.find(option => option.label === voteType);
+      if (!pollOption) {
+        throw new Error('Poll option not found');
+      }
+
+      await pollsService.voteOnPoll(poll.id, pollOption.id);
+      
+      voteTracker.recordVote(poll.id);
+      setHasVoted(true);
+      toast({
+        title: "सफलता",
+        description: "तपाईंको मत सफलतापूर्वक दर्ता भयो",
+      });
+    } catch (error) {
+      console.error('Error voting:', error);
+      toast({
+        title: "त्रुटि",
+        description: error instanceof Error ? error.message : "मत दिन असफल",
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleVote = (voteType: string) => {

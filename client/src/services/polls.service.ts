@@ -1,4 +1,5 @@
 import { apiRequest } from '@/lib/queryClient';
+import { getUserId, getUserName, isAuthenticated } from '@/lib/auth';
 
 // Types matching the backend aggregated polls response
 export interface AggregatedComment {
@@ -21,6 +22,16 @@ export interface AggregatedCandidate {
   voteCount: number;
 }
 
+export interface AggregatedPollOption {
+  id: string;
+  pollId: string;
+  label: string | null;
+  icon: string | null;
+  color: string | null;
+  candidateId: string | null;
+  voteCount: number;
+}
+
 export interface AggregatedPoll {
   id: string;
   title: string;
@@ -36,6 +47,7 @@ export interface AggregatedPoll {
   createdBy: string;
   createdAt: string;
   candidates?: AggregatedCandidate[];
+  pollOptions?: AggregatedPollOption[];
   voteCounts?: { [key: string]: number };
   totalComments: number;
   totalVotes: number;
@@ -114,14 +126,94 @@ class PollsService {
   // Vote on a poll
   async voteOnPoll(pollId: string, optionId: string): Promise<void> {
     try {
+      // Check if user is authenticated
+      if (!isAuthenticated()) {
+        throw new Error('User must be logged in to vote');
+      }
+
+      const userId = getUserId();
+      if (!userId) {
+        throw new Error('User ID not found');
+      }
+
       await apiRequest('POST', `${this.baseUrl}/votes`, {
         pollId,
         optionId,
-        userId: 'anonymous' // This should come from auth context
+        userId
       });
     } catch (error) {
       console.error('Error voting on poll:', error);
       throw new Error('Failed to vote on poll');
+    }
+  }
+
+  // Add comment to a poll
+  async addComment(pollId: string, content: string, author?: string): Promise<void> {
+    try {
+      // Check if user is authenticated
+      if (!isAuthenticated()) {
+        throw new Error('User must be logged in to comment');
+      }
+
+      // Use authenticated user's name if author not provided
+      const commentAuthor = author || getUserName() || 'Anonymous';
+      
+      // Get current poll
+      const poll = await this.getAggregatedPoll(pollId);
+      
+      // Add new comment to existing comments
+      const newComment = {
+        id: `comment_${Date.now()}`,
+        pollId,
+        content,
+        author: commentAuthor,
+        createdAt: new Date().toISOString(),
+        gajjabCount: 0,
+        bekarCount: 0,
+        furiousCount: 0
+      };
+
+      const updatedComments = [...(poll.comments || []), newComment];
+
+      // Update poll with new comment
+      await apiRequest('PATCH', `${this.baseUrl}/polls/${pollId}`, {
+        comments: updatedComments
+      });
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      throw new Error('Failed to add comment');
+    }
+  }
+
+  // Add reaction to a comment
+  async addCommentReaction(pollId: string, commentId: string, reactionType: 'gajjab' | 'bekar' | 'furious'): Promise<void> {
+    try {
+      // Check if user is authenticated
+      if (!isAuthenticated()) {
+        throw new Error('User must be logged in to react to comments');
+      }
+
+      // Get current poll
+      const poll = await this.getAggregatedPoll(pollId);
+      
+      // Find and update the specific comment
+      const updatedComments = poll.comments.map(comment => {
+        if (comment.id === commentId) {
+          return {
+            ...comment,
+            [`${reactionType}Count`]: (comment[`${reactionType}Count`] || 0) + 1
+          };
+        }
+        return comment;
+      });
+
+      // Update poll with updated comments
+      await apiRequest('PATCH', `${this.baseUrl}/polls/${pollId}`, {
+        comments: updatedComments
+      });
+    } catch (error) {
+      console.error('Error adding comment reaction:', error);
+      throw new Error('Failed to add comment reaction');
     }
   }
 }
