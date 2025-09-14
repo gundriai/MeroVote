@@ -22,7 +22,7 @@ const mockPolls = [
     id: "1",
     title: "नयाँ सरकारी नीति कस्तो लाग्यो?",
     description: "सरकारले ल्याएको नयाँ शिक्षा नीति बारे तपाईंको राय दिनुहोस्।",
-    type: "political_rating",
+    type: "REACTION_BASED",
     createdAt: "August 5, 2025 at 07:17 PM",
     totalVotes: 490,
     totalComments: 23,
@@ -36,7 +36,7 @@ const mockPolls = [
     id: "2", 
     title: "आजको मौसम कस्तो छ?",
     description: "काठमाडौंको आजको मौसम कस्तो लाग्यो तपाईंलाई?",
-    type: "daily_rating",
+    type: "REACTION_BASED",
     createdAt: "August 5, 2025 at 05:17 PM",
     totalVotes: 635,
     totalComments: 45,
@@ -79,16 +79,16 @@ export default function Admin() {
 
   const getTypeLabel = (type: string): string => {
     switch (type) {
-      case "daily_rating": return t('admin.polls.types.daily_rating', 'Daily Rating');
-      case "political_rating": return t('admin.polls.types.political_rating', 'Politician Rating');
+      case "REACTION_BASED": return t('admin.polls.types.reaction_based', 'Reaction-Based');
+      case "ONE_VS_ONE": return t('admin.polls.types.one_vs_one', 'One vs One');
       default: return t('admin.polls.types.default', 'Vote');
     }
   };
 
   const getTypeBadgeColor = (type: string): string => {
     switch (type) {
-      case "daily_rating": return "bg-nepal-orange";
-      case "political_rating": return "bg-purple-600";
+      case "REACTION_BASED": return "bg-green-600";
+      case "ONE_VS_ONE": return "bg-blue-600";
       default: return "bg-gray-600";
     }
   };
@@ -210,7 +210,7 @@ export default function Admin() {
 
                     {/* Vote Statistics */}
                     <div className="grid grid-cols-3 gap-4">
-                      {poll.type === "political_rating" ? (
+                      {poll.type === "REACTION_BASED" ? (
                         <>
                           <div className="text-center">
                             <p className="text-2xl font-bold text-green-600">{poll.voteCounts.excellent}</p>

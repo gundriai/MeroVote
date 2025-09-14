@@ -7,26 +7,24 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Upload, User, Edit3 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { CreateCandidate } from "@/types/poll-creation.types";
 
-interface Candidate {
+interface CandidateWithId extends CreateCandidate {
   id: string;
-  name: string;
-  description: string;
-  imageUrl: string;
 }
 
 interface CandidateManagerProps {
-  candidates: Candidate[];
-  onCandidatesChange: (candidates: Candidate[]) => void;
+  candidates: CreateCandidate[];
+  onCandidatesChange: (candidates: CreateCandidate[]) => void;
 }
 
 export default function CandidateManager({ candidates, onCandidatesChange }: CandidateManagerProps) {
   const { t } = useTranslation();
-  const [editingCandidate, setEditingCandidate] = useState<Candidate | null>(null);
+  const [editingCandidate, setEditingCandidate] = useState<CandidateWithId | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
   const addCandidate = () => {
-    const newCandidate: Candidate = {
+    const newCandidate: CandidateWithId = {
       id: `candidate_${Date.now()}`,
       name: "",
       description: "",
@@ -36,32 +34,41 @@ export default function CandidateManager({ candidates, onCandidatesChange }: Can
     setShowAddForm(true);
   };
 
-  const editCandidate = (candidate: Candidate) => {
-    setEditingCandidate(candidate);
+  const editCandidate = (candidate: CreateCandidate, index: number) => {
+    const candidateWithId: CandidateWithId = {
+      ...candidate,
+      id: `existing_${index}`
+    };
+    setEditingCandidate(candidateWithId);
     setShowAddForm(true);
   };
 
-  const saveCandidate = (candidateData: Partial<Candidate>) => {
+  const saveCandidate = (candidateData: Partial<CandidateWithId>) => {
     if (!editingCandidate) return;
 
     const updatedCandidate = { ...editingCandidate, ...candidateData };
     
+    // Convert to CreateCandidate format (remove id)
+    const { id, ...candidateWithoutId } = updatedCandidate;
+    
     if (editingCandidate.id.startsWith('candidate_')) {
-      // New candidate
-      onCandidatesChange([...candidates, updatedCandidate]);
-    } else {
-      // Existing candidate
-      onCandidatesChange(
-        candidates.map(c => c.id === editingCandidate.id ? updatedCandidate : c)
-      );
+      // New candidate - add to the end
+      onCandidatesChange([...candidates, candidateWithoutId]);
+    } else if (editingCandidate.id.startsWith('existing_')) {
+      // Existing candidate - find by index and update
+      const candidateIndex = parseInt(editingCandidate.id.split('_')[1]);
+      const updatedCandidates = [...candidates];
+      updatedCandidates[candidateIndex] = candidateWithoutId;
+      onCandidatesChange(updatedCandidates);
     }
     
     setEditingCandidate(null);
     setShowAddForm(false);
   };
 
-  const deleteCandidate = (candidateId: string) => {
-    onCandidatesChange(candidates.filter(c => c.id !== candidateId));
+  const deleteCandidate = (candidateIndex: number) => {
+    const updatedCandidates = candidates.filter((_, index) => index !== candidateIndex);
+    onCandidatesChange(updatedCandidates);
   };
 
   const cancelEdit = () => {
@@ -93,7 +100,7 @@ export default function CandidateManager({ candidates, onCandidatesChange }: Can
         {candidates.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {candidates.map((candidate, index) => (
-              <div key={candidate.id} className="border border-gray-200 rounded-lg p-4">
+              <div key={index} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center space-x-2">
                     <Badge variant="outline" className="text-xs">
@@ -107,14 +114,14 @@ export default function CandidateManager({ candidates, onCandidatesChange }: Can
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => editCandidate(candidate)}
+                      onClick={() => editCandidate(candidate, index)}
                     >
                       <Edit3 className="w-3 h-3" />
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => deleteCandidate(candidate.id)}
+                      onClick={() => deleteCandidate(index)}
                       className="text-red-600 hover:text-red-700"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -184,8 +191,8 @@ export default function CandidateManager({ candidates, onCandidatesChange }: Can
 }
 
 interface CandidateFormProps {
-  candidate: Candidate;
-  onSave: (candidateData: Partial<Candidate>) => void;
+  candidate: CandidateWithId;
+  onSave: (candidateData: Partial<CandidateWithId>) => void;
   onCancel: () => void;
 }
 

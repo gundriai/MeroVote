@@ -117,7 +117,7 @@ export default function Home() {
                 ) : (
                   <VotingCard poll={poll} />
                 )}
-                {/* <CommentSection pollId={poll.id} showWordLimit={poll.type === "daily_rating"} /> */}
+                {/* <CommentSection pollId={poll.id} showWordLimit={poll.type === "REACTION_BASED"} /> */}
               </div>
             ))
           )}

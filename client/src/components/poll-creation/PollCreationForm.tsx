@@ -16,26 +16,13 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import CandidateManager from "./CandidateManager";
 import VoteOptionsManager from "./VoteOptionsManager";
+import { CreateComprehensivePoll, CreateCandidate, CreateVoteOption } from "@/types/poll-creation.types";
 
 interface PollCreationFormProps {
   pollType: PollType;
   onBack: () => void;
-  onSave: (pollData: any) => void;
+  onSave: (pollData: CreateComprehensivePoll) => void;
   isLoading?: boolean;
-}
-
-interface Candidate {
-  id: string;
-  name: string;
-  description: string;
-  imageUrl: string;
-}
-
-interface VoteOption {
-  type: string;
-  label: string;
-  icon: string;
-  color: string;
 }
 
 export default function PollCreationForm({ pollType, onBack, onSave, isLoading = false }: PollCreationFormProps) {
@@ -50,12 +37,12 @@ export default function PollCreationForm({ pollType, onBack, onSave, isLoading =
     endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
     mediaUrl: "",
     isHidden: false,
-    createdBy: "admin" // This would come from auth context
+    createdBy: undefined // This would come from auth context
   });
 
   // Dynamic state based on poll type
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
-  const [voteOptions, setVoteOptions] = useState<VoteOption[]>([]);
+  const [candidates, setCandidates] = useState<CreateCandidate[]>([]);
+  const [voteOptions, setVoteOptions] = useState<CreateVoteOption[]>([]);
 
   // UI state
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
@@ -105,14 +92,19 @@ export default function PollCreationForm({ pollType, onBack, onSave, isLoading =
       return;
     }
 
-    // Prepare poll data for API
-    const pollData = {
-      ...formData,
+    // Prepare comprehensive poll data for API
+    const pollData: CreateComprehensivePoll = {
+      title: formData.title,
+      description: formData.description,
       type: pollType,
+      category: formData.category,
       startDate: formData.startDate.toISOString(),
       endDate: formData.endDate.toISOString(),
-      candidates: pollType === PollType.ONE_VS_ONE ? candidates : [],
-      voteOptions: pollType === PollType.REACTION_BASED ? voteOptions : [],
+      mediaUrl: formData.mediaUrl,
+      createdBy: formData.createdBy || undefined,
+      isHidden: formData.isHidden,
+      candidates: pollType === PollType.ONE_VS_ONE ? candidates : undefined,
+      voteOptions: pollType === PollType.REACTION_BASED ? voteOptions : undefined,
       comments: [] // Initialize with empty comments
     };
 

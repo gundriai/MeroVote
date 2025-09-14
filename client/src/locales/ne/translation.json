@@ -34,8 +34,8 @@
   },
   "voting": {
     "types": {
-      "daily_rating": "दैनिक मूल्याङ्कन",
-      "political_rating": "राजनैतिक मूल्याङ्कन",
+      "reaction_based": "प्रतिक्रिया-आधारित",
+      "one_vs_one": "एक बिरुद्ध एक",
       "default": "मतदान"
     },
     "ratings": {
@@ -102,8 +102,8 @@
       "daily": "दैनिक",
       "political": "राजनैतिक",
       "activities": "गतिविधि",
-      "daily_rating": "मतदान कार्यक्रम",
-      "political_rating": "राजनैतिक",
+      "reaction_based": "प्रतिक्रिया-आधारित",
+      "one_vs_one": "एक बिरुद्ध एक",
       "comparison_voting": "तथ्यांक"
     },
     "loading": "पोलहरू लोड गर्दै...",
@@ -194,8 +194,8 @@
         "draft": "ड्राफ्ट"
       },
       "types": {
-        "daily_rating": "दैनिक मूल्यांकन",
-        "political_rating": "राजनीतिज्ञ मूल्यांकन",
+        "reaction_based": "प्रतिक्रिया-आधारित",
+        "one_vs_one": "एक बिरुद्ध एक",
         "default": "मतदान"
       },
       "actions": {

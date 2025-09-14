@@ -41,7 +41,7 @@ const getVoteOptions = (pollType: string, t: any): VoteOption[] => {
     ];
   } 
   // TODO: Need to think if it is needed or not.
-  else if (pollType === "political_rating") {
+  else if (pollType === "REACTION_BASED") {
     return [
       { type: "excellent", label: t('voting.ratings.excellent', 'Excellent'), icon: Star, color: "text-green-700", bgColor: "bg-green-500", hoverColor: "hover:bg-green-50 hover:border-green-500" },
       { type: "good", label: t('voting.ratings.good', 'Good'), icon: ThumbsUp, color: "text-blue-700", bgColor: "bg-blue-500", hoverColor: "hover:bg-blue-50 hover:border-blue-500" },
@@ -54,16 +54,16 @@ const getVoteOptions = (pollType: string, t: any): VoteOption[] => {
 
 const getTypeLabel = (type: string, t: any): string => {
   switch (type) {
-    case "daily_rating": return t('voting.types.daily_rating', 'Daily Rating');
-    case "political_rating": return t('voting.types.political_rating', 'Political Rating');
+    case "REACTION_BASED": return t('voting.types.reaction_based', 'Reaction-Based');
+    case "ONE_VS_ONE": return t('voting.types.one_vs_one', 'One vs One');
     default: return t('voting.types.default', 'Vote');
   }
 };
 
 const getTypeBadgeColor = (type: string): string => {
   switch (type) {
-    case "daily_rating": return "bg-nepal-orange";
-    case "political_rating": return "bg-purple-600";
+    case "REACTION_BASED": return "bg-green-600";
+    case "ONE_VS_ONE": return "bg-blue-600";
     default: return "bg-gray-600";
   }
 };
@@ -217,7 +217,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
 
         {/* Comment Section */}
         {showComments && (
-          <CommentSection pollId={poll.id} showWordLimit={poll.type === "daily_rating"} />
+          <CommentSection pollId={poll.id} showWordLimit={poll.type === "REACTION_BASED"} />
         )}
       </CardContent>
     </Card>

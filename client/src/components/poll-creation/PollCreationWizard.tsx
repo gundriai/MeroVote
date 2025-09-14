@@ -7,6 +7,7 @@ import PollTypeSelector from "./PollTypeSelector";
 import PollCreationForm from "./PollCreationForm";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { CreateComprehensivePoll } from "@/types/poll-creation.types";
 
 type WizardStep = 'type-selection' | 'poll-configuration';
 
@@ -38,18 +39,13 @@ export default function PollCreationWizard({ onClose, onPollCreated }: PollCreat
     setSelectedType(null);
   };
 
-  const handleSave = async (pollData: any) => {
+  const handleSave = async (pollData: CreateComprehensivePoll) => {
     setIsLoading(true);
     
     try {
-      // Create the poll with all related data in a single API call
-      const response = await apiRequest('/api/polls', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(pollData),
-      });
+      // Create comprehensive poll with all related data in a single API call
+      console.log(pollData)
+      const response = await apiRequest('POST', '/api/polls/comprehensive', pollData);
 
       if (response.ok) {
         const createdPoll = await response.json();
@@ -58,16 +54,6 @@ export default function PollCreationWizard({ onClose, onPollCreated }: PollCreat
           title: t('admin.poll_creation.success', 'Success'),
           description: t('admin.poll_creation.poll_created', 'Poll created successfully!'),
         });
-
-        // If we have candidates, create poll options for them
-        if (pollData.candidates && pollData.candidates.length > 0) {
-          await createPollOptions(createdPoll.id, pollData.candidates);
-        }
-
-        // If we have vote options, create poll options for them
-        if (pollData.voteOptions && pollData.voteOptions.length > 0) {
-          await createVoteOptions(createdPoll.id, pollData.voteOptions);
-        }
 
         onPollCreated?.(createdPoll);
         onClose();
@@ -87,66 +73,6 @@ export default function PollCreationWizard({ onClose, onPollCreated }: PollCreat
     }
   };
 
-  const createPollOptions = async (pollId: string, candidates: any[]) => {
-    try {
-      // First, create candidates
-      const candidatePromises = candidates.map(candidate => 
-        apiRequest('/api/candidates', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: candidate.name,
-            description: candidate.description,
-            photo: candidate.imageUrl
-          }),
-        })
-      );
-
-      const candidateResponses = await Promise.all(candidatePromises);
-      const createdCandidates = await Promise.all(
-        candidateResponses.map(response => response.json())
-      );
-
-      // Then, create poll options for each candidate
-      const pollOptionPromises = createdCandidates.map(candidate =>
-        apiRequest('/api/poll-options', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            pollId: pollId,
-            candidateId: candidate.id,
-            label: candidate.name
-          }),
-        })
-      );
-
-      await Promise.all(pollOptionPromises);
-    } catch (error) {
-      console.error('Error creating poll options:', error);
-      // Don't throw here as the poll was created successfully
-    }
-  };
-
-  const createVoteOptions = async (pollId: string, voteOptions: any[]) => {
-    try {
-      // For reaction-based polls, create poll options for each vote option
-      const pollOptionPromises = voteOptions.map(option =>
-        apiRequest('/api/poll-options', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            pollId: pollId,
-            label: option.label
-          }),
-        })
-      );
-
-      await Promise.all(pollOptionPromises);
-    } catch (error) {
-      console.error('Error creating vote options:', error);
-      // Don't throw here as the poll was created successfully
-    }
-  };
 
   const renderCurrentStep = () => {
     switch (currentStep) {

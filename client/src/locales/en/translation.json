@@ -33,8 +33,8 @@
   },
   "voting": {
     "types": {
-      "daily_rating": "Daily Rating",
-      "political_rating": "Political Rating",
+      "reaction_based": "Reaction-Based",
+      "one_vs_one": "One vs One",
       "default": "Vote"
     },
     "ratings": {
@@ -101,8 +101,8 @@
       "daily": "Daily",
       "political": "Political",
       "activities": "Activities",
-      "daily_rating": "Voting Program",
-      "political_rating": "Political",
+      "reaction_based": "Reaction-Based",
+      "one_vs_one": "One vs One",
       "comparison_voting": "Statistics"
     },
     "loading": "Loading polls...",
@@ -192,8 +192,8 @@
         "draft": "Draft"
       },
       "types": {
-        "daily_rating": "Daily Rating",
-        "political_rating": "Politician Rating",
+        "reaction_based": "Reaction-Based",
+        "one_vs_one": "One vs One",
         "default": "Vote"
       },
       "actions": {

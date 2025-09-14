@@ -7,17 +7,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Trash2, ThumbsUp, ThumbsDown, Flame, Star, Minus, Heart, Zap } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { CreateVoteOption } from "@/types/poll-creation.types";
 
-interface VoteOption {
+interface VoteOption extends CreateVoteOption {
+  id?: string;
   type: string;
-  label: string;
-  icon: string;
-  color: string;
 }
 
 interface VoteOptionsManagerProps {
-  voteOptions: VoteOption[];
-  onVoteOptionsChange: (options: VoteOption[]) => void;
+  voteOptions: CreateVoteOption[];
+  onVoteOptionsChange: (options: CreateVoteOption[]) => void;
 }
 
 const DEFAULT_ICONS = [
@@ -123,8 +122,8 @@ export default function VoteOptionsManager({ voteOptions, onVoteOptionsChange }:
         {voteOptions.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {voteOptions.map((option, index) => {
-              const IconComponent = getIconComponent(option.icon);
-              const colorClass = getColorClass(option.color);
+              const IconComponent = getIconComponent(option.icon || 'thumbs-up');
+              const colorClass = getColorClass(option.color || 'blue');
               
               return (
                 <div key={option.type} className="border border-gray-200 rounded-lg p-4">
@@ -254,8 +253,8 @@ function VoteOptionForm({ option, onSave, onCancel }: VoteOptionFormProps) {
     return colorConfig ? colorConfig.class : "text-gray-600 bg-gray-100";
   };
 
-  const IconComponent = getIconComponent(formData.icon);
-  const colorClass = getColorClass(formData.color);
+  const IconComponent = getIconComponent(formData.icon || 'thumbs-up');
+  const colorClass = getColorClass(formData.color || 'blue');
 
   return (
     <div className="space-y-4">
