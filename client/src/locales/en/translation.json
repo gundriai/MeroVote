@@ -232,9 +232,11 @@
       "actions": {
         "edit": "Edit",
         "pause": "Pause",
+        "resume": "Resume",
         "delete": "Delete",
         "success": "Success",
-        "error": "Error"
+        "error": "Error",
+        "save": "Save Changes"
       },
       "messages": {
         "edit_coming_soon": "Poll editing feature coming soon",
@@ -243,14 +245,26 @@
         "created": "Poll created successfully",
         "toggle_failed": "Failed to toggle poll visibility",
         "delete_failed": "Failed to delete poll",
+        "updated": "Poll has been updated successfully",
+        "update_failed": "Failed to update poll",
         "feature_coming_soon": "Card management feature coming soon",
         "analytics_coming_soon": "Detailed analytics feature coming soon",
         "security_coming_soon": "Security settings feature coming soon"
       },
+      "form": {
+        "title": "Title",
+        "title_placeholder": "Enter poll title",
+        "description": "Description",
+        "description_placeholder": "Enter poll description",
+        "end_date": "End Date",
+        "category": "Category",
+        "category_placeholder": "Select category",
+        "hidden": "Hide from public"
+      },
       "all_posts": "All Posts",
-        "votes": "votes",
-        "comments": "comments",
-        "no_votes": "No votes yet",
+      "votes": "votes",
+      "comments": "comments",
+      "no_votes": "No votes yet",
       "no_polls": "No polls found"
     },
     "poll_creation": {
