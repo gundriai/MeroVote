@@ -26,6 +26,7 @@ export interface AggregatedPollOption {
   id: string;
   pollId: string;
   label: string | null;
+  type: string | null;
   icon: string | null;
   color: string | null;
   candidateId: string | null;
@@ -51,7 +52,10 @@ export interface AggregatedPoll {
   voteCounts?: { [key: string]: number };
   totalComments: number;
   totalVotes: number;
-  alreadyVoted: boolean;
+  votedDetails: {
+    alreadyVoted: boolean;
+    optionChosen?: string;
+  };
 }
 
 export interface AggregatedPollsResponse {
