@@ -370,15 +370,6 @@ export default function VotingCard({ poll }: VotingCardProps) {
         )}
       </CardContent>
     </Card>
-    
-    {/* VOTED Sticker */}
-    {hasVoted && (
-      <div className="absolute top-4 right-4 pointer-events-none z-10">
-        <div className="bg-green-600 text-white px-3 py-1 rounded-full shadow-md opacity-60">
-          <span className="text-sm font-medium">VOTED</span>
-        </div>
-      </div>
-    )}
   </div>
   );
 }
