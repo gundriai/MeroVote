@@ -2,58 +2,44 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { BarChart3, Users, MessageSquare, Grid3X3, Edit3, Pause, Trash2, LogOut, Home, Shield, Settings, PieChart, Plus } from "lucide-react";
+import { BarChart3, Users, MessageSquare, Grid3X3, Edit3, Pause, Trash2, LogOut, Home, Shield, Settings, PieChart, Plus, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
 import Header from "@/components/header";
 import { useTranslation } from "react-i18next";
 import PollCreationWizard from "@/components/poll-creation/PollCreationWizard";
+import { useAdmin } from "@/hooks/use-admin";
+import { AggregatedPoll } from "@/services/polls.service";
 
-// Mock data for admin dashboard
-const mockStats = {
-  totalPolls: 1827,
-  activePolls: 3,
-  totalComments: 135,
-  totalCards: 7
+// Helper function to format date
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
 };
-
-const mockPolls = [
-  {
-    id: "1",
-    title: "नयाँ सरकारी नीति कस्तो लाग्यो?",
-    description: "सरकारले ल्याएको नयाँ शिक्षा नीति बारे तपाईंको राय दिनुहोस्।",
-    type: "REACTION_BASED",
-    createdAt: "August 5, 2025 at 07:17 PM",
-    totalVotes: 490,
-    totalComments: 23,
-    voteCounts: {
-      excellent: 245,
-      good: 89,
-      poor: 156
-    }
-  },
-  {
-    id: "2", 
-    title: "आजको मौसम कस्तो छ?",
-    description: "काठमाडौंको आजको मौसम कस्तो लाग्यो तपाईंलाई?",
-    type: "REACTION_BASED",
-    createdAt: "August 5, 2025 at 05:17 PM",
-    totalVotes: 635,
-    totalComments: 45,
-    voteCounts: {
-      gajjab: 312,
-      bekar: 180,
-      furious: 143
-    }
-  }
-];
 
 export default function Admin() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("posts");
   const [showPollCreation, setShowPollCreation] = useState(false);
-  const stats = { activeVoters: 1234 };
+  
+  // Use admin hook to fetch real data
+  const { 
+    stats, 
+    polls, 
+    isLoading, 
+    error, 
+    refetch, 
+    togglePollVisibility, 
+    deletePoll 
+  } = useAdmin();
 
   const handleEdit = (pollId: string) => {
     toast({
@@ -62,19 +48,37 @@ export default function Admin() {
     });
   };
 
-  const handlePause = (pollId: string) => {
-    toast({
-      title: t('admin.polls.status.paused'),
-      description: t('admin.polls.messages.paused', 'Poll has been paused'),
-    });
+  const handlePause = async (pollId: string) => {
+    try {
+      await togglePollVisibility(pollId);
+      toast({
+        title: t('admin.polls.status.paused'),
+        description: t('admin.polls.messages.paused', 'Poll visibility has been toggled'),
+      });
+    } catch (error) {
+      toast({
+        title: t('admin.polls.actions.error'),
+        description: t('admin.polls.messages.toggle_failed', 'Failed to toggle poll visibility'),
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDelete = (pollId: string) => {
-    toast({
-      title: t('admin.polls.actions.delete'),
-      description: t('admin.polls.messages.deleted', 'Poll has been deleted successfully'),
-      variant: "destructive",
-    });
+  const handleDelete = async (pollId: string) => {
+    try {
+      await deletePoll(pollId);
+      toast({
+        title: t('admin.polls.actions.delete'),
+        description: t('admin.polls.messages.deleted', 'Poll has been deleted successfully'),
+        variant: "destructive",
+      });
+    } catch (error) {
+      toast({
+        title: t('admin.polls.actions.error'),
+        description: t('admin.polls.messages.delete_failed', 'Failed to delete poll'),
+        variant: "destructive",
+      });
+    }
   };
 
   const getTypeLabel = (type: string): string => {
@@ -161,7 +165,17 @@ export default function Admin() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {mockPolls.map((poll) => (
+              {isLoading ? (
+                <div className="text-center py-8">
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  <p className="text-gray-500 mt-2">{t('admin.loading', 'Loading polls...')}</p>
+                </div>
+              ) : polls.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">{t('admin.no_polls', 'No polls found')}</p>
+                </div>
+              ) : (
+                polls.map((poll: AggregatedPoll) => (
                 <Card key={poll.id} className="border border-gray-200">
                   <CardContent className="p-6">
                     <div className="flex justify-between items-start mb-4">
@@ -172,7 +186,7 @@ export default function Admin() {
                           <Badge className={`${getTypeBadgeColor(poll.type)} text-white text-xs`}>
                             {getTypeLabel(poll.type)}
                           </Badge>
-                          <span className="text-xs text-gray-500">{poll.createdAt}</span>
+                          <span className="text-xs text-gray-500">{formatDate(poll.createdAt)}</span>
                           <span className="text-xs text-gray-500">{poll.totalVotes} {t('admin.polls.votes', 'votes')}</span>
                           <span className="text-xs text-gray-500">{poll.totalComments} {t('admin.polls.comments', 'comments')}</span>
                         </div>
@@ -210,41 +224,30 @@ export default function Admin() {
 
                     {/* Vote Statistics */}
                     <div className="grid grid-cols-3 gap-4">
-                      {poll.type === "REACTION_BASED" ? (
-                        <>
-                          <div className="text-center">
-                            <p className="text-2xl font-bold text-green-600">{poll.voteCounts.excellent}</p>
-                            <p className="text-sm text-gray-600">{t('admin.polls.ratings.excellent', 'Excellent')}</p>
+                      {poll.pollOptions && poll.pollOptions.length > 0 ? (
+                        poll.pollOptions.slice(0, 3).map((option, index) => (
+                          <div key={option.id} className="text-center">
+                            <p className="text-2xl font-bold text-gray-600">{option.voteCount}</p>
+                            <p className="text-sm text-gray-600">{option.label}</p>
                           </div>
-                          <div className="text-center">
-                            <p className="text-2xl font-bold text-orange-600">{poll.voteCounts.good}</p>
-                            <p className="text-sm text-gray-600">{t('admin.polls.ratings.good', 'Good')}</p>
+                        ))
+                      ) : poll.voteCounts ? (
+                        Object.entries(poll.voteCounts).slice(0, 3).map(([key, value], index) => (
+                          <div key={key} className="text-center">
+                            <p className="text-2xl font-bold text-gray-600">{value}</p>
+                            <p className="text-sm text-gray-600">{key}</p>
                           </div>
-                          <div className="text-center">
-                            <p className="text-2xl font-bold text-red-600">{poll.voteCounts.poor}</p>
-                            <p className="text-sm text-gray-600">{t('admin.polls.ratings.poor', 'Poor')}</p>
-                          </div>
-                        </>
+                        ))
                       ) : (
-                        <>
-                          <div className="text-center">
-                            <p className="text-2xl font-bold text-green-600">{poll.voteCounts.gajjab}</p>
-                            <p className="text-sm text-gray-600">{t('admin.polls.ratings.excellent', 'Excellent')}</p>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-2xl font-bold text-orange-600">{poll.voteCounts.bekar}</p>
-                            <p className="text-sm text-gray-600">{t('admin.polls.ratings.good', 'Good')}</p>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-2xl font-bold text-red-600">{poll.voteCounts.furious}</p>
-                            <p className="text-sm text-gray-600">{t('admin.polls.ratings.poor', 'Poor')}</p>
-                          </div>
-                        </>
+                        <div className="col-span-3 text-center text-gray-500">
+                          {t('admin.polls.no_votes', 'No votes yet')}
+                        </div>
                       )}
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+                ))
+              )}
             </CardContent>
           </Card>
         );
@@ -253,7 +256,11 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header stats={stats} />
+        <Header stats={{
+          totalVotes: stats?.totalVotes || 0,
+          activeVoters: Math.floor((stats?.totalVotes || 0) * 0.4),
+          activePolls: stats?.activePolls || 0
+        }} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -264,8 +271,8 @@ export default function Admin() {
                   <BarChart3 className="w-6 h-6 text-nepal-red" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{mockStats.totalPolls}</p>
-                  <p className="text-sm text-gray-600">{t('admin.stats.total_votes', 'Total Votes')}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.totalPolls || 0}</p>
+                  <p className="text-sm text-gray-600">{t('admin.stats.total_polls', 'Total Polls')}</p>
                 </div>
               </div>
             </CardContent>
@@ -278,7 +285,7 @@ export default function Admin() {
                   <Users className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{mockStats.activePolls}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.activePolls || 0}</p>
                   <p className="text-sm text-gray-600">{t('admin.stats.active_polls', 'Active Polls')}</p>
                 </div>
               </div>
@@ -292,7 +299,7 @@ export default function Admin() {
                   <MessageSquare className="w-6 h-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{mockStats.totalComments}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.totalComments || 0}</p>
                   <p className="text-sm text-gray-600">{t('admin.stats.total_comments', 'Total Comments')}</p>
                 </div>
               </div>
@@ -306,13 +313,43 @@ export default function Admin() {
                   <Grid3X3 className="w-6 h-6 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{mockStats.totalCards}</p>
-                  <p className="text-sm text-gray-600">{t('admin.stats.card_types', 'Card Types')}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.totalVotes || 0}</p>
+                  <p className="text-sm text-gray-600">{t('admin.stats.total_votes', 'Total Votes')}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* Header with Refresh Button */}
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">{t('admin.title', 'Admin Dashboard')}</h1>
+          <div className="flex space-x-2">
+            <Button
+              onClick={refetch}
+              disabled={isLoading}
+              variant="outline"
+              size="sm"
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              {t('admin.refresh', 'Refresh')}
+            </Button>
+            <Button
+              onClick={() => setShowPollCreation(true)}
+              className="bg-nepal-red hover:bg-red-700"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              {t('admin.create_poll', 'Create Poll')}
+            </Button>
+          </div>
+        </div>
+
+        {/* Error State */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-100 border border-red-300 rounded-lg">
+            <p className="text-red-800">{error}</p>
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="flex flex-wrap gap-2 mb-8 p-1 bg-white rounded-lg border border-gray-200">
@@ -346,7 +383,13 @@ export default function Admin() {
           onClose={() => setShowPollCreation(false)}
           onPollCreated={(poll) => {
             console.log('Poll created:', poll);
-            // You can add logic here to refresh the polls list
+            // Refresh the polls list
+            refetch();
+            setShowPollCreation(false);
+            toast({
+              title: t('admin.polls.actions.success'),
+              description: t('admin.polls.messages.created', 'Poll created successfully'),
+            });
           }}
         />
       )}

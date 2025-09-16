@@ -6,10 +6,12 @@ import { voteTracker } from "@/lib/vote-tracker";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
-import { MessageSquare, ChevronDown, ChevronUp, Clock, Users, TrendingUp, Zap } from "lucide-react";
+import { MessageSquare, ChevronDown, ChevronUp, Clock, Users, TrendingUp, Zap, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CommentSection from "./comment-section";
-import { MockPoll } from "@/data/mock-polls";
+import { AggregatedPoll } from "@/services/polls.service";
+import { pollsService } from "@/services/polls.service";
+import { PollVoteStatusMessages } from "@/enums";
 
 interface Candidate {
   id: string;
@@ -19,17 +21,18 @@ interface Candidate {
   voteCount: number;
 }
 
-export default function ComparisonCard(poll: MockPoll) {
+export default function ComparisonCard(poll: AggregatedPoll) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [hasVoted, setHasVoted] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState("");
   const [showComments, setShowComments] = useState(false);
 
-  // Check if user has voted locally
+  // Check if user has voted (from API or locally)
   useEffect(() => {
-    setHasVoted(voteTracker.hasVotedLocally(poll.id));
-  }, [poll.id]);
+    // Use API data if available, otherwise fallback to local storage
+    setHasVoted(poll.alreadyVoted || voteTracker.hasVotedLocally(poll.id));
+  }, [poll.id, poll.alreadyVoted]);
 
   // Calculate time remaining
   useEffect(() => {
@@ -67,14 +70,66 @@ export default function ComparisonCard(poll: MockPoll) {
   const candidates = (poll as any)?.candidates || [];
   const totalVotes = candidates.reduce((sum: number, candidate: any) => sum + candidate.voteCount, 0);
 
-  // Simulate voting without API call
-  const handleVoteAction = (candidateId: string) => {
-    voteTracker.recordVote(poll.id);
-    setHasVoted(true);
-    toast({
-      title: t('success'),
-      description: t('vote_success'),
-    });
+  // Real voting with API call
+  const handleVoteAction = async (candidateId: string) => {
+    try {
+      // Find the poll option ID for this candidate
+      const pollOption = poll.pollOptions?.find(option => option.candidateId === candidateId);
+      if (!pollOption) {
+        throw new Error('Poll option not found for this candidate');
+      }
+
+      await pollsService.voteOnPoll(poll.id, pollOption.id);
+      
+      voteTracker.recordVote(poll.id);
+      setHasVoted(true);
+      toast({
+        title: t('success'),
+        description: t('vote_success'),
+      });
+    } catch (error) {
+      console.error('Error voting:', error);
+      
+      let errorMessage = t('vote_failed', 'मत दिन असफल');
+      
+      if (error instanceof Error) {
+        // Get the full error message
+        const errorText = error.message;
+        
+        // Check if the error text contains any of our enum values using includes()
+        if (errorText.includes(PollVoteStatusMessages.ALREADY_VOTED)) {
+          errorMessage = t('voting.errors.already_voted', 'तपाईंले यो पोलमा पहिले नै मत दिनुभएको छ');
+        } else if (errorText.includes(PollVoteStatusMessages.POLL_NOT_ACTIVE)) {
+          errorMessage = t('voting.errors.poll_not_active', 'यो पोल अहिले सक्रिय छैन');
+        } else if (errorText.includes(PollVoteStatusMessages.POLL_OPTION_NOT_FOUND)) {
+          errorMessage = t('voting.errors.poll_option_not_found', 'पोल विकल्प फेला परेन');
+        } else if (errorText.includes(PollVoteStatusMessages.USER_NOT_LOGGED_IN)) {
+          errorMessage = t('voting.errors.user_not_logged_in', 'मत दिनका लागि तपाईंले लग इन गर्नुपर्छ');
+        } else if (errorText.includes(PollVoteStatusMessages.POLL_NOT_FOUND)) {
+          errorMessage = t('voting.errors.poll_not_found', 'पोल फेला परेन');
+        } else if (errorText.includes(PollVoteStatusMessages.VOTING_ENDED)) {
+          errorMessage = t('voting.errors.voting_ended', 'यो पोलको मतदान समाप्त भएको छ');
+        } else {
+          // If no enum value is found, try to extract message after colon if it exists
+          if (errorText.includes(':')) {
+            const parts = errorText.split(':');
+            if (parts.length > 1) {
+              errorMessage = parts[1].trim();
+            } else {
+              errorMessage = errorText;
+            }
+          } else {
+            errorMessage = errorText;
+          }
+        }
+      }
+      
+      toast({
+        title: t('voting.errors.title', 'त्रुटि'),
+        description: errorMessage,
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleVote = (candidateId: string) => {
@@ -86,7 +141,7 @@ export default function ComparisonCard(poll: MockPoll) {
       return;
     }
 
-    if (!poll?.isHidden || new Date() > new Date(poll?.endDate)) {
+    if (new Date() > new Date(poll?.endDate)) {
       toast({
         title: t('info'),
         description: t('poll_ended'),
@@ -142,7 +197,15 @@ export default function ComparisonCard(poll: MockPoll) {
   const isExpired = new Date() > new Date(poll?.endDate);
 
   return (
-    <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden w-full">
+    <div className="relative w-full">
+      <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden w-full relative" style={{
+        backgroundImage: 'url(/assets/Mero Vote.png)',
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundBlendMode: 'overlay',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)'
+      }}>
       {/* Countdown Banner */}
       {!isExpired && (
         <div className="bg-gradient-to-r from-amber-600 to-orange-600 px-3 md:px-4 py-2 md:py-3 text-center">
@@ -418,6 +481,16 @@ export default function ComparisonCard(poll: MockPoll) {
         )}
       </CardContent>
     </Card>
+    
+    {/* VOTED Sticker */}
+    {hasVoted && (
+      <div className="absolute top-4 right-4 pointer-events-none z-10">
+        <div className="bg-green-600 text-white px-3 py-1 rounded-full shadow-md opacity-60">
+          <span className="text-sm font-medium">VOTED</span>
+        </div>
+      </div>
+    )}
+  </div>
   );
 }
 
