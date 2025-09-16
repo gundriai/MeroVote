@@ -31,8 +31,8 @@ export default function ComparisonCard(poll: AggregatedPoll) {
   // Check if user has voted (from API or locally)
   useEffect(() => {
     // Use API data if available, otherwise fallback to local storage
-    setHasVoted(poll.alreadyVoted || voteTracker.hasVotedLocally(poll.id));
-  }, [poll.id, poll.alreadyVoted]);
+    setHasVoted(poll.votedDetails.alreadyVoted || voteTracker.hasVotedLocally(poll.id));
+  }, [poll.id, poll.votedDetails.alreadyVoted]);
 
   // Calculate time remaining
   useEffect(() => {
@@ -264,7 +264,7 @@ export default function ComparisonCard(poll: AggregatedPoll) {
               <div className="flex-1">
                 <div className="text-center h-full flex flex-col">
                   <div className="relative mb-3">
-                    <div className="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full overflow-hidden border-3 border-gray-200 shadow-lg hover:border-blue-500 transition-all duration-300">
+                    <div className="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full overflow-hidden border-3 border-gray-200 shadow-lg hover:border-blue-500 transition-all duration-300 relative">
                       {candidates[0].imageUrl ? (
                         <img 
                           src={candidates[0].imageUrl} 
@@ -274,6 +274,12 @@ export default function ComparisonCard(poll: AggregatedPoll) {
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                           <span className="text-2xl md:text-3xl">👤</span>
+                        </div>
+                      )}
+                      {/* Check if this candidate was chosen */}
+                      {poll.votedDetails.alreadyVoted && poll.pollOptions?.find(option => option.candidateId === candidates[0].id)?.id === poll.votedDetails.optionChosen && (
+                        <div className="absolute inset-0 bg-green-500 bg-opacity-80 flex items-center justify-center rounded-full">
+                          <span className="text-white font-bold text-xs">VOTED</span>
                         </div>
                       )}
                     </div>
@@ -329,7 +335,7 @@ export default function ComparisonCard(poll: AggregatedPoll) {
               <div className="flex-1">
                 <div className="text-center h-full flex flex-col">
                   <div className="relative mb-3">
-                    <div className="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full overflow-hidden border-3 border-gray-200 shadow-lg hover:border-green-500 transition-all duration-300">
+                    <div className="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full overflow-hidden border-3 border-gray-200 shadow-lg hover:border-green-500 transition-all duration-300 relative">
                       {candidates[1].imageUrl ? (
                         <img 
                           src={candidates[1].imageUrl} 
@@ -339,6 +345,12 @@ export default function ComparisonCard(poll: AggregatedPoll) {
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                           <span className="text-2xl md:text-3xl">👤</span>
+                        </div>
+                      )}
+                      {/* Check if this candidate was chosen */}
+                      {poll.votedDetails.alreadyVoted && poll.pollOptions?.find(option => option.candidateId === candidates[1].id)?.id === poll.votedDetails.optionChosen && (
+                        <div className="absolute inset-0 bg-green-500 bg-opacity-80 flex items-center justify-center rounded-full">
+                          <span className="text-white font-bold text-xs">VOTED</span>
                         </div>
                       )}
                     </div>
@@ -447,7 +459,7 @@ export default function ComparisonCard(poll: AggregatedPoll) {
         </div>
 
         {/* Voting Status */}
-        {hasVoted && (
+        {/* {hasVoted && (
           <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
             <div className="text-green-800 font-medium">
               ✅ {t('already_voted')}
@@ -456,7 +468,7 @@ export default function ComparisonCard(poll: AggregatedPoll) {
               {t('thank_you_voting')}
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Comment Toggle Button */}
         <div className="flex justify-center">

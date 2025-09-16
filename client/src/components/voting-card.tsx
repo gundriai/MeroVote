@@ -127,7 +127,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
   // Use poll options from API if available, otherwise fallback to hardcoded options
   const voteOptions = poll.pollOptions && poll.pollOptions.length > 0 
     ? poll.pollOptions.map(option => ({
-        type: option.label || 'unknown',
+        type: option.type || option.label || 'unknown',
         label: option.label || 'Unknown',
         icon: getIconFromName(option.icon || 'thumbs-up'),
         color: getColorClass(option.color || 'blue'),
@@ -139,8 +139,8 @@ export default function VotingCard({ poll }: VotingCardProps) {
   // Check if user has voted (from API or locally)
   useEffect(() => {
     // Use API data if available, otherwise fallback to local storage
-    setHasVoted(poll.alreadyVoted || voteTracker.hasVotedLocally(poll.id));
-  }, [poll.id, poll.alreadyVoted]);
+    setHasVoted(poll.votedDetails.alreadyVoted || voteTracker.hasVotedLocally(poll.id));
+  }, [poll.id, poll.votedDetails.alreadyVoted]);
 
   // Calculate time remaining
   useEffect(() => {
@@ -175,7 +175,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
 
   // Use vote counts from poll options data
   const voteCounts = poll.pollOptions?.reduce((acc, option) => {
-    acc[option.label || 'unknown'] = option.voteCount;
+    acc[option.type || option.label || 'unknown'] = option.voteCount;
     return acc;
   }, {} as { [key: string]: number }) || {};
 
@@ -183,7 +183,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
   const handleVoteAction = async (voteType: string) => {
     try {
       // Find the poll option ID for this vote type
-      const pollOption = poll.pollOptions?.find(option => option.label === voteType);
+      const pollOption = poll.pollOptions?.find(option => option.type === voteType);
       if (!pollOption) {
         throw new Error('Poll option not found');
       }
@@ -306,6 +306,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
             const Icon = option.icon;
             const count = (voteCounts as any)?.[option.type] || 0;
             const isDisabled = hasVoted || isExpired;
+            const isOptionChosen = poll.votedDetails.alreadyVoted && poll.votedDetails.optionChosen === option.type;
 
             return (
               <Button
@@ -313,13 +314,23 @@ export default function VotingCard({ poll }: VotingCardProps) {
                 onClick={() => handleVote(option.type)}
                 disabled={isDisabled}
                 variant="outline"
-                className={`vote-button flex flex-col items-center p-4 h-auto border-2 border-gray-200 ${option.hoverColor} transition-all ${isDisabled ? 'opacity-30 cursor-not-allowed' : ''}`}
+                className={`vote-button flex flex-col items-center p-4 h-auto border-2 border-gray-200 ${option.hoverColor} transition-all ${isDisabled ? 'opacity-30 cursor-not-allowed' : ''} relative`}
               >
-                <div className={`w-10 h-10 ${option.bgColor} rounded-full flex items-center justify-center mb-2`}>
+                <div className={`w-10 h-10 ${option.bgColor} rounded-full flex items-center justify-center mb-2 relative`}>
                   <Icon className="text-white w-5 h-5" />
+                  {isOptionChosen && (
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                      <Check className="text-white w-3 h-3" />
+                    </div>
+                  )}
                 </div>
                 <span className={`font-medium ${option.color} text-sm`}>{option.label}</span>
                 <span className="text-xs text-gray-500">{count}</span>
+                {isOptionChosen && (
+                  <div className="absolute inset-0 bg-green-100 bg-opacity-80 flex items-center justify-center rounded-lg">
+                    <span className="text-green-700 font-bold text-xs">VOTED</span>
+                  </div>
+                )}
               </Button>
             );
           })}
