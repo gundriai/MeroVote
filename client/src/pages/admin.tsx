@@ -10,6 +10,10 @@ import { useTranslation } from "react-i18next";
 import PollCreationWizard from "@/components/poll-creation/PollCreationWizard";
 import { useAdmin } from "@/hooks/use-admin";
 import { AggregatedPoll } from "@/services/polls.service";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 // Helper function to format date
 const formatDate = (dateString: string): string => {
@@ -29,6 +33,13 @@ export default function Admin() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("posts");
   const [showPollCreation, setShowPollCreation] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingPoll, setEditingPoll] = useState<AggregatedPoll | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    title: '',
+    description: '',
+    endDate: ''
+  });
   
   // Use admin hook to fetch real data
   const { 
@@ -38,14 +49,21 @@ export default function Admin() {
     error, 
     refetch, 
     togglePollVisibility, 
-    deletePoll 
+    deletePoll,
+    updatePoll
   } = useAdmin();
 
   const handleEdit = (pollId: string) => {
-    toast({
-      title: t('admin.polls.actions.edit'),
-      description: t('admin.polls.messages.edit_coming_soon', 'Poll editing feature coming soon'),
-    });
+    const poll = polls.find(p => p.id === pollId);
+    if (poll) {
+      setEditingPoll(poll);
+      setEditFormData({
+        title: poll.title,
+        description: poll.description || '',
+        endDate: new Date(poll.endDate).toISOString().slice(0, 16) // Format for datetime-local input
+      });
+      setShowEditModal(true);
+    }
   };
 
   const handlePause = async (pollId: string) => {
@@ -76,6 +94,32 @@ export default function Admin() {
       toast({
         title: t('admin.polls.actions.error'),
         description: t('admin.polls.messages.delete_failed', 'Failed to delete poll'),
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEditSubmit = async () => {
+    if (!editingPoll) return;
+    
+    try {
+      await updatePoll(editingPoll.id, {
+        title: editFormData.title,
+        description: editFormData.description,
+        endDate: new Date(editFormData.endDate).toISOString()
+      });
+      
+      toast({
+        title: t('admin.polls.actions.success'),
+        description: t('admin.polls.messages.updated', 'Poll has been updated successfully'),
+      });
+      
+      setShowEditModal(false);
+      setEditingPoll(null);
+    } catch (error) {
+      toast({
+        title: t('admin.polls.actions.error'),
+        description: t('admin.polls.messages.update_failed', 'Failed to update poll'),
         variant: "destructive",
       });
     }
@@ -186,6 +230,11 @@ export default function Admin() {
                           <Badge className={`${getTypeBadgeColor(poll.type)} text-white text-xs`}>
                             {getTypeLabel(poll.type)}
                           </Badge>
+                          {poll.isHidden && (
+                            <Badge className="bg-orange-500 text-white text-xs">
+                              {t('admin.polls.status.paused', 'Paused')}
+                            </Badge>
+                          )}
                           <span className="text-xs text-gray-500">{formatDate(poll.createdAt)}</span>
                           <span className="text-xs text-gray-500">{poll.totalVotes} {t('admin.polls.votes', 'votes')}</span>
                           <span className="text-xs text-gray-500">{poll.totalComments} {t('admin.polls.comments', 'comments')}</span>
@@ -205,10 +254,19 @@ export default function Admin() {
                           onClick={() => handlePause(poll.id)}
                           variant="outline"
                           size="sm"
-                          className="text-orange-600 border-orange-600 hover:bg-orange-50"
+                          className={`${poll.isHidden ? 'text-green-600 border-green-600 hover:bg-green-50' : 'text-orange-600 border-orange-600 hover:bg-orange-50'}`}
                         >
-                          <Pause className="w-4 h-4 mr-1" />
-                          {t('admin.polls.actions.pause')}
+                          {poll.isHidden ? (
+                            <>
+                              <Pause className="w-4 h-4 mr-1" />
+                              {t('admin.polls.actions.resume', 'Resume')}
+                            </>
+                          ) : (
+                            <>
+                              <Pause className="w-4 h-4 mr-1" />
+                              {t('admin.polls.actions.pause')}
+                            </>
+                          )}
                         </Button>
                         <Button
                           onClick={() => handleDelete(poll.id)}
@@ -393,6 +451,53 @@ export default function Admin() {
           }}
         />
       )}
+
+      {/* Edit Poll Modal */}
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{t('admin.polls.actions.edit', 'Edit Poll')}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="title">{t('admin.polls.form.title', 'Title')}</Label>
+              <Input
+                id="title"
+                value={editFormData.title}
+                onChange={(e) => setEditFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder={t('admin.polls.form.title_placeholder', 'Enter poll title')}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="description">{t('admin.polls.form.description', 'Description')}</Label>
+              <Textarea
+                id="description"
+                value={editFormData.description}
+                onChange={(e) => setEditFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder={t('admin.polls.form.description_placeholder', 'Enter poll description')}
+                rows={3}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="endDate">{t('admin.polls.form.end_date', 'End Date')}</Label>
+              <Input
+                id="endDate"
+                type="datetime-local"
+                value={editFormData.endDate}
+                onChange={(e) => setEditFormData(prev => ({ ...prev, endDate: e.target.value }))}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => setShowEditModal(false)}>
+              {t('common.cancel', 'Cancel')}
+            </Button>
+            <Button onClick={handleEditSubmit}>
+              {t('admin.polls.actions.save', 'Save Changes')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

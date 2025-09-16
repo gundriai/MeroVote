@@ -27,7 +27,7 @@ class AdminService {
     }
   }
 
-  // Get aggregated polls with full data
+  // Get aggregated polls with full data (public only)
   async getAggregatedPolls(): Promise<AggregatedPollsResponse> {
     try {
       const response = await apiRequest('GET', `${this.baseUrl}/aggregated-polls`);
@@ -38,16 +38,25 @@ class AdminService {
     }
   }
 
+  // Get all aggregated polls for admin (including hidden ones)
+  async getAllAggregatedPollsForAdmin(): Promise<AggregatedPollsResponse> {
+    try {
+      const response = await apiRequest('GET', `${this.baseUrl}/aggregated-polls/admin/all`);
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching all aggregated polls for admin:', error);
+      throw new Error('Failed to fetch all aggregated polls for admin');
+    }
+  }
+
   // Get admin dashboard data
   async getAdminDashboardData(): Promise<PollManagementData> {
     try {
-      const [pollsResponse, aggregatedResponse] = await Promise.all([
-        this.getAllPolls(),
-        this.getAggregatedPolls()
-      ]);
+      // Use the admin endpoint that includes hidden polls
+      const aggregatedResponse = await this.getAllAggregatedPollsForAdmin();
 
       const stats: AdminStats = {
-        totalPolls: pollsResponse.length,
+        totalPolls: aggregatedResponse.polls.length,
         activePolls: aggregatedResponse.polls.filter(poll => !poll.isHidden).length,
         totalComments: aggregatedResponse.totalComments,
         totalVotes: aggregatedResponse.totalVotes
