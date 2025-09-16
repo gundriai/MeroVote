@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { voteTracker } from "@/lib/vote-tracker";
 import { useToast } from "@/hooks/use-toast";
-import { ThumbsUp, ThumbsDown, Flame, Star, Minus, MessageSquare, ChevronDown, ChevronUp, Heart, Zap } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Flame, Star, Minus, MessageSquare, ChevronDown, ChevronUp, Heart, Zap, Check } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CommentSection from "./comment-section";
@@ -136,10 +136,11 @@ export default function VotingCard({ poll }: VotingCardProps) {
       }))
     : getVoteOptions(poll.type, t);
 
-  // Check if user has voted locally
+  // Check if user has voted (from API or locally)
   useEffect(() => {
-    setHasVoted(voteTracker.hasVotedLocally(poll.id));
-  }, [poll.id]);
+    // Use API data if available, otherwise fallback to local storage
+    setHasVoted(poll.alreadyVoted || voteTracker.hasVotedLocally(poll.id));
+  }, [poll.id, poll.alreadyVoted]);
 
   // Calculate time remaining
   useEffect(() => {
@@ -263,7 +264,15 @@ export default function VotingCard({ poll }: VotingCardProps) {
   const isExpired = new Date() > new Date(poll.endDate);
 
   return (
-    <Card className="bg-white shadow-sm border border-gray-200 w-full">
+    <div className="relative w-full">
+      <Card className="bg-white shadow-sm border border-gray-200 w-full relative overflow-hidden" style={{
+        backgroundImage: 'url(/assets/Mero Vote.png)',
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundBlendMode: 'overlay',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)'
+      }}>
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -304,7 +313,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
                 onClick={() => handleVote(option.type)}
                 disabled={isDisabled}
                 variant="outline"
-                className={`vote-button flex flex-col items-center p-4 h-auto border-2 border-gray-200 ${option.hoverColor} transition-all ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`vote-button flex flex-col items-center p-4 h-auto border-2 border-gray-200 ${option.hoverColor} transition-all ${isDisabled ? 'opacity-30 cursor-not-allowed' : ''}`}
               >
                 <div className={`w-10 h-10 ${option.bgColor} rounded-full flex items-center justify-center mb-2`}>
                   <Icon className="text-white w-5 h-5" />
@@ -335,5 +344,15 @@ export default function VotingCard({ poll }: VotingCardProps) {
         )}
       </CardContent>
     </Card>
+    
+    {/* VOTED Sticker */}
+    {hasVoted && (
+      <div className="absolute top-4 right-4 pointer-events-none z-10">
+        <div className="bg-green-600 text-white px-3 py-1 rounded-full shadow-md opacity-60">
+          <span className="text-sm font-medium">VOTED</span>
+        </div>
+      </div>
+    )}
+  </div>
   );
 }

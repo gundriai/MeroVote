@@ -51,6 +51,7 @@ export interface AggregatedPoll {
   voteCounts?: { [key: string]: number };
   totalComments: number;
   totalVotes: number;
+  alreadyVoted: boolean;
 }
 
 export interface AggregatedPollsResponse {

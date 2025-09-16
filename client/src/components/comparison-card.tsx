@@ -6,7 +6,7 @@ import { voteTracker } from "@/lib/vote-tracker";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
-import { MessageSquare, ChevronDown, ChevronUp, Clock, Users, TrendingUp, Zap } from "lucide-react";
+import { MessageSquare, ChevronDown, ChevronUp, Clock, Users, TrendingUp, Zap, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CommentSection from "./comment-section";
 import { AggregatedPoll } from "@/services/polls.service";
@@ -28,10 +28,11 @@ export default function ComparisonCard(poll: AggregatedPoll) {
   const [timeRemaining, setTimeRemaining] = useState("");
   const [showComments, setShowComments] = useState(false);
 
-  // Check if user has voted locally
+  // Check if user has voted (from API or locally)
   useEffect(() => {
-    setHasVoted(voteTracker.hasVotedLocally(poll.id));
-  }, [poll.id]);
+    // Use API data if available, otherwise fallback to local storage
+    setHasVoted(poll.alreadyVoted || voteTracker.hasVotedLocally(poll.id));
+  }, [poll.id, poll.alreadyVoted]);
 
   // Calculate time remaining
   useEffect(() => {
@@ -196,7 +197,15 @@ export default function ComparisonCard(poll: AggregatedPoll) {
   const isExpired = new Date() > new Date(poll?.endDate);
 
   return (
-    <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden w-full">
+    <div className="relative w-full">
+      <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden w-full relative" style={{
+        backgroundImage: 'url(/assets/Mero Vote.png)',
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundBlendMode: 'overlay',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)'
+      }}>
       {/* Countdown Banner */}
       {!isExpired && (
         <div className="bg-gradient-to-r from-amber-600 to-orange-600 px-3 md:px-4 py-2 md:py-3 text-center">
@@ -472,6 +481,16 @@ export default function ComparisonCard(poll: AggregatedPoll) {
         )}
       </CardContent>
     </Card>
+    
+    {/* VOTED Sticker */}
+    {hasVoted && (
+      <div className="absolute top-4 right-4 pointer-events-none z-10">
+        <div className="bg-green-600 text-white px-3 py-1 rounded-full shadow-md opacity-60">
+          <span className="text-sm font-medium">VOTED</span>
+        </div>
+      </div>
+    )}
+  </div>
   );
 }
 

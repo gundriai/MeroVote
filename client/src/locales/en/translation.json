@@ -57,6 +57,7 @@
       "voting_ended": "Voting has ended for this poll"
     },
     "ended": "Ended",
+    "voted": "Voted",
     "days_remaining": "{{count}} days left",
     "hours_remaining": "{{count}} hours left",
     "minutes_remaining": "{{count}} minutes left"

@@ -58,6 +58,7 @@
       "voting_ended": "यो पोलको मतदान समाप्त भएको छ"
     },
     "ended": "समाप्त",
+    "voted": "मत दिइयो",
     "days_remaining": "{{count}} दिन बाँकी",
     "hours_remaining": "{{count}} घण्टा बाँकी",
     "minutes_remaining": "{{count}} मिनेट बाँकी"
