@@ -12,6 +12,7 @@ import CommentSection from "./comment-section";
 import { PollType } from "@/data/mock-polls";
 import { AggregatedPoll, AggregatedPollOption } from "@/services/polls.service";
 import { pollsService } from "@/services/polls.service";
+import { PollVoteStatusMessages } from "@/enums";
 
 interface VotingCardProps {
   poll: AggregatedPoll;
@@ -196,9 +197,44 @@ export default function VotingCard({ poll }: VotingCardProps) {
       });
     } catch (error) {
       console.error('Error voting:', error);
+      
+      let errorMessage = "मत दिन असफल";
+      
+      if (error instanceof Error) {
+        // Get the full error message
+        const errorText = error.message;
+        
+        // Check if the error text contains any of our enum values using includes()
+        if (errorText.includes(PollVoteStatusMessages.ALREADY_VOTED)) {
+          errorMessage = t('voting.errors.already_voted', 'तपाईंले यो पोलमा पहिले नै मत दिनुभएको छ');
+        } else if (errorText.includes(PollVoteStatusMessages.POLL_NOT_ACTIVE)) {
+          errorMessage = t('voting.errors.poll_not_active', 'यो पोल अहिले सक्रिय छैन');
+        } else if (errorText.includes(PollVoteStatusMessages.POLL_OPTION_NOT_FOUND)) {
+          errorMessage = t('voting.errors.poll_option_not_found', 'पोल विकल्प फेला परेन');
+        } else if (errorText.includes(PollVoteStatusMessages.USER_NOT_LOGGED_IN)) {
+          errorMessage = t('voting.errors.user_not_logged_in', 'मत दिनका लागि तपाईंले लग इन गर्नुपर्छ');
+        } else if (errorText.includes(PollVoteStatusMessages.POLL_NOT_FOUND)) {
+          errorMessage = t('voting.errors.poll_not_found', 'पोल फेला परेन');
+        } else if (errorText.includes(PollVoteStatusMessages.VOTING_ENDED)) {
+          errorMessage = t('voting.errors.voting_ended', 'यो पोलको मतदान समाप्त भएको छ');
+        } else {
+          // If no enum value is found, try to extract message after colon if it exists
+          if (errorText.includes(':')) {
+            const parts = errorText.split(':');
+            if (parts.length > 1) {
+              errorMessage = parts[1].trim();
+            } else {
+              errorMessage = errorText;
+            }
+          } else {
+            errorMessage = errorText;
+          }
+        }
+      }
+      
       toast({
-        title: "त्रुटि",
-        description: error instanceof Error ? error.message : "मत दिन असफल",
+        title: t('voting.errors.title', 'त्रुटि'),
+        description: errorMessage,
         variant: 'destructive',
       });
     }

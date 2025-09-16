@@ -46,6 +46,16 @@
       "bekar": "Bekar",
       "furious": "Furious"
     },
+    "errors": {
+      "title": "Error",
+      "vote_failed": "Failed to vote",
+      "already_voted": "You have already voted on this poll",
+      "poll_not_active": "This poll is not currently active",
+      "poll_option_not_found": "Poll option not found",
+      "user_not_logged_in": "You must be logged in to vote",
+      "poll_not_found": "Poll not found",
+      "voting_ended": "Voting has ended for this poll"
+    },
     "ended": "Ended",
     "days_remaining": "{{count}} days left",
     "hours_remaining": "{{count}} hours left",

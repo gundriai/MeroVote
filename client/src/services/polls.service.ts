@@ -143,6 +143,10 @@ class PollsService {
       });
     } catch (error) {
       console.error('Error voting on poll:', error);
+      // Preserve the original error message from the API response
+      if (error instanceof Error) {
+        throw error;
+      }
       throw new Error('Failed to vote on poll');
     }
   }
