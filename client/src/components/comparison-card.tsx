@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import CommentSection from "./comment-section";
 import { AggregatedPoll } from "@/services/polls.service";
 import { pollsService } from "@/services/polls.service";
+import { PollVoteStatusMessages } from "@/enums";
 
 interface Candidate {
   id: string;
@@ -72,14 +73,12 @@ export default function ComparisonCard(poll: AggregatedPoll) {
   const handleVoteAction = async (candidateId: string) => {
     try {
       // Find the poll option ID for this candidate
-      const candidate = candidates.find((c: any) => c.id === candidateId);
-      if (!candidate) {
-        throw new Error('Candidate not found');
+      const pollOption = poll.pollOptions?.find(option => option.candidateId === candidateId);
+      if (!pollOption) {
+        throw new Error('Poll option not found for this candidate');
       }
 
-      // For now, we'll use the candidate ID as option ID
-      // In a real implementation, you'd need to map candidates to poll options
-      await pollsService.voteOnPoll(poll.id, candidateId);
+      await pollsService.voteOnPoll(poll.id, pollOption.id);
       
       voteTracker.recordVote(poll.id);
       setHasVoted(true);
@@ -89,9 +88,44 @@ export default function ComparisonCard(poll: AggregatedPoll) {
       });
     } catch (error) {
       console.error('Error voting:', error);
+      
+      let errorMessage = t('vote_failed', 'मत दिन असफल');
+      
+      if (error instanceof Error) {
+        // Get the full error message
+        const errorText = error.message;
+        
+        // Check if the error text contains any of our enum values using includes()
+        if (errorText.includes(PollVoteStatusMessages.ALREADY_VOTED)) {
+          errorMessage = t('voting.errors.already_voted', 'तपाईंले यो पोलमा पहिले नै मत दिनुभएको छ');
+        } else if (errorText.includes(PollVoteStatusMessages.POLL_NOT_ACTIVE)) {
+          errorMessage = t('voting.errors.poll_not_active', 'यो पोल अहिले सक्रिय छैन');
+        } else if (errorText.includes(PollVoteStatusMessages.POLL_OPTION_NOT_FOUND)) {
+          errorMessage = t('voting.errors.poll_option_not_found', 'पोल विकल्प फेला परेन');
+        } else if (errorText.includes(PollVoteStatusMessages.USER_NOT_LOGGED_IN)) {
+          errorMessage = t('voting.errors.user_not_logged_in', 'मत दिनका लागि तपाईंले लग इन गर्नुपर्छ');
+        } else if (errorText.includes(PollVoteStatusMessages.POLL_NOT_FOUND)) {
+          errorMessage = t('voting.errors.poll_not_found', 'पोल फेला परेन');
+        } else if (errorText.includes(PollVoteStatusMessages.VOTING_ENDED)) {
+          errorMessage = t('voting.errors.voting_ended', 'यो पोलको मतदान समाप्त भएको छ');
+        } else {
+          // If no enum value is found, try to extract message after colon if it exists
+          if (errorText.includes(':')) {
+            const parts = errorText.split(':');
+            if (parts.length > 1) {
+              errorMessage = parts[1].trim();
+            } else {
+              errorMessage = errorText;
+            }
+          } else {
+            errorMessage = errorText;
+          }
+        }
+      }
+      
       toast({
-        title: t('error'),
-        description: error instanceof Error ? error.message : t('vote_failed'),
+        title: t('voting.errors.title', 'त्रुटि'),
+        description: errorMessage,
         variant: 'destructive',
       });
     }
