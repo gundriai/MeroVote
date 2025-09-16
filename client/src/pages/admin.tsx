@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { BarChart3, Users, MessageSquare, Grid3X3, Edit3, Pause, Trash2, LogOut, Home, Shield, Settings, PieChart, Plus, RefreshCw } from "lucide-react";
+import { BarChart3, Users, MessageSquare, Grid3X3, Edit3, Pause, Play, Trash2, LogOut, Home, Shield, Settings, PieChart, Plus, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
 import Header from "@/components/header";
@@ -258,7 +258,7 @@ export default function Admin() {
                         >
                           {poll.isHidden ? (
                             <>
-                              <Pause className="w-4 h-4 mr-1" />
+                              <Play className="w-4 h-4 mr-1" />
                               {t('admin.polls.actions.resume', 'Resume')}
                             </>
                           ) : (
