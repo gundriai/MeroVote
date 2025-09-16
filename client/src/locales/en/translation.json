@@ -9,6 +9,10 @@
   "active": "Active",
   "login_success": "Successfully logged in!",
   "login_failed": "Login failed. Please try again.",
+  "auth": {
+    "logout_success": "Logged out successfully",
+    "logout_message": "You have been logged out"
+  },
   "show_comments": "Show Comments",
   "hide_comments": "Hide Comments",
   "already_voted": "You have already voted in this poll",
@@ -32,6 +36,8 @@
     "message": "Did you forget to add the page to the router?"
   },
   "voting": {
+    "auth_required_title": "Authentication Required",
+    "auth_required_message": "You need to login to cast vote",
     "types": {
       "reaction_based": "Reaction-Based",
       "one_vs_one": "One vs One",
@@ -166,7 +172,8 @@
     "nav": {
       "home": "Home",
       "admin": "Admin",
-      "login":"Login"
+      "login": "Login",
+      "logout": "Logout"
     },
     "status": {
       "secure": "Secure",

@@ -8,12 +8,17 @@ import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
 import Login from "@/components/login";
 import AuthSuccess from "./components/AuthSuccess";
+import AdminGuard from "@/components/AdminGuard";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/admin" component={Admin} />
+      <Route path="/admin">
+        <AdminGuard>
+          <Admin />
+        </AdminGuard>
+      </Route>
       <Route path="/login" component={Login}/>
       <Route path="/auth/success" component={AuthSuccess}/>
       <Route component={NotFound} />

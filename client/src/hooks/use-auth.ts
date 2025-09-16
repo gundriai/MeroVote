@@ -4,7 +4,9 @@ import { StorageManager } from '@/lib/api';
 interface User {
   id: string;
   email: string;
-  name: string;
+  name?: string;
+  photo?: string;
+  role?: string;
   avatar?: string;
 }
 

@@ -13,6 +13,8 @@ import { PollType } from "@/data/mock-polls";
 import { AggregatedPoll, AggregatedPollOption } from "@/services/polls.service";
 import { pollsService } from "@/services/polls.service";
 import { PollVoteStatusMessages } from "@/enums";
+import { useAuth } from "@/hooks/use-auth";
+import { useLocation } from "wouter";
 
 interface VotingCardProps {
   poll: AggregatedPoll;
@@ -123,6 +125,8 @@ export default function VotingCard({ poll }: VotingCardProps) {
   const [showComments, setShowComments] = useState(false);
 
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
+  const [, navigate] = useLocation();
   
   // Use poll options from API if available, otherwise fallback to hardcoded options
   const voteOptions = poll.pollOptions && poll.pollOptions.length > 0 
@@ -181,6 +185,17 @@ export default function VotingCard({ poll }: VotingCardProps) {
 
   // Real voting with API call
   const handleVoteAction = async (voteType: string) => {
+    // Check authentication first
+    if (!isAuthenticated) {
+      toast({
+        title: t('voting.auth_required_title', 'Authentication Required'),
+        description: t('voting.auth_required_message', 'You need to login to cast vote'),
+        variant: 'destructive',
+      });
+      navigate('/login');
+      return;
+    }
+
     try {
       // Find the poll option ID for this vote type
       const pollOption = poll.pollOptions?.find(option => option.label === voteType);

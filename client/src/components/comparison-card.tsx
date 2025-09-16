@@ -12,6 +12,8 @@ import CommentSection from "./comment-section";
 import { AggregatedPoll } from "@/services/polls.service";
 import { pollsService } from "@/services/polls.service";
 import { PollVoteStatusMessages } from "@/enums";
+import { useAuth } from "@/hooks/use-auth";
+import { useLocation } from "wouter";
 
 interface Candidate {
   id: string;
@@ -27,6 +29,9 @@ export default function ComparisonCard(poll: AggregatedPoll) {
   const [hasVoted, setHasVoted] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState("");
   const [showComments, setShowComments] = useState(false);
+  
+  const { isAuthenticated } = useAuth();
+  const [, navigate] = useLocation();
 
   // Check if user has voted (from API or locally)
   useEffect(() => {
@@ -72,6 +77,17 @@ export default function ComparisonCard(poll: AggregatedPoll) {
 
   // Real voting with API call
   const handleVoteAction = async (candidateId: string) => {
+    // Check authentication first
+    if (!isAuthenticated) {
+      toast({
+        title: t('voting.auth_required_title', 'Authentication Required'),
+        description: t('voting.auth_required_message', 'You need to login to cast vote'),
+        variant: 'destructive',
+      });
+      navigate('/login');
+      return;
+    }
+
     try {
       // Find the poll option ID for this candidate
       const pollOption = poll.pollOptions?.find(option => option.candidateId === candidateId);
