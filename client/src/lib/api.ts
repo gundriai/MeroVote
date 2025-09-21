@@ -1,5 +1,5 @@
 // API Configuration and Endpoints
-export const API_BASE_URL = 'http://localhost:3300';
+export const API_BASE_URL = 'https://merovotebackend-app-hxb0g6deh8auc5gh.centralindia-01.azurewebsites.net';
 
 // Authentication Endpoints
 export const AUTH_ENDPOINTS = {

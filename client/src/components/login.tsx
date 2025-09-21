@@ -16,7 +16,7 @@ export default function Login() {
       setIsLoading(true);
       setAuthProvider('google');
       // Redirect to backend OAuth endpoint
-      window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:3300'}/auth/google`;
+      window.location.href = `${import.meta.env.VITE_API_URL || 'https://merovotebackend-app-hxb0g6deh8auc5gh.centralindia-01.azurewebsites.net'}/auth/google`;
     } catch (error) {
       toast({
         title: t('error'),
@@ -32,7 +32,7 @@ export default function Login() {
     try {
       setIsLoading(true);
       setAuthProvider('facebook');
-      window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:3300'}/auth/facebook`;
+      window.location.href = `${import.meta.env.VITE_API_URL || 'https://merovotebackend-app-hxb0g6deh8auc5gh.centralindia-01.azurewebsites.net'}/auth/facebook`;
     } catch (error) {
       toast({
         title: t('error'),

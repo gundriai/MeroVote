@@ -119,7 +119,7 @@ function ProtectedComponent() {
 
 ## Environment Variables
 ```env
-REACT_APP_API_URL=http://localhost:3001/api
+REACT_APP_API_URL=https://merovotebackend-app-hxb0g6deh8auc5gh.centralindia-01.azurewebsites.net/api
 ```
 
 ## Next Steps for Production

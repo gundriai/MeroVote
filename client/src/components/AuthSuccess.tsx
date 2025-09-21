@@ -26,7 +26,7 @@ const [, navigate] = useLocation();
     (async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:3300'}/auth/me`,
+          `${import.meta.env.VITE_API_URL || 'https://merovotebackend-app-hxb0g6deh8auc5gh.centralindia-01.azurewebsites.net'}/auth/me`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

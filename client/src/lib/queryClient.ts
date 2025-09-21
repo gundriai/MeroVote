@@ -18,7 +18,7 @@ export async function apiRequest(
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  const res = await fetch(`http://localhost:3300${url}`, {
+  const res = await fetch(`https://merovotebackend-app-hxb0g6deh8auc5gh.centralindia-01.azurewebsites.net${url}`, {
     method,
     headers,
     body: data ? JSON.stringify(data) : undefined,
