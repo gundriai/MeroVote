@@ -1,4 +1,5 @@
 // API Configuration and Endpoints
+// export const API_BASE_URL = 'https://merovotebackend-app-hxb0g6deh8auc5gh.centralindia-01.azurewebsites.net';
 export const API_BASE_URL = 'https://merovotebackend-app-hxb0g6deh8auc5gh.centralindia-01.azurewebsites.net';
 
 // Authentication Endpoints
@@ -11,7 +12,7 @@ export const AUTH_ENDPOINTS = {
   FACEBOOK_CALLBACK: `${API_BASE_URL}/auth/facebook/callback`,
 } as const;
 
-// HTTP Status Codes
+// HTTP Status Code
 export const HTTP_STATUS = {
   OK: 200,
   CREATED: 201,
