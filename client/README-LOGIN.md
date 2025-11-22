@@ -158,7 +158,7 @@ The login page uses:
 npm run dev
 
 # Visit the login page
-http://localhost:5173/login
+https://afnovote.netlify.app/login
 ```
 
 ## Troubleshooting
