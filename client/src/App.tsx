@@ -9,6 +9,7 @@ import NotFound from "@/pages/not-found";
 import Login from "@/components/login";
 import AuthSuccess from "./components/AuthSuccess";
 import Privacy from "@/pages/privacy";
+import DataDeletion from "@/pages/data-deletion";
 import AdminGuard from "@/components/AdminGuard";
 
 function Router() {
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/login" component={Login}/>
       <Route path="/auth/success" component={AuthSuccess}/>
   <Route path="/privacy" component={Privacy} />
+  <Route path="/data-deletion" component={DataDeletion} />
       <Route component={NotFound} />
     </Switch>
   );
