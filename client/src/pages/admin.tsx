@@ -38,6 +38,7 @@ export default function Admin() {
   const [editFormData, setEditFormData] = useState({
     title: '',
     description: '',
+    mediaUrl: '',
     endDate: ''
   });
   
@@ -60,6 +61,7 @@ export default function Admin() {
       setEditFormData({
         title: poll.title,
         description: poll.description || '',
+        mediaUrl: poll.mediaUrl || '',
         endDate: new Date(poll.endDate).toISOString().slice(0, 16) // Format for datetime-local input
       });
       setShowEditModal(true);
@@ -106,6 +108,7 @@ export default function Admin() {
       await updatePoll(editingPoll.id, {
         title: editFormData.title,
         description: editFormData.description,
+        mediaUrl: editFormData.mediaUrl,
         endDate: new Date(editFormData.endDate).toISOString()
       });
       
@@ -476,6 +479,15 @@ export default function Admin() {
                 onChange={(e) => setEditFormData(prev => ({ ...prev, description: e.target.value }))}
                 placeholder={t('admin.polls.form.description_placeholder', 'Enter poll description')}
                 rows={3}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="mediaUrl">{t('admin.polls.form.media_url', 'Media URL')}</Label>
+              <Input
+                id="mediaUrl"
+                value={editFormData.mediaUrl}
+                onChange={(e) => setEditFormData(prev => ({ ...prev, mediaUrl: e.target.value }))}
+                placeholder={t('admin.polls.form.media_url_placeholder', 'Enter media URL')}
               />
             </div>
             <div className="grid gap-2">
