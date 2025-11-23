@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 interface HeaderProps {
-  stats?: { 
+  stats?: {
     activeVoters?: number;
     totalVotes?: number;
     activePolls?: number;
@@ -33,12 +33,12 @@ export default function Header({ stats }: HeaderProps) {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-nepal-red rounded-lg flex items-center justify-center">
-                <Vote className="text-white w-4 h-4" />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+                <img src="/assets/icons/android-chrome-512x512.png" alt="MeroVote Logo" className="w-full h-full object-contain mix-blend-multiply" />
               </div>
               <h1 className="text-xl font-bold text-gray-900">{t('header.app_name')}</h1>
             </div>
-            
+
           </div>
           <nav className="hidden md:flex items-center space-x-6">
             <Link href="/" className={`text-gray-700 hover:text-nepal-red transition-colors${location === "/" ? " font-bold text-nepal-red" : ""}`}>
@@ -51,19 +51,19 @@ export default function Header({ stats }: HeaderProps) {
               </Link>
             )}
           </nav>
-          
+
           {/* Right side - Auth section */}
           <div className="flex items-center space-x-4">
             <LanguageSwitcher />
-            
+
             {isAuthenticated ? (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-nepal-red rounded-full flex items-center justify-center">
                     {user?.photo ? (
-                      <img 
-                        src={user.photo} 
-                        alt={user.name || 'User'} 
+                      <img
+                        src={user.photo}
+                        alt={user.name || 'User'}
                         className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (
