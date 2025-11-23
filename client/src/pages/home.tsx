@@ -25,7 +25,7 @@ import { AggregatedPoll } from "@/services/polls.service";
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<PollCategory>({} as PollCategory);
   const { t } = useTranslation();
-  
+
   // Use API data with category filtering
   const { polls, stats, isLoading, error, refetch } = usePolls({
     category: selectedCategory.id === PollCategoriesEnum.ALL ? undefined : selectedCategory.id,
@@ -40,24 +40,24 @@ export default function Home() {
   console.log('Error:', error);
 
   // Map icon string to actual component
-  const iconMap: Record<string, ElementType> = { 
-    Zap, 
-    Landmark, 
-    Scale, 
-    EarthIcon, 
-    FaceToFace: FaceToFaceIcon, 
+  const iconMap: Record<string, ElementType> = {
+    Zap,
+    Landmark,
+    Scale,
+    EarthIcon,
+    FaceToFace: FaceToFaceIcon,
     Activity: Users // fallback for Activity, replace with actual icon if available
   };
 
   // Transform pollCategoriesData to PollCategory[]
   const categories: PollCategory[] = pollCategoriesData
-  .map<PollCategory>((cat) => ({
-    id: cat.id as PollCategoriesEnum,
-    label: t(cat.labelKey),
-    icon: (iconMap[cat.icon] ?? Zap) as ElementType,
-    order: cat.order ?? 0,
-  }))
-  .sort((a, b) => a.order - b.order);
+    .map<PollCategory>((cat) => ({
+      id: cat.id as PollCategoriesEnum,
+      label: t(cat.labelKey),
+      icon: (iconMap[cat.icon] ?? Zap) as ElementType,
+      order: cat.order ?? 0,
+    }))
+    .sort((a, b) => a.order - b.order);
 
   // Set default category to "All" if none selected
   useEffect(() => {
@@ -92,15 +92,6 @@ export default function Home() {
           setSelectedCategory={handleCategoryChange}
         />
 
-        {/* Debug Info */}
-        <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
-          <h3 className="font-bold text-yellow-800">Debug Info:</h3>
-          <p><strong>Selected Category:</strong> {selectedCategory.id || 'None'}</p>
-          <p><strong>Total Polls:</strong> {polls.length}</p>
-          <p><strong>Loading:</strong> {isLoading ? 'Yes' : 'No'}</p>
-          <p><strong>Error:</strong> {error || 'None'}</p>
-          <p><strong>Stats:</strong> {JSON.stringify(stats)}</p>
-        </div>
 
         {/* Polls Section */}
         <div className="flex flex-wrap -mx-3">
@@ -112,7 +103,7 @@ export default function Home() {
           ) : error ? (
             <div className="text-center py-8 w-full">
               <p className="text-red-500 mb-4">{t('home.error_loading_polls', 'Error loading polls')}</p>
-              <button 
+              <button
                 onClick={refetch}
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
@@ -153,7 +144,7 @@ export default function Home() {
                 {t('home.footer.tagline')}
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-3">{t('home.footer.features')}</h4>
               <ul className="space-y-2 text-sm text-gray-600">
@@ -162,7 +153,7 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-3">{t('home.footer.help')}</h4>
               <ul className="space-y-2 text-sm text-gray-600">
@@ -171,7 +162,7 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-3">{t('home.footer.security_info')}</h4>
               <div className="space-y-2 text-sm text-gray-600">
@@ -186,7 +177,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          
+
           <div className="border-t border-gray-200 mt-8 pt-6 text-center">
             <p className="text-sm text-gray-500">{t('home.footer.copyright')}</p>
           </div>

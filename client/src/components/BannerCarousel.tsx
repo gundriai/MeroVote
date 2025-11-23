@@ -3,6 +3,8 @@
 import { useTranslation } from "react-i18next";
 import bannerData from "@/data/banner-carousel.json";
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { bannersService } from "@/services/banners.service";
 
 type Banner = {
   id: string;
@@ -22,9 +24,19 @@ type Banner = {
 export default function BannerCarousel() {
   const { t } = useTranslation();
   // Filter active banners and sort by order
-  const banners: Banner[] = Array.isArray(bannerData)
-    ? (bannerData as Banner[]).filter((b: Banner) => b.isActive).sort((a: Banner, b: Banner) => (a.order ?? 0) - (b.order ?? 0))
-    : [bannerData as Banner];
+  const { data: apiBanners } = useQuery({
+    queryKey: ["active-banners"],
+    queryFn: () => bannersService.getActiveBanners(),
+    retry: false,
+  });
+
+  // Filter active banners and sort by order
+  // If API returns banners, use them. Otherwise, fallback to JSON data.
+  const sourceData = (apiBanners && apiBanners.length > 0) ? apiBanners : bannerData;
+
+  const banners: Banner[] = Array.isArray(sourceData)
+    ? (sourceData as Banner[]).filter((b: Banner) => b.isActive).sort((a: Banner, b: Banner) => (a.order ?? 0) - (b.order ?? 0))
+    : [sourceData as Banner];
 
   const [current, setCurrent] = useState(0);
   const banner = banners[current] || banners[0];
@@ -54,7 +66,7 @@ export default function BannerCarousel() {
             </div>
             {/* Banner Image */}
             <div className="absolute inset-0">
-              <img 
+              <img
                 src={banner.imageUrl}
                 alt={banner.imageAlt}
                 className="w-full h-full object-cover"
@@ -93,20 +105,20 @@ export default function BannerCarousel() {
         <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
           {banners.length > 1
             ? banners.map((b, idx) => (
-                <button
-                  key={b.id}
-                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${idx === current ? 'bg-white' : 'bg-white/50'}`}
-                  aria-label={`Go to slide ${idx + 1}`}
-                  onClick={() => goTo(idx)}
-                />
-              ))
+              <button
+                key={b.id}
+                className={`w-2 h-2 rounded-full transition-colors duration-200 ${idx === current ? 'bg-white' : 'bg-white/50'}`}
+                aria-label={`Go to slide ${idx + 1}`}
+                onClick={() => goTo(idx)}
+              />
+            ))
             : (
-                <button
-                  className="w-2 h-2 rounded-full bg-white"
-                  aria-label="Only one banner"
-                  disabled
-                />
-              )}
+              <button
+                className="w-2 h-2 rounded-full bg-white"
+                aria-label="Only one banner"
+                disabled
+              />
+            )}
         </div>
         {/* Navigation Arrows */}
         {banners.length > 1 && (
