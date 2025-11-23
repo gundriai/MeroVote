@@ -10,7 +10,7 @@ export interface PollCategory {
 
 import VotingCard from "@/components/voting-card";
 import ComparisonCard from "@/components/comparison-card";
-import { Vote, Users, CheckSquare, Zap, Landmark, Scale, Earth, EarthIcon } from "lucide-react";
+import { Vote, Users, CheckSquare, Zap, Landmark, Scale, Earth, EarthIcon, Share2 } from "lucide-react";
 import { FaceToFaceIcon } from "@/components/icons/FaceToFaceIcon";
 import pollCategoriesData from "@/data/poll-categories.json";
 import Header from "@/components/header";
@@ -20,9 +20,15 @@ import { useState, useEffect } from "react";
 import { PollType, PollCategories as PollCategoriesEnum } from "@/data/mock-polls";
 import { useTranslation } from "react-i18next";
 import { usePolls } from "@/hooks/use-polls";
-import { AggregatedPoll } from "@/services/polls.service";
+import { AggregatedPoll, pollsService } from "@/services/polls.service";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useLocation } from "wouter";
 
-export default function Home() {
+interface HomeProps {
+  pollId?: string;
+}
+
+export default function Home({ pollId }: HomeProps) {
   const [selectedCategory, setSelectedCategory] = useState<PollCategory>({} as PollCategory);
   const { t } = useTranslation();
 
@@ -128,6 +134,21 @@ export default function Home() {
           )}
         </div>
       </main>
+
+      {/* Shared Poll Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0 border-0 bg-transparent shadow-none">
+          {sharedPoll && (
+            <div className="w-full">
+              {sharedPoll.type === 'ONE_VS_ONE' ? (
+                <ComparisonCard {...sharedPoll} />
+              ) : (
+                <VotingCard poll={sharedPoll} />
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-16">

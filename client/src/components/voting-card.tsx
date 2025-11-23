@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { voteTracker } from "@/lib/vote-tracker";
 import { useToast } from "@/hooks/use-toast";
-import { ThumbsUp, ThumbsDown, Flame, Star, Minus, MessageSquare, ChevronDown, ChevronUp, Heart, Zap, Check } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Flame, Star, Minus, MessageSquare, ChevronDown, ChevronUp, Heart, Zap, Check, Share2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CommentSection from "./comment-section";
@@ -89,7 +89,7 @@ const getVoteOptions = (pollType: string, t: any): VoteOption[] => {
       { type: "bekar", label: t('voting.ratings.bekar', 'Bekar'), icon: ThumbsDown, color: "text-red-700", bgColor: "bg-red-500", hoverColor: "hover:bg-red-50 hover:border-red-500" },
       { type: "furious", label: t('voting.ratings.furious', 'Furious'), icon: Flame, color: "text-orange-700", bgColor: "bg-orange-500", hoverColor: "hover:bg-orange-50 hover:border-orange-500" },
     ];
-  } 
+  }
   // TODO: Need to think if it is needed or not.
   else if (pollType === "REACTION_BASED") {
     return [
@@ -123,21 +123,22 @@ export default function VotingCard({ poll }: VotingCardProps) {
   const [hasVoted, setHasVoted] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState("");
   const [showComments, setShowComments] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
-  
+
   // Use poll options from API if available, otherwise fallback to hardcoded options
-  const voteOptions = poll.pollOptions && poll.pollOptions.length > 0 
+  const voteOptions = poll.pollOptions && poll.pollOptions.length > 0
     ? poll.pollOptions.map(option => ({
-        type: option.type || option.label || 'unknown',
-        label: option.label || 'Unknown',
-        icon: getIconFromName(option.icon || 'thumbs-up'),
-        color: getColorClass(option.color || 'blue'),
-        bgColor: getBgColorClass(option.color || 'blue'),
-        hoverColor: getHoverColorClass(option.color || 'blue'),
-      }))
+      type: option.type || option.label || 'unknown',
+      label: option.label || 'Unknown',
+      icon: getIconFromName(option.icon || 'thumbs-up'),
+      color: getColorClass(option.color || 'blue'),
+      bgColor: getBgColorClass(option.color || 'blue'),
+      hoverColor: getHoverColorClass(option.color || 'blue'),
+    }))
     : getVoteOptions(poll.type, t);
 
   // Check if user has voted (from API or locally)
@@ -165,9 +166,9 @@ export default function VotingCard({ poll }: VotingCardProps) {
         const days = Math.floor(hours / 24);
         setTimeRemaining(t('voting.days_remaining', { count: days, defaultValue: '{{count}} days left' }));
       } else if (hours > 0) {
-        setTimeRemaining(t('voting.hours_remaining', { count: hours, defaultValue: '{{count}} hours left' }));
+        setTimeRemaining(t('voting.hours_remaining', { count: hours, defaultValue: '{{count}}h left' }));
       } else {
-        setTimeRemaining(t('voting.minutes_remaining', { count: minutes, defaultValue: '{{count}} minutes left' }));
+        setTimeRemaining(t('voting.minutes_remaining', { count: minutes, defaultValue: '{{count}}m left' }));
       }
     };
 
@@ -204,7 +205,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
       }
 
       await pollsService.voteOnPoll(poll.id, pollOption.id);
-      
+
       voteTracker.recordVote(poll.id);
       setHasVoted(true);
       toast({
@@ -213,13 +214,13 @@ export default function VotingCard({ poll }: VotingCardProps) {
       });
     } catch (error) {
       console.error('Error voting:', error);
-      
+
       let errorMessage = "मत दिन असफल";
-      
+
       if (error instanceof Error) {
         // Get the full error message
         const errorText = error.message;
-        
+
         // Check if the error text contains any of our enum values using includes()
         if (errorText.includes(PollVoteStatusMessages.ALREADY_VOTED)) {
           errorMessage = t('voting.errors.already_voted', 'तपाईंले यो पोलमा पहिले नै मत दिनुभएको छ');
@@ -247,7 +248,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
           }
         }
       }
-      
+
       toast({
         title: t('voting.errors.title', 'त्रुटि'),
         description: errorMessage,
@@ -278,6 +279,18 @@ export default function VotingCard({ poll }: VotingCardProps) {
 
   const isExpired = new Date() > new Date(poll.endDate);
 
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}/poll/${poll.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    setIsCopied(true);
+    toast({
+      title: t('share.copied', 'Link Copied!'),
+      description: t('share.description', 'Poll link has been copied to clipboard'),
+      className: "bg-green-500 text-white border-green-600",
+    });
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
   return (
     <div className="relative w-full">
       <Card className="bg-white shadow-sm border border-gray-200 w-full relative overflow-hidden" style={{
@@ -288,88 +301,99 @@ export default function VotingCard({ poll }: VotingCardProps) {
         backgroundBlendMode: 'overlay',
         backgroundColor: 'rgba(255, 255, 255, 0.95)'
       }}>
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center space-x-2 mb-2">
-              <Badge className={`${getTypeBadgeColor(poll.type)} text-white text-xs`}>
-                {getTypeLabel(poll.type, t)}
-              </Badge>
-              <span className="text-sm text-gray-500">{timeRemaining}</span>
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="flex items-center space-x-2 mb-2">
+                <Badge className={`${getTypeBadgeColor(poll.type)} text-white text-xs`}>
+                  {getTypeLabel(poll.type, t)}
+                </Badge>
+                <span className="text-sm text-gray-500">{timeRemaining}</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{poll.title}</h3>
+              {poll.description && (
+                <p className="text-gray-600 text-sm mb-4">{poll.description}</p>
+              )}
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{poll.title}</h3>
-            {poll.description && (
-              <p className="text-gray-600 text-sm mb-4">{poll.description}</p>
+            {poll.mediaUrl && (
+              <div className="rounded-lg overflow-hidden ml-4 flex items-center justify-center" style={{ width: 128, height: 128 }}>
+                <img
+                  src={poll.mediaUrl}
+                  alt="Poll media"
+                  className="w-full h-full object-contain"
+                />
+              </div>
             )}
           </div>
-          {poll.mediaUrl && (
-            <div className="rounded-lg overflow-hidden ml-4 flex items-center justify-center" style={{ width: 128, height: 128 }}>
-              <img 
-                src={poll.mediaUrl} 
-                alt="Poll media" 
-                className="w-full h-full object-contain"
-              />
-            </div>
-          )}
-        </div>
-      </CardHeader>
+        </CardHeader>
 
-      <CardContent>
-        {/* Voting Options */}
-        <div className={`grid gap-4 mb-6 ${voteOptions.length === 3 ? 'grid-cols-3' : 'grid-cols-2 md:grid-cols-4'}`}>
-          {voteOptions.map((option) => {
-            const Icon = option.icon;
-            const count = (voteCounts as any)?.[option.type] || 0;
-            const isDisabled = hasVoted || isExpired;
-            const isOptionChosen = poll.votedDetails.alreadyVoted && poll.votedDetails.optionChosen === option.type;
+        <CardContent>
+          {/* Voting Options */}
+          <div className={`grid gap-4 mb-6 ${voteOptions.length === 3 ? 'grid-cols-3' : 'grid-cols-2 md:grid-cols-4'}`}>
+            {voteOptions.map((option) => {
+              const Icon = option.icon;
+              const count = (voteCounts as any)?.[option.type] || 0;
+              const isDisabled = hasVoted || isExpired;
+              const isOptionChosen = poll.votedDetails.alreadyVoted && poll.votedDetails.optionChosen === option.type;
 
-            return (
-              <Button
-                key={option.type}
-                onClick={() => handleVote(option.type)}
-                disabled={isDisabled}
-                variant="outline"
-                className={`vote-button flex flex-col items-center p-4 h-auto border-2 border-gray-200 ${option.hoverColor} transition-all ${isDisabled ? 'opacity-30 cursor-not-allowed' : ''} relative`}
-              >
-                <div className={`w-10 h-10 ${option.bgColor} rounded-full flex items-center justify-center mb-2 relative`}>
-                  <Icon className="text-white w-5 h-5" />
+              return (
+                <Button
+                  key={option.type}
+                  onClick={() => handleVote(option.type)}
+                  disabled={isDisabled}
+                  variant="outline"
+                  className={`vote-button flex flex-col items-center p-4 h-auto border-2 border-gray-200 ${option.hoverColor} transition-all ${isDisabled ? 'opacity-30 cursor-not-allowed' : ''} relative`}
+                >
+                  <div className={`w-10 h-10 ${option.bgColor} rounded-full flex items-center justify-center mb-2 relative`}>
+                    <Icon className="text-white w-5 h-5" />
+                    {isOptionChosen && (
+                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                        <Check className="text-white w-3 h-3" />
+                      </div>
+                    )}
+                  </div>
+                  <span className={`font-medium ${option.color} text-sm`}>{option.label}</span>
+                  <span className="text-xs text-gray-500">{count}</span>
                   {isOptionChosen && (
-                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-                      <Check className="text-white w-3 h-3" />
+                    <div className="absolute inset-0 bg-green-100 bg-opacity-80 flex items-center justify-center rounded-lg">
+                      <span className="text-green-700 font-bold text-xs">VOTED</span>
                     </div>
                   )}
-                </div>
-                <span className={`font-medium ${option.color} text-sm`}>{option.label}</span>
-                <span className="text-xs text-gray-500">{count}</span>
-                {isOptionChosen && (
-                  <div className="absolute inset-0 bg-green-100 bg-opacity-80 flex items-center justify-center rounded-lg">
-                    <span className="text-green-700 font-bold text-xs">VOTED</span>
-                  </div>
-                )}
-              </Button>
-            );
-          })}
-        </div>
+                </Button>
+              );
+            })}
+          </div>
 
 
 
-        {/* Comment Toggle Button */}
-        <Button
-          onClick={() => setShowComments(!showComments)}
-          variant="outline"
-          className="w-full mb-4 flex items-center justify-center space-x-2 hover:bg-gray-50"
-        >
-          <MessageSquare className="w-4 h-4" />
-          <span>{showComments ? "टिप्पणी लुकाउनुहोस्" : "टिप्पणी देखाउनुहोस्"}</span>
-          {showComments ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        </Button>
+          {/* Comment Toggle and Share Button */}
+          <div className="flex items-center gap-2 mb-4">
+            <Button
+              onClick={() => setShowComments(!showComments)}
+              variant="outline"
+              className="flex-1 flex items-center justify-center space-x-2 hover:bg-gray-50"
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span>{showComments ? "टिप्पणी लुकाउनुहोस्" : "टिप्पणी देखाउनुहोस्"}</span>
+              {showComments ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </Button>
 
-        {/* Comment Section */}
-        {showComments && (
-          <CommentSection pollId={poll.id} showWordLimit={poll.type === "REACTION_BASED"} />
-        )}
-      </CardContent>
-    </Card>
-  </div>
+            <Button
+              variant="outline"
+              className={`flex items-center gap-2 transition-all duration-300 ${isCopied ? 'bg-green-50 text-green-600 border-green-200' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
+              onClick={handleShare}
+            >
+              {isCopied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
+              <span className="text-sm font-medium">{isCopied ? "Copied" : "Share"}</span>
+            </Button>
+          </div>
+
+          {/* Comment Section */}
+          {showComments && (
+            <CommentSection pollId={poll.id} showWordLimit={poll.type === "REACTION_BASED"} />
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
