@@ -13,14 +13,19 @@ import AdminGuard from "@/components/AdminGuard";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/">
+        {() => <Home />}
+      </Route>
+      <Route path="/poll/:id">
+        {(params) => <Home pollId={params.id} />}
+      </Route>
       <Route path="/admin">
         <AdminGuard>
           <Admin />
         </AdminGuard>
       </Route>
-      <Route path="/login" component={Login}/>
-      <Route path="/auth/success" component={AuthSuccess}/>
+      <Route path="/login" component={Login} />
+      <Route path="/auth/success" component={AuthSuccess} />
       <Route component={NotFound} />
     </Switch>
   );
