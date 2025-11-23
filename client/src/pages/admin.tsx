@@ -39,7 +39,8 @@ export default function Admin() {
     title: '',
     description: '',
     mediaUrl: '',
-    endDate: ''
+    endDate: '',
+    candidates: [] as any[]
   });
   
   // Use admin hook to fetch real data
@@ -62,7 +63,8 @@ export default function Admin() {
         title: poll.title,
         description: poll.description || '',
         mediaUrl: poll.mediaUrl || '',
-        endDate: new Date(poll.endDate).toISOString().slice(0, 16) // Format for datetime-local input
+        endDate: new Date(poll.endDate).toISOString().slice(0, 16), // Format for datetime-local input
+        candidates: (poll as any).candidates || []
       });
       setShowEditModal(true);
     }
@@ -109,7 +111,8 @@ export default function Admin() {
         title: editFormData.title,
         description: editFormData.description,
         mediaUrl: editFormData.mediaUrl,
-        endDate: new Date(editFormData.endDate).toISOString()
+        endDate: new Date(editFormData.endDate).toISOString(),
+        candidates: editFormData.candidates
       });
       
       toast({
@@ -421,8 +424,7 @@ export default function Admin() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 variant={activeTab === tab.id ? "default" : "ghost"}
-                className={`flex items-center space-x-2 px-4 py-2 ${
-                  activeTab === tab.id
+                className={`flex items-center space-x-2 px-4 py-2 ${activeTab === tab.id
                     ? "bg-nepal-red text-white hover:bg-red-700"
                     : "text-gray-600 hover:text-nepal-red hover:bg-gray-50"
                 }`}
@@ -490,6 +492,35 @@ export default function Admin() {
                 placeholder={t('admin.polls.form.media_url_placeholder', 'Enter media URL')}
               />
             </div>
+
+            {/* Candidate Images for One vs One Polls */}
+            {editingPoll?.type === 'ONE_VS_ONE' && editFormData.candidates && editFormData.candidates.length > 0 && (
+              <div className="space-y-4 border-t pt-4 mt-2">
+                <h4 className="font-medium text-sm text-gray-900">Candidate Images</h4>
+                {editFormData.candidates.map((candidate, index) => (
+                  <div key={candidate.id || index} className="grid gap-2">
+                    <Label htmlFor={`candidate-${index}-image`}>
+                      {candidate.name} Image URL
+                    </Label>
+                    <Input
+                      id={`candidate-${index}-image`}
+                      value={candidate.imageUrl || candidate.photo || ''}
+                      onChange={(e) => {
+                        const newCandidates = [...editFormData.candidates];
+                        newCandidates[index] = {
+                          ...newCandidates[index],
+                          imageUrl: e.target.value,
+                          photo: e.target.value // Update both for compatibility
+                        };
+                        setEditFormData(prev => ({ ...prev, candidates: newCandidates }));
+                      }}
+                      placeholder={`Enter image URL for ${candidate.name}`}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div className="grid gap-2">
               <Label htmlFor="endDate">{t('admin.polls.form.end_date', 'End Date')}</Label>
               <Input
