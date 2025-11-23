@@ -10,7 +10,7 @@ export interface PollCategory {
 
 import VotingCard from "@/components/voting-card";
 import ComparisonCard from "@/components/comparison-card";
-import { Vote, Users, CheckSquare, Zap, Landmark, Scale, Earth, EarthIcon } from "lucide-react";
+import { Vote, Users, CheckSquare, Zap, Landmark, Scale, Earth, EarthIcon, Share2 } from "lucide-react";
 import { FaceToFaceIcon } from "@/components/icons/FaceToFaceIcon";
 import pollCategoriesData from "@/data/poll-categories.json";
 import Header from "@/components/header";
@@ -20,12 +20,47 @@ import { useState, useEffect } from "react";
 import { PollType, PollCategories as PollCategoriesEnum } from "@/data/mock-polls";
 import { useTranslation } from "react-i18next";
 import { usePolls } from "@/hooks/use-polls";
-import { AggregatedPoll } from "@/services/polls.service";
+import { AggregatedPoll, pollsService } from "@/services/polls.service";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useLocation } from "wouter";
 
-export default function Home() {
+interface HomeProps {
+  pollId?: string;
+}
+
+export default function Home({ pollId }: HomeProps) {
   const [selectedCategory, setSelectedCategory] = useState<PollCategory>({} as PollCategory);
   const { t } = useTranslation();
-  
+  const [, setLocation] = useLocation();
+  const [sharedPoll, setSharedPoll] = useState<AggregatedPoll | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Fetch shared poll if pollId is present
+  useEffect(() => {
+    if (pollId) {
+      const fetchPoll = async () => {
+        try {
+          const poll = await pollsService.getAggregatedPoll(pollId);
+          setSharedPoll(poll);
+          setIsDialogOpen(true);
+        } catch (error) {
+          console.error("Error fetching shared poll:", error);
+        }
+      };
+      fetchPoll();
+    } else {
+      setSharedPoll(null);
+      setIsDialogOpen(false);
+    }
+  }, [pollId]);
+
+  const handleDialogClose = (open: boolean) => {
+    setIsDialogOpen(open);
+    if (!open) {
+      setLocation("/");
+    }
+  };
+
   // Use API data with category filtering
   const { polls, stats, isLoading, error, refetch } = usePolls({
     category: selectedCategory.id === PollCategoriesEnum.ALL ? undefined : selectedCategory.id,
@@ -40,24 +75,24 @@ export default function Home() {
   console.log('Error:', error);
 
   // Map icon string to actual component
-  const iconMap: Record<string, ElementType> = { 
-    Zap, 
-    Landmark, 
-    Scale, 
-    EarthIcon, 
-    FaceToFace: FaceToFaceIcon, 
+  const iconMap: Record<string, ElementType> = {
+    Zap,
+    Landmark,
+    Scale,
+    EarthIcon,
+    FaceToFace: FaceToFaceIcon,
     Activity: Users // fallback for Activity, replace with actual icon if available
   };
 
   // Transform pollCategoriesData to PollCategory[]
   const categories: PollCategory[] = pollCategoriesData
-  .map<PollCategory>((cat) => ({
-    id: cat.id as PollCategoriesEnum,
-    label: t(cat.labelKey),
-    icon: (iconMap[cat.icon] ?? Zap) as ElementType,
-    order: cat.order ?? 0,
-  }))
-  .sort((a, b) => a.order - b.order);
+    .map<PollCategory>((cat) => ({
+      id: cat.id as PollCategoriesEnum,
+      label: t(cat.labelKey),
+      icon: (iconMap[cat.icon] ?? Zap) as ElementType,
+      order: cat.order ?? 0,
+    }))
+    .sort((a, b) => a.order - b.order);
 
   // Set default category to "All" if none selected
   useEffect(() => {
@@ -112,7 +147,7 @@ export default function Home() {
           ) : error ? (
             <div className="text-center py-8 w-full">
               <p className="text-red-500 mb-4">{t('home.error_loading_polls', 'Error loading polls')}</p>
-              <button 
+              <button
                 onClick={refetch}
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
@@ -138,6 +173,21 @@ export default function Home() {
         </div>
       </main>
 
+      {/* Shared Poll Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0 border-0 bg-transparent shadow-none">
+          {sharedPoll && (
+            <div className="w-full">
+              {sharedPoll.type === 'ONE_VS_ONE' ? (
+                <ComparisonCard {...sharedPoll} />
+              ) : (
+                <VotingCard poll={sharedPoll} />
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -153,7 +203,7 @@ export default function Home() {
                 {t('home.footer.tagline')}
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-3">{t('home.footer.features')}</h4>
               <ul className="space-y-2 text-sm text-gray-600">
@@ -162,7 +212,7 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-3">{t('home.footer.help')}</h4>
               <ul className="space-y-2 text-sm text-gray-600">
@@ -171,7 +221,7 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-3">{t('home.footer.security_info')}</h4>
               <div className="space-y-2 text-sm text-gray-600">
@@ -186,7 +236,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          
+
           <div className="border-t border-gray-200 mt-8 pt-6 text-center">
             <p className="text-sm text-gray-500">{t('home.footer.copyright')}</p>
           </div>
