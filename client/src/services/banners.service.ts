@@ -2,7 +2,7 @@ import { apiRequest } from '@/lib/queryClient';
 
 export interface Banner {
     id: string;
-    imageUrl: string;
+    image: string;
     imageAlt: string;
     title: string;
     subTitle: string;
@@ -15,7 +15,7 @@ export interface Banner {
 }
 
 export interface CreateBannerDto {
-    imageUrl: string;
+    image: string;
     title: string;
     subTitle: string;
     buttonLabel?: string;
@@ -52,7 +52,7 @@ class BannersService {
         // My DTO here: imageUrl... wait. Backend uses 'image', not 'imageUrl'.
 
         const payload = {
-            image: data.imageUrl,
+            image: data.image,
             title: data.title,
             subTitle: data.subTitle,
             buttonLabel: data.buttonLabel,
@@ -66,7 +66,7 @@ class BannersService {
 
     async updateBanner(id: string, data: UpdateBannerDto): Promise<Banner> {
         const payload: any = {};
-        if (data.imageUrl !== undefined) payload.image = data.imageUrl;
+        if (data.image !== undefined) payload.image = data.image;
         if (data.title !== undefined) payload.title = data.title;
         if (data.subTitle !== undefined) payload.subTitle = data.subTitle;
         if (data.buttonLabel !== undefined) payload.buttonLabel = data.buttonLabel;

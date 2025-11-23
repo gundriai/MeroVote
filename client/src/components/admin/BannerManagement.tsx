@@ -31,7 +31,7 @@ export default function BannerManagement() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
     const [formData, setFormData] = useState<CreateBannerDto>({
-        imageUrl: "",
+        image: "",
         title: "",
         subTitle: "",
         buttonLabel: "",
@@ -94,7 +94,7 @@ export default function BannerManagement() {
     const handleEdit = (banner: Banner) => {
         setEditingBanner(banner);
         setFormData({
-            imageUrl: banner.imageUrl,
+            image: banner.image,
             title: banner.title,
             subTitle: banner.subTitle,
             buttonLabel: banner.buttonLabel || "",
@@ -113,7 +113,7 @@ export default function BannerManagement() {
     const resetForm = () => {
         setEditingBanner(null);
         setFormData({
-            imageUrl: "",
+            image: "",
             title: "",
             subTitle: "",
             buttonLabel: "",
@@ -150,11 +150,11 @@ export default function BannerManagement() {
                         </DialogHeader>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="imageUrl">Image URL</Label>
+                                <Label htmlFor="image">Image URL</Label>
                                 <Input
-                                    id="imageUrl"
-                                    value={formData.imageUrl}
-                                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                                    id="image"
+                                    value={formData.image}
+                                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                                     placeholder="https://example.com/image.jpg"
                                     required
                                 />
@@ -237,8 +237,8 @@ export default function BannerManagement() {
                                 <TableRow key={banner.id}>
                                     <TableCell>
                                         <div className="w-16 h-10 rounded overflow-hidden bg-gray-100">
-                                            {banner.imageUrl ? (
-                                                <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover" />
+                                            {banner.image ? (
+                                                <img src={banner.image} alt={banner.title} className="w-full h-full object-cover" />
                                             ) : (
                                                 <ImageIcon className="w-6 h-6 m-auto mt-2 text-gray-400" />
                                             )}
