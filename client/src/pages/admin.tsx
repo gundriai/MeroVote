@@ -2,7 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { BarChart3, Users, MessageSquare, Grid3X3, Edit3, Pause, Play, Trash2, LogOut, Home, Shield, Settings, PieChart, Plus, RefreshCw } from "lucide-react";
+import { BarChart3, Users, MessageSquare, Grid3X3, Edit3, Pause, Play, Trash2, LogOut, Home, Shield, Settings, PieChart, Plus, RefreshCw, Image as ImageIcon } from "lucide-react";
+import BannerManagement from "@/components/admin/BannerManagement";
 import { useState } from "react";
 import { Link } from "wouter";
 import Header from "@/components/header";
@@ -42,15 +43,15 @@ export default function Admin() {
     endDate: '',
     candidates: [] as any[]
   });
-  
+
   // Use admin hook to fetch real data
-  const { 
-    stats, 
-    polls, 
-    isLoading, 
-    error, 
-    refetch, 
-    togglePollVisibility, 
+  const {
+    stats,
+    polls,
+    isLoading,
+    error,
+    refetch,
+    togglePollVisibility,
     deletePoll,
     updatePoll
   } = useAdmin();
@@ -105,7 +106,7 @@ export default function Admin() {
 
   const handleEditSubmit = async () => {
     if (!editingPoll) return;
-    
+
     try {
       await updatePoll(editingPoll.id, {
         title: editFormData.title,
@@ -114,12 +115,12 @@ export default function Admin() {
         endDate: new Date(editFormData.endDate).toISOString(),
         candidates: editFormData.candidates
       });
-      
+
       toast({
         title: t('admin.polls.actions.success'),
         description: t('admin.polls.messages.updated', 'Poll has been updated successfully'),
       });
-      
+
       setShowEditModal(false);
       setEditingPoll(null);
     } catch (error) {
@@ -150,6 +151,7 @@ export default function Admin() {
   const tabs = [
     { id: "cards", label: t('admin.navigation.cards', 'Voter Cards'), icon: Grid3X3 },
     { id: "posts", label: t('admin.navigation.polls', 'Poll Management'), icon: Settings },
+    { id: "banners", label: "Banners", icon: ImageIcon },
     { id: "analytics", label: t('admin.navigation.analytics', 'Analytics'), icon: PieChart },
     { id: "security", label: t('admin.navigation.security', 'Security'), icon: Shield },
   ];
@@ -226,90 +228,90 @@ export default function Admin() {
                 </div>
               ) : (
                 polls.map((poll: AggregatedPoll) => (
-                <Card key={poll.id} className="border border-gray-200">
-                  <CardContent className="p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{poll.title}</h3>
-                        <p className="text-gray-600 text-sm mb-3">{poll.description}</p>
-                        <div className="flex items-center space-x-4 mb-4">
-                          <Badge className={`${getTypeBadgeColor(poll.type)} text-white text-xs`}>
-                            {getTypeLabel(poll.type)}
-                          </Badge>
-                          {poll.isHidden && (
-                            <Badge className="bg-orange-500 text-white text-xs">
-                              {t('admin.polls.status.paused', 'Paused')}
+                  <Card key={poll.id} className="border border-gray-200">
+                    <CardContent className="p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-2">{poll.title}</h3>
+                          <p className="text-gray-600 text-sm mb-3">{poll.description}</p>
+                          <div className="flex items-center space-x-4 mb-4">
+                            <Badge className={`${getTypeBadgeColor(poll.type)} text-white text-xs`}>
+                              {getTypeLabel(poll.type)}
                             </Badge>
-                          )}
-                          <span className="text-xs text-gray-500">{formatDate(poll.createdAt)}</span>
-                          <span className="text-xs text-gray-500">{poll.totalVotes} {t('admin.polls.votes', 'votes')}</span>
-                          <span className="text-xs text-gray-500">{poll.totalComments} {t('admin.polls.comments', 'comments')}</span>
+                            {poll.isHidden && (
+                              <Badge className="bg-orange-500 text-white text-xs">
+                                {t('admin.polls.status.paused', 'Paused')}
+                              </Badge>
+                            )}
+                            <span className="text-xs text-gray-500">{formatDate(poll.createdAt)}</span>
+                            <span className="text-xs text-gray-500">{poll.totalVotes} {t('admin.polls.votes', 'votes')}</span>
+                            <span className="text-xs text-gray-500">{poll.totalComments} {t('admin.polls.comments', 'comments')}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            onClick={() => handleEdit(poll.id)}
+                            variant="outline"
+                            size="sm"
+                            className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                          >
+                            <Edit3 className="w-4 h-4 mr-1" />
+                            {t('admin.polls.actions.edit')}
+                          </Button>
+                          <Button
+                            onClick={() => handlePause(poll.id)}
+                            variant="outline"
+                            size="sm"
+                            className={`${poll.isHidden ? 'text-green-600 border-green-600 hover:bg-green-50' : 'text-orange-600 border-orange-600 hover:bg-orange-50'}`}
+                          >
+                            {poll.isHidden ? (
+                              <>
+                                <Play className="w-4 h-4 mr-1" />
+                                {t('admin.polls.actions.resume', 'Resume')}
+                              </>
+                            ) : (
+                              <>
+                                <Pause className="w-4 h-4 mr-1" />
+                                {t('admin.polls.actions.pause')}
+                              </>
+                            )}
+                          </Button>
+                          <Button
+                            onClick={() => handleDelete(poll.id)}
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 border-red-600 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4 mr-1" />
+                            {t('admin.polls.actions.delete')}
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          onClick={() => handleEdit(poll.id)}
-                          variant="outline"
-                          size="sm"
-                          className="text-blue-600 border-blue-600 hover:bg-blue-50"
-                        >
-                          <Edit3 className="w-4 h-4 mr-1" />
-                          {t('admin.polls.actions.edit')}
-                        </Button>
-                        <Button
-                          onClick={() => handlePause(poll.id)}
-                          variant="outline"
-                          size="sm"
-                          className={`${poll.isHidden ? 'text-green-600 border-green-600 hover:bg-green-50' : 'text-orange-600 border-orange-600 hover:bg-orange-50'}`}
-                        >
-                          {poll.isHidden ? (
-                            <>
-                              <Play className="w-4 h-4 mr-1" />
-                              {t('admin.polls.actions.resume', 'Resume')}
-                            </>
-                          ) : (
-                            <>
-                              <Pause className="w-4 h-4 mr-1" />
-                              {t('admin.polls.actions.pause')}
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          onClick={() => handleDelete(poll.id)}
-                          variant="outline"
-                          size="sm"
-                          className="text-red-600 border-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4 mr-1" />
-                          {t('admin.polls.actions.delete')}
-                        </Button>
-                      </div>
-                    </div>
 
-                    {/* Vote Statistics */}
-                    <div className="grid grid-cols-3 gap-4">
-                      {poll.pollOptions && poll.pollOptions.length > 0 ? (
-                        poll.pollOptions.slice(0, 3).map((option, index) => (
-                          <div key={option.id} className="text-center">
-                            <p className="text-2xl font-bold text-gray-600">{option.voteCount}</p>
-                            <p className="text-sm text-gray-600">{option.label}</p>
+                      {/* Vote Statistics */}
+                      <div className="grid grid-cols-3 gap-4">
+                        {poll.pollOptions && poll.pollOptions.length > 0 ? (
+                          poll.pollOptions.slice(0, 3).map((option, index) => (
+                            <div key={option.id} className="text-center">
+                              <p className="text-2xl font-bold text-gray-600">{option.voteCount}</p>
+                              <p className="text-sm text-gray-600">{option.label}</p>
+                            </div>
+                          ))
+                        ) : poll.voteCounts ? (
+                          Object.entries(poll.voteCounts).slice(0, 3).map(([key, value], index) => (
+                            <div key={key} className="text-center">
+                              <p className="text-2xl font-bold text-gray-600">{value}</p>
+                              <p className="text-sm text-gray-600">{key}</p>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="col-span-3 text-center text-gray-500">
+                            {t('admin.polls.no_votes', 'No votes yet')}
                           </div>
-                        ))
-                      ) : poll.voteCounts ? (
-                        Object.entries(poll.voteCounts).slice(0, 3).map(([key, value], index) => (
-                          <div key={key} className="text-center">
-                            <p className="text-2xl font-bold text-gray-600">{value}</p>
-                            <p className="text-sm text-gray-600">{key}</p>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-span-3 text-center text-gray-500">
-                          {t('admin.polls.no_votes', 'No votes yet')}
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))
               )}
             </CardContent>
@@ -320,11 +322,11 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-        <Header stats={{
-          totalVotes: stats?.totalVotes || 0,
-          activeVoters: Math.floor((stats?.totalVotes || 0) * 0.4),
-          activePolls: stats?.activePolls || 0
-        }} />
+      <Header stats={{
+        totalVotes: stats?.totalVotes || 0,
+        activeVoters: Math.floor((stats?.totalVotes || 0) * 0.4),
+        activePolls: stats?.activePolls || 0
+      }} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -437,7 +439,11 @@ export default function Admin() {
         </div>
 
         {/* Tab Content */}
-        {renderTabContent()}
+        {activeTab === "banners" ? (
+          <BannerManagement />
+        ) : (
+          renderTabContent()
+        )}
       </main>
 
       {/* Poll Creation Wizard */}

@@ -158,7 +158,7 @@ The login page uses:
 npm run dev
 
 # Visit the login page
-https://afnovote.netlify.app/login
+https://merovote.netlify.app/login
 ```
 
 ## Troubleshooting

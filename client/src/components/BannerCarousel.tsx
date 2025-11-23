@@ -1,46 +1,45 @@
-
-
 import { useTranslation } from "react-i18next";
-import bannerData from "@/data/banner-carousel.json";
 import { useState, useEffect } from "react";
-
-type Banner = {
-  id: string;
-  imageUrl: string;
-  imageAlt: string;
-  title: string;
-  subtitle?: string;
-  button?: {
-    text: string;
-    href: string;
-  };
-  order?: number;
-  likeCount?: number;
-  isActive?: boolean;
-};
+import { useQuery } from "@tanstack/react-query";
+import { bannersService, Banner } from "@/services/banners.service";
 
 export default function BannerCarousel() {
   const { t } = useTranslation();
-  // Filter active banners and sort by order
-  const banners: Banner[] = Array.isArray(bannerData)
-    ? (bannerData as Banner[]).filter((b: Banner) => b.isActive).sort((a: Banner, b: Banner) => (a.order ?? 0) - (b.order ?? 0))
-    : [bannerData as Banner];
+
+  const { data: banners, isLoading } = useQuery({
+    queryKey: ["active-banners"],
+    queryFn: () => bannersService.getActiveBanners(),
+    retry: false,
+  });
 
   const [current, setCurrent] = useState(0);
-  const banner = banners[current] || banners[0];
 
   // Auto-advance every 10 seconds
   useEffect(() => {
-    if (banners.length <= 1) return;
+    if (!banners || banners.length <= 1) return;
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % banners.length);
     }, 10000);
     return () => clearInterval(interval);
-  }, [banners.length]);
+  }, [banners?.length]);
 
   const goTo = (idx: number) => setCurrent(idx);
-  const prev = () => setCurrent((prev) => (prev - 1 + banners.length) % banners.length);
-  const next = () => setCurrent((prev) => (prev + 1) % banners.length);
+  const prev = () => setCurrent((prev) => (prev - 1 + (banners?.length || 1)) % (banners?.length || 1));
+  const next = () => setCurrent((prev) => (prev + 1) % (banners?.length || 1));
+
+  if (isLoading) {
+    return (
+      <div className="relative mb-12 h-48 md:h-72 lg:h-96 w-full rounded-2xl overflow-hidden bg-gray-100 animate-pulse flex items-center justify-center">
+        <div className="text-gray-400">Loading banners...</div>
+      </div>
+    );
+  }
+
+  if (!banners || banners.length === 0) {
+    return null;
+  }
+
+  const banner = banners[current] || banners[0];
 
   return (
     <div className="relative mb-12 group">
@@ -54,9 +53,9 @@ export default function BannerCarousel() {
             </div>
             {/* Banner Image */}
             <div className="absolute inset-0">
-              <img 
-                src={banner.imageUrl}
-                alt={banner.imageAlt}
+              <img
+                src={banner.image}
+                alt={banner.imageAlt || banner.title}
                 className="w-full h-full object-cover"
               />
               {/* Subtle overlay */}
@@ -65,22 +64,22 @@ export default function BannerCarousel() {
             {/* Banner Content */}
             <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 py-8">
               <h1 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">
-                {t(banner.title, 'Your Voice Matters')}
+                {banner.title || 'Your Voice Matters'}
               </h1>
-              {banner.subtitle && (
+              {banner.subTitle && (
                 <p className="text-white/90 mt-4 text-base md:text-xl max-w-3xl mx-auto leading-relaxed">
-                  {t(banner.subtitle, 'Participate in the democratic process and make your vote count')}
+                  {banner.subTitle}
                 </p>
               )}
-              {banner.button && (
+              {banner.buttonLabel && banner.buttonUrl && (
                 <div className="mt-6 flex flex-col sm:flex-row gap-4">
                   <a
-                    href={banner.button.href}
+                    href={banner.buttonUrl}
                     className="relative inline-flex items-center justify-center px-6 py-3 rounded-full font-medium text-base bg-gradient-to-r from-red-50 via-white to-blue-50 border-2 border-transparent hover:from-red-100 hover:to-blue-100 transition-colors shadow group"
                   >
                     {/* Red dot left */}
                     <span className="absolute left-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                    <span className="mx-3 text-nepal-red z-10">{t(banner.button.text, 'Vote Now')}</span>
+                    <span className="mx-3 text-nepal-red z-10">{banner.buttonLabel}</span>
                     {/* Blue dot right */}
                     <span className="absolute right-3 w-2 h-2 bg-blue-500 rounded-full border-2 border-white"></span>
                   </a>
@@ -92,21 +91,21 @@ export default function BannerCarousel() {
         {/* Banner Indicators */}
         <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
           {banners.length > 1
-            ? banners.map((b, idx) => (
-                <button
-                  key={b.id}
-                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${idx === current ? 'bg-white' : 'bg-white/50'}`}
-                  aria-label={`Go to slide ${idx + 1}`}
-                  onClick={() => goTo(idx)}
-                />
-              ))
+            ? banners.map((b: Banner, idx: number) => (
+              <button
+                key={b.id}
+                className={`w-2 h-2 rounded-full transition-colors duration-200 ${idx === current ? 'bg-white' : 'bg-white/50'}`}
+                aria-label={`Go to slide ${idx + 1}`}
+                onClick={() => goTo(idx)}
+              />
+            ))
             : (
-                <button
-                  className="w-2 h-2 rounded-full bg-white"
-                  aria-label="Only one banner"
-                  disabled
-                />
-              )}
+              <button
+                className="w-2 h-2 rounded-full bg-white"
+                aria-label="Only one banner"
+                disabled
+              />
+            )}
         </div>
         {/* Navigation Arrows */}
         {banners.length > 1 && (

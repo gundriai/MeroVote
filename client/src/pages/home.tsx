@@ -31,35 +31,6 @@ interface HomeProps {
 export default function Home({ pollId }: HomeProps) {
   const [selectedCategory, setSelectedCategory] = useState<PollCategory>({} as PollCategory);
   const { t } = useTranslation();
-  const [, setLocation] = useLocation();
-  const [sharedPoll, setSharedPoll] = useState<AggregatedPoll | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  // Fetch shared poll if pollId is present
-  useEffect(() => {
-    if (pollId) {
-      const fetchPoll = async () => {
-        try {
-          const poll = await pollsService.getAggregatedPoll(pollId);
-          setSharedPoll(poll);
-          setIsDialogOpen(true);
-        } catch (error) {
-          console.error("Error fetching shared poll:", error);
-        }
-      };
-      fetchPoll();
-    } else {
-      setSharedPoll(null);
-      setIsDialogOpen(false);
-    }
-  }, [pollId]);
-
-  const handleDialogClose = (open: boolean) => {
-    setIsDialogOpen(open);
-    if (!open) {
-      setLocation("/");
-    }
-  };
 
   // Use API data with category filtering
   const { polls, stats, isLoading, error, refetch } = usePolls({
@@ -127,15 +98,6 @@ export default function Home({ pollId }: HomeProps) {
           setSelectedCategory={handleCategoryChange}
         />
 
-        {/* Debug Info */}
-        <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
-          <h3 className="font-bold text-yellow-800">Debug Info:</h3>
-          <p><strong>Selected Category:</strong> {selectedCategory.id || 'None'}</p>
-          <p><strong>Total Polls:</strong> {polls.length}</p>
-          <p><strong>Loading:</strong> {isLoading ? 'Yes' : 'No'}</p>
-          <p><strong>Error:</strong> {error || 'None'}</p>
-          <p><strong>Stats:</strong> {JSON.stringify(stats)}</p>
-        </div>
 
         {/* Polls Section */}
         <div className="flex flex-wrap -mx-3">
