@@ -292,8 +292,8 @@ export default function VotingCard({ poll }: VotingCardProps) {
   };
 
   return (
-    <div className="relative w-full">
-      <Card className="bg-white shadow-sm border border-gray-200 w-full relative overflow-hidden" style={{
+    <div className="relative w-full h-full flex flex-col">
+      <Card className="bg-white shadow-sm border border-gray-200 w-full h-full flex flex-col relative overflow-hidden" style={{
         backgroundImage: 'url(/assets/Mero Vote.png)',
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
@@ -327,7 +327,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
           </div>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="flex-1 flex flex-col justify-between">
           {/* Voting Options */}
           <div className={`grid gap-4 mb-6 ${voteOptions.length === 3 ? 'grid-cols-3' : 'grid-cols-2 md:grid-cols-4'}`}>
             {voteOptions.map((option) => {
