@@ -226,8 +226,8 @@ export default function ComparisonCard(poll: AggregatedPoll) {
   };
 
   return (
-    <div className="relative w-full">
-      <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden w-full relative" style={{
+    <div className="relative w-full h-full flex flex-col">
+      <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden w-full h-full flex flex-col relative" style={{
         backgroundImage: 'url(/assets/Mero Vote.png)',
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
@@ -284,7 +284,7 @@ export default function ComparisonCard(poll: AggregatedPoll) {
         </div>
 
         {/* Main Comparison Section */}
-        <CardContent className="p-4 space-y-6">
+        <CardContent className="p-4 space-y-6 flex-1 flex flex-col justify-between">
           {/* Candidates Comparison */}
           <div className="space-y-4">
             {candidates.length === 2 ? (
