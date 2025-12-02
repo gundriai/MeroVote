@@ -81,6 +81,36 @@ export default function Home({ pollId }: HomeProps) {
     // The usePolls hook will automatically refetch when category changes
   };
 
+  // Shared Poll Logic
+  const [location, setLocation] = useLocation();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [sharedPoll, setSharedPoll] = useState<AggregatedPoll | null>(null);
+
+  useEffect(() => {
+    if (pollId) {
+      const fetchPoll = async () => {
+        try {
+          const poll = await pollsService.getAggregatedPoll(pollId);
+          setSharedPoll(poll);
+          setIsDialogOpen(true);
+        } catch (error) {
+          console.error("Error fetching shared poll:", error);
+        }
+      };
+      fetchPoll();
+    } else {
+      setIsDialogOpen(false);
+      setSharedPoll(null);
+    }
+  }, [pollId]);
+
+  const handleDialogClose = (open: boolean) => {
+    setIsDialogOpen(open);
+    if (!open) {
+      setLocation("/");
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
