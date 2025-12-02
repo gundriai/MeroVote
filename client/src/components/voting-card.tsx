@@ -190,7 +190,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
     if (!isAuthenticated) {
       toast({
         title: t('voting.auth_required_title', 'Authentication Required'),
-        description: t('voting.auth_required_message', 'You need to login to cast vote'),
+        description: t('voting.session_expired', 'Your session has expired. Please login again.'),
         variant: 'destructive',
       });
       navigate('/login');
@@ -208,6 +208,11 @@ export default function VotingCard({ poll }: VotingCardProps) {
 
       voteTracker.recordVote(poll.id);
       setHasVoted(true);
+
+      // Invalidate queries to refresh data immediately
+      queryClient.invalidateQueries({ queryKey: ['polls'] });
+      queryClient.invalidateQueries({ queryKey: ['poll-stats'] });
+
       toast({
         title: "सफलता",
         description: "तपाईंको मत सफलतापूर्वक दर्ता भयो",
@@ -220,6 +225,17 @@ export default function VotingCard({ poll }: VotingCardProps) {
       if (error instanceof Error) {
         // Get the full error message
         const errorText = error.message;
+
+        // Handle 401 specifically
+        if (errorText.includes('401')) {
+          toast({
+            title: t('voting.auth_required_title', 'Authentication Required'),
+            description: t('voting.session_expired', 'Your session has expired. Please login again.'),
+            variant: 'destructive',
+          });
+          navigate('/login');
+          return;
+        }
 
         // Check if the error text contains any of our enum values using includes()
         if (errorText.includes(PollVoteStatusMessages.ALREADY_VOTED)) {
@@ -235,11 +251,30 @@ export default function VotingCard({ poll }: VotingCardProps) {
         } else if (errorText.includes(PollVoteStatusMessages.VOTING_ENDED)) {
           errorMessage = t('voting.errors.voting_ended', 'यो पोलको मतदान समाप्त भएको छ');
         } else {
-          // If no enum value is found, try to extract message after colon if it exists
-          if (errorText.includes(':')) {
+          // Try to parse JSON error message if present
+          const jsonMatch = errorText.match(/(\{.*\})/);
+          if (jsonMatch) {
+            try {
+              const errorObj = JSON.parse(jsonMatch[1]);
+              if (errorObj.message) {
+                errorMessage = errorObj.message;
+              }
+            } catch (e) {
+              if (errorText.includes(':')) {
+                const parts = errorText.split(':');
+                if (parts.length > 1) {
+                  errorMessage = parts.slice(1).join(':').trim();
+                } else {
+                  errorMessage = errorText;
+                }
+              } else {
+                errorMessage = errorText;
+              }
+            }
+          } else if (errorText.includes(':')) {
             const parts = errorText.split(':');
             if (parts.length > 1) {
-              errorMessage = parts[1].trim();
+              errorMessage = parts.slice(1).join(':').trim();
             } else {
               errorMessage = errorText;
             }
@@ -347,13 +382,11 @@ export default function VotingCard({ poll }: VotingCardProps) {
                   ${isDisabled && !isSelected ? 'opacity-70 cursor-default' : 'cursor-pointer'}
                 `}
               >
-                {/* Progress Bar Background */}
-                {(hasVoted || isExpired) && (
-                  <div
-                    className={`absolute inset-y-0 left-0 bg-blue-100/50 transition-all duration-700 ease-out`}
-                    style={{ width: `${percentage}%`, zIndex: 0 }}
-                  />
-                )}
+                {/* Progress Bar Background - Always Visible */}
+                <div
+                  className={`absolute inset-y-0 left-0 bg-blue-100/50 transition-all duration-700 ease-out`}
+                  style={{ width: `${percentage}%`, zIndex: 0 }}
+                />
 
                 <div className="flex items-center gap-3 relative z-10">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center ${option.bgColor} text-white shadow-sm`}>
@@ -365,16 +398,9 @@ export default function VotingCard({ poll }: VotingCardProps) {
                 </div>
 
                 <div className="flex flex-col items-end relative z-10 pl-2">
-                  {(hasVoted || isExpired) ? (
-                    <>
-                      <span className="font-bold text-gray-900">{percentage}%</span>
-                      <span className="text-[10px] text-gray-500 font-medium">{count} votes</span>
-                    </>
-                  ) : (
-                    <div className={`w-4 h-4 rounded-full border-2 ${isSelected ? 'border-blue-500 bg-blue-500' : 'border-gray-300 group-hover:border-gray-400'}`}>
-                      {isSelected && <Check className="w-3 h-3 text-white" />}
-                    </div>
-                  )}
+                  {/* Always show percentage and vote count */}
+                  <span className="font-bold text-gray-900">{percentage}%</span>
+                  <span className="text-[10px] text-gray-500 font-medium">{count} votes</span>
                 </div>
               </button>
             );
