@@ -115,6 +115,17 @@ export default function ComparisonCard(poll: AggregatedPoll) {
         // Get the full error message
         const errorText = error.message;
 
+        // Handle 401 specifically
+        if (errorText.includes('401')) {
+          toast({
+            title: t('voting.auth_required_title', 'Authentication Required'),
+            description: t('voting.session_expired', 'Your session has expired. Please login again.'),
+            variant: 'destructive',
+          });
+          navigate('/login');
+          return;
+        }
+
         // Check if the error text contains any of our enum values using includes()
         if (errorText.includes(PollVoteStatusMessages.ALREADY_VOTED)) {
           errorMessage = t('voting.errors.already_voted', 'तपाईंले यो पोलमा पहिले नै मत दिनुभएको छ');
@@ -129,11 +140,33 @@ export default function ComparisonCard(poll: AggregatedPoll) {
         } else if (errorText.includes(PollVoteStatusMessages.VOTING_ENDED)) {
           errorMessage = t('voting.errors.voting_ended', 'यो पोलको मतदान समाप्त भएको छ');
         } else {
-          // If no enum value is found, try to extract message after colon if it exists
-          if (errorText.includes(':')) {
+          // Try to parse JSON error message if present
+          // Format is usually "Status: JSON" or just "JSON"
+          const jsonMatch = errorText.match(/(\{.*\})/);
+          if (jsonMatch) {
+            try {
+              const errorObj = JSON.parse(jsonMatch[1]);
+              if (errorObj.message) {
+                errorMessage = errorObj.message;
+              }
+            } catch (e) {
+              // Failed to parse JSON, fall back to simple split
+              if (errorText.includes(':')) {
+                const parts = errorText.split(':');
+                if (parts.length > 1) {
+                  errorMessage = parts.slice(1).join(':').trim();
+                } else {
+                  errorMessage = errorText;
+                }
+              } else {
+                errorMessage = errorText;
+              }
+            }
+          } else if (errorText.includes(':')) {
+            // Fallback for non-JSON "Status: Message" format
             const parts = errorText.split(':');
             if (parts.length > 1) {
-              errorMessage = parts[1].trim();
+              errorMessage = parts.slice(1).join(':').trim();
             } else {
               errorMessage = errorText;
             }
