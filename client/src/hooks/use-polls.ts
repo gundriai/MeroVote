@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { pollsService, AggregatedPoll, PollStats } from '@/services/polls.service';
 
 export interface UsePollsOptions {
@@ -17,57 +17,30 @@ export interface UsePollsReturn {
 
 export function usePolls(options: UsePollsOptions = {}): UsePollsReturn {
   const { category, autoFetch = true } = options;
-  
-  const [polls, setPolls] = useState<AggregatedPoll[]>([]);
-  const [stats, setStats] = useState<PollStats>({
-    totalVotes: 0,
-    activeVoters: 0,
-    activePolls: 0
+  const queryClient = useQueryClient();
+
+  const pollsQuery = useQuery({
+    queryKey: ['polls', category],
+    queryFn: () => pollsService.getAggregatedPolls(category),
+    enabled: autoFetch,
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchPolls = useCallback(async () => {
-    if (!autoFetch) return;
-    
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const [pollsResponse, statsData] = await Promise.all([
-        pollsService.getAggregatedPolls(category),
-        pollsService.getPollStats()
-      ]);
-      
-      setPolls(pollsResponse.polls);
-      setStats(statsData);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch polls');
-      console.error('Error fetching polls:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [category, autoFetch]);
+  const statsQuery = useQuery({
+    queryKey: ['poll-stats'],
+    queryFn: () => pollsService.getPollStats(),
+    enabled: autoFetch,
+  });
 
-  const setCategory = useCallback((newCategory: string) => {
-    // This will trigger a refetch when category changes
-    // The effect will handle the refetch when category changes
-  }, []);
-
-  const refetch = useCallback(async () => {
-    await fetchPolls();
-  }, [fetchPolls]);
-
-  useEffect(() => {
-    fetchPolls();
-  }, [fetchPolls]);
+  const refetch = async () => {
+    await Promise.all([pollsQuery.refetch(), statsQuery.refetch()]);
+  };
 
   return {
-    polls,
-    stats,
-    isLoading,
-    error,
+    polls: pollsQuery.data?.polls || [],
+    stats: statsQuery.data || { totalVotes: 0, activeVoters: 0, activePolls: 0 },
+    isLoading: pollsQuery.isLoading || statsQuery.isLoading,
+    error: (pollsQuery.error as Error)?.message || (statsQuery.error as Error)?.message || null,
     refetch,
-    setCategory
+    setCategory: () => { } // No-op, handled by prop change
   };
 }

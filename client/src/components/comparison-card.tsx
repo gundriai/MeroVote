@@ -102,6 +102,11 @@ export default function ComparisonCard(poll: AggregatedPoll) {
 
       voteTracker.recordVote(poll.id);
       setHasVoted(true);
+
+      // Invalidate queries to refresh data immediately
+      queryClient.invalidateQueries({ queryKey: ['polls'] });
+      queryClient.invalidateQueries({ queryKey: ['poll-stats'] });
+
       toast({
         title: t('success'),
         description: t('vote_success'),
