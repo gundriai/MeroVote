@@ -34,6 +34,8 @@ export default function ComparisonCard(poll: AggregatedPoll) {
   const { isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
 
+  const isExpired = new Date() > new Date(poll?.endDate);
+
   // Check if user has voted (from API or locally)
   useEffect(() => {
     // Use API data if available, otherwise fallback to local storage
@@ -211,7 +213,7 @@ export default function ComparisonCard(poll: AggregatedPoll) {
     return colors[index % colors.length];
   };
 
-  const isExpired = new Date() > new Date(poll?.endDate);
+
 
   const handleShare = () => {
     const shareUrl = `${window.location.origin}/poll/${poll.id}`;
@@ -226,310 +228,329 @@ export default function ComparisonCard(poll: AggregatedPoll) {
   };
 
   return (
-    <div className="relative w-full h-full flex flex-col">
-      <Card className="bg-white shadow-lg border-0 rounded-2xl overflow-hidden w-full h-full flex flex-col relative" style={{
-        backgroundImage: 'url(/assets/Mero Vote.png)',
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center',
-        backgroundBlendMode: 'overlay',
-        backgroundColor: 'rgba(255, 255, 255, 0.95)'
-      }}>
-        {/* Countdown Banner */}
-        {!isExpired && (
-          <div className="bg-gradient-to-r from-amber-600 to-orange-600 px-3 md:px-4 py-2 md:py-3 text-center">
-            <div className="text-white text-xs md:text-sm font-medium">
-              {t('voting_ends_in')}: <span className="text-xl md:text-2xl font-bold text-yellow-200">{timeRemaining}</span>
+    <Card className="w-full h-full flex flex-col bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-xl overflow-hidden">
+      {/* Countdown Banner - Optional, maybe keep it subtle or remove if using the header badge */}
+      {/* Keeping it clean, moving time to header like VotingCard */}
+
+      <CardHeader className="pb-3 pt-4 px-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 space-y-1.5">
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <Badge variant="secondary" className="rounded-md font-normal bg-blue-50 text-blue-700 hover:bg-blue-100 px-2 py-0.5">
+                {t('comparison_voting')}
+              </Badge>
+              <span>•</span>
+              <span className={`font-medium ${isExpired ? "text-red-500" : "text-green-600"}`}>{timeRemaining}</span>
             </div>
+            <h3 className="font-bold text-lg leading-snug text-gray-900 line-clamp-2">{poll.title}</h3>
           </div>
+          {/* VS Badge or Icon */}
+          <div className="w-10 h-10 shrink-0 rounded-full bg-yellow-100 flex items-center justify-center border border-yellow-200">
+            <Zap className="w-5 h-5 text-yellow-600" />
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className="flex-1 flex flex-col px-4 pb-4 pt-0">
+        {poll.description && (
+          <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">{poll.description}</p>
         )}
 
-        {/* Top Section - Poll Details */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-4 border-b border-gray-200">
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <Badge className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1 rounded-full">
-                  {t('comparison_voting')}
-                </Badge>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Clock className="w-4 h-4" />
-                  <span className="font-medium">{timeRemaining}</span>
+        {/* Candidates VS Layout */}
+        <div className="flex-1 flex flex-col justify-center py-4">
+          {candidates.length === 2 ? (
+            (() => {
+              const c1 = candidates[0];
+              const c2 = candidates[1];
+              let c1Scheme = {
+                border: 'border-slate-500 ring-4 ring-slate-100',
+                liquid: 'bg-slate-400/50',
+                shadow: '0 0 20px rgba(148, 163, 184, 0.3)',
+                crest: 'bg-slate-400/50',
+                text: 'text-slate-700',
+                btnBg: 'bg-slate-800 hover:bg-slate-900',
+                btnText: 'text-white',
+                btnShadow: 'shadow-slate-200',
+                btnBorder: 'border-slate-200', // Not used in voted state but good to have
+                btnHoverText: 'text-slate-700'
+              };
+              let c2Scheme = { ...c1Scheme };
+
+              // Always calculate winner/loser colors since results are always shown
+              if (true) {
+                if (c1.voteCount > c2.voteCount) {
+                  // C1 Wins -> Green
+                  c1Scheme = {
+                    border: 'border-green-500 ring-4 ring-green-100',
+                    liquid: 'bg-green-400/50',
+                    shadow: '0 0 20px rgba(74, 222, 128, 0.3)',
+                    crest: 'bg-green-400/50',
+                    text: 'text-green-700',
+                    btnBg: 'bg-green-600 hover:bg-green-700',
+                    btnText: 'text-white',
+                    btnShadow: 'shadow-green-200',
+                    btnBorder: 'border-green-200',
+                    btnHoverText: 'text-green-700'
+                  };
+                  // C2 Loses -> Red
+                  c2Scheme = {
+                    border: 'border-red-500 ring-4 ring-red-100',
+                    liquid: 'bg-red-400/50',
+                    shadow: '0 0 20px rgba(248, 113, 113, 0.3)',
+                    crest: 'bg-red-400/50',
+                    text: 'text-red-700',
+                    btnBg: 'bg-red-600 hover:bg-red-700',
+                    btnText: 'text-white',
+                    btnShadow: 'shadow-red-200',
+                    btnBorder: 'border-red-200',
+                    btnHoverText: 'text-red-700'
+                  };
+                } else if (c2.voteCount > c1.voteCount) {
+                  // C2 Wins -> Green
+                  c2Scheme = {
+                    border: 'border-green-500 ring-4 ring-green-100',
+                    liquid: 'bg-green-400/50',
+                    shadow: '0 0 20px rgba(74, 222, 128, 0.3)',
+                    crest: 'bg-green-400/50',
+                    text: 'text-green-700',
+                    btnBg: 'bg-green-600 hover:bg-green-700',
+                    btnText: 'text-white',
+                    btnShadow: 'shadow-green-200',
+                    btnBorder: 'border-green-200',
+                    btnHoverText: 'text-green-700'
+                  };
+                  // C1 Loses -> Red
+                  c1Scheme = {
+                    border: 'border-red-500 ring-4 ring-red-100',
+                    liquid: 'bg-red-400/50',
+                    shadow: '0 0 20px rgba(248, 113, 113, 0.3)',
+                    crest: 'bg-red-400/50',
+                    text: 'text-red-700',
+                    btnBg: 'bg-red-600 hover:bg-red-700',
+                    btnText: 'text-white',
+                    btnShadow: 'shadow-red-200',
+                    btnBorder: 'border-red-200',
+                    btnHoverText: 'text-red-700'
+                  };
+                }
+              }
+
+              return (
+                <div className="flex items-center justify-between gap-2 sm:gap-4 relative">
+                  {/* Candidate 1 */}
+                  <div className="flex-1 flex flex-col items-center text-center group">
+                    <div className="relative mb-4">
+                      {/* Image Container with Liquid Effect */}
+                      <div className={`relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 shadow-lg transition-transform duration-300 group-hover:scale-105 z-0
+                    ${poll.votedDetails.alreadyVoted && poll.pollOptions?.find(o => o.candidateId === candidates[0].id)?.id === poll.votedDetails.optionChosen
+                          ? c1Scheme.border
+                          : 'border-white ring-1 ring-gray-200'
+                        }
+                  `}>
+                        {/* Background Image */}
+                        {candidates[0].imageUrl ? (
+                          <img src={candidates[0].imageUrl} alt={candidates[0].name} className="w-full h-full object-cover relative z-10" />
+                        ) : (
+                          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-3xl relative z-10">👤</div>
+                        )}
+
+                        {/* Liquid Wave Animation Layer */}
+                        <div className="absolute inset-0 z-20 pointer-events-none">
+                          <div
+                            className={`absolute bottom-0 left-0 right-0 transition-all duration-1000 ease-out ${c1Scheme.liquid}`}
+                            style={{
+                              height: `${getPercentage(candidates[0].voteCount)}%`,
+                              boxShadow: c1Scheme.shadow
+                            }}
+                          >
+                            {/* Wave crest */}
+                            <div className={`absolute -top-3 left-0 right-0 h-6 rounded-[100%] animate-wave ${c1Scheme.crest}`} style={{ transform: 'scaleX(1.5)' }}></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Vote Percentage Badge (Moved outside) */}
+                      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-30 bg-white shadow-sm border border-gray-100 rounded-full px-3 py-1 flex flex-col items-center min-w-[80px]">
+                        <span className={`text-sm font-bold leading-none ${c1Scheme.text}`}>{getPercentage(candidates[0].voteCount)}%</span>
+                        <span className="text-[10px] text-gray-500 leading-none mt-0.5">{candidates[0].voteCount} votes</span>
+                      </div>
+                    </div>
+
+                    <h4 className="font-bold text-gray-900 text-sm sm:text-base mb-1 line-clamp-1 mt-2">{candidates[0].name}</h4>
+
+                    {/* Vote Button */}
+                    <Button
+                      onClick={() => handleVote(candidates[0].id)}
+                      disabled={hasVoted || isExpired}
+                      className={`mt-2 rounded-full px-6 transition-all duration-300
+                    ${poll.votedDetails.alreadyVoted && poll.pollOptions?.find(o => o.candidateId === candidates[0].id)?.id === poll.votedDetails.optionChosen
+                          ? `${c1Scheme.btnBg} ${c1Scheme.btnText} ${c1Scheme.btnShadow}`
+                          : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 hover:border-slate-300'
+                        }
+                    ${hasVoted || isExpired ? 'opacity-50 cursor-not-allowed' : 'shadow-md hover:shadow-lg hover:-translate-y-0.5'}
+                  `}
+                      size="sm"
+                    >
+                      {poll.votedDetails.alreadyVoted && poll.pollOptions?.find(o => o.candidateId === candidates[0].id)?.id === poll.votedDetails.optionChosen
+                        ? <><Check className="w-4 h-4 mr-1" /> Voted</>
+                        : "Vote"
+                      }
+                    </Button>
+                  </div>
+
+                  {/* VS Badge */}
+                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-orange-500 blur-xl opacity-50 rounded-full animate-pulse"></div>
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center shadow-xl border-4 border-white transform rotate-12 hover:rotate-0 transition-transform duration-300">
+                        <span className="font-black text-white text-lg sm:text-2xl italic tracking-tighter drop-shadow-md">VS</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Candidate 2 */}
+                  <div className="flex-1 flex flex-col items-center text-center group">
+                    <div className="relative mb-4">
+                      {/* Image Container with Liquid Effect */}
+                      <div className={`relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 shadow-lg transition-transform duration-300 group-hover:scale-105 z-0
+                    ${poll.votedDetails.alreadyVoted && poll.pollOptions?.find(o => o.candidateId === candidates[1].id)?.id === poll.votedDetails.optionChosen
+                          ? c2Scheme.border
+                          : 'border-white ring-1 ring-gray-200'
+                        }
+                  `}>
+                        {/* Background Image */}
+                        {candidates[1].imageUrl ? (
+                          <img src={candidates[1].imageUrl} alt={candidates[1].name} className="w-full h-full object-cover relative z-10" />
+                        ) : (
+                          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-3xl relative z-10">👤</div>
+                        )}
+
+                        {/* Liquid Wave Animation Layer */}
+                        <div className="absolute inset-0 z-20 pointer-events-none">
+                          <div
+                            className={`absolute bottom-0 left-0 right-0 transition-all duration-1000 ease-out ${c2Scheme.liquid}`}
+                            style={{
+                              height: `${getPercentage(candidates[1].voteCount)}%`,
+                              boxShadow: c2Scheme.shadow
+                            }}
+                          >
+                            {/* Wave crest */}
+                            <div className={`absolute -top-3 left-0 right-0 h-6 rounded-[100%] animate-wave ${c2Scheme.crest}`} style={{ transform: 'scaleX(1.5)' }}></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Vote Percentage Badge (Moved outside) */}
+                      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-30 bg-white shadow-sm border border-gray-100 rounded-full px-3 py-1 flex flex-col items-center min-w-[80px]">
+                        <span className={`text-sm font-bold leading-none ${c2Scheme.text}`}>{getPercentage(candidates[1].voteCount)}%</span>
+                        <span className="text-[10px] text-gray-500 leading-none mt-0.5">{candidates[1].voteCount} votes</span>
+                      </div>
+                    </div>
+
+                    <h4 className="font-bold text-gray-900 text-sm sm:text-base mb-1 line-clamp-1 mt-2">{candidates[1].name}</h4>
+
+                    {/* Vote Button */}
+                    <Button
+                      onClick={() => handleVote(candidates[1].id)}
+                      disabled={hasVoted || isExpired}
+                      className={`mt-2 rounded-full px-6 transition-all duration-300
+                    ${poll.votedDetails.alreadyVoted && poll.pollOptions?.find(o => o.candidateId === candidates[1].id)?.id === poll.votedDetails.optionChosen
+                          ? `${c2Scheme.btnBg} ${c2Scheme.btnText} ${c2Scheme.btnShadow}`
+                          : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 hover:border-slate-300'
+                        }
+                    ${hasVoted || isExpired ? 'opacity-50 cursor-not-allowed' : 'shadow-md hover:shadow-lg hover:-translate-y-0.5'}
+                  `}
+                      size="sm"
+                    >
+                      {poll.votedDetails.alreadyVoted && poll.pollOptions?.find(o => o.candidateId === candidates[1].id)?.id === poll.votedDetails.optionChosen
+                        ? <><Check className="w-4 h-4 mr-1" /> Voted</>
+                        : "Vote"
+                      }
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </div>
+              );
+            })()
+          ) : (
+            // Fallback for >2 candidates (Grid Layout)
+            <div className="grid grid-cols-2 gap-4">
+              {candidates.map((candidate: Candidate, index: number) => {
+                const percentage = getPercentage(candidate.voteCount);
+                const isSelected = poll.votedDetails.alreadyVoted && poll.pollOptions?.find(option => option.candidateId === candidate.id)?.id === poll.votedDetails.optionChosen;
+                const isDisabled = hasVoted || isExpired;
 
-            <div className="flex items-center gap-4 text-sm text-gray-600">
-              <div className="flex items-center gap-1">
-                <Users className="w-4 h-4" />
-                <span>{totalVotes} {t('vote')}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <TrendingUp className="w-4 h-4" />
-                <span>{t('active')}</span>
-              </div>
-            </div>
+                return (
+                  <div key={candidate.id} className="flex flex-col items-center text-center p-3 rounded-xl border border-gray-100 bg-gray-50/50">
+                    <div className="relative w-16 h-16 mb-3">
+                      <div className={`w-full h-full rounded-full overflow-hidden border-2 ${isSelected ? 'border-blue-500' : 'border-gray-200'}`}>
+                        {candidate.imageUrl ? (
+                          <img src={candidate.imageUrl} alt={candidate.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">👤</div>
+                        )}
+                      </div>
+                      {isSelected && <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white rounded-full p-0.5"><Check className="w-3 h-3" /></div>}
+                    </div>
+                    <h4 className="font-medium text-sm text-gray-900 line-clamp-1 mb-2">{candidate.name}</h4>
 
-            <div className="mt-3">
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 leading-tight">
-                {poll.title}
-              </h3>
-              {poll.description && (
-                <p className="text-gray-600 text-xs md:text-sm mt-2 leading-relaxed">
-                  {poll.description}
-                </p>
-              )}
+                    {/* Simple Progress Bar */}
+                    <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden mb-2">
+                      <div className="h-full bg-blue-500 transition-all duration-500" style={{ width: `${percentage}%` }} />
+                    </div>
+
+                    <Button
+                      size="sm"
+                      variant={isSelected ? "default" : "outline"}
+                      className="h-7 text-xs w-full"
+                      onClick={() => handleVote(candidate.id)}
+                      disabled={isDisabled}
+                    >
+                      {isDisabled ? `${percentage}%` : "Vote"}
+                    </Button>
+                  </div>
+                );
+              })}
             </div>
+          )}
+        </div>
+
+        {/* Footer Actions */}
+        <div className="flex items-center justify-between mt-5 pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium bg-gray-100 px-2 py-1 rounded-full">
+            <Users className="w-3 h-3" />
+            {totalVotes} Votes
+          </div>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`h-8 px-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 gap-1.5 ${showComments ? 'bg-gray-100 text-gray-900' : ''}`}
+              onClick={() => setShowComments(!showComments)}
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span className="text-xs font-medium hidden sm:inline">{showComments ? "Hide" : "Comments"}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 gap-1.5"
+              onClick={handleShare}
+            >
+              {isCopied ? <Check className="w-4 h-4 text-green-600" /> : <Share2 className="w-4 h-4" />}
+              <span className="text-xs font-medium hidden sm:inline">{isCopied ? "Copied" : "Share"}</span>
+            </Button>
           </div>
         </div>
 
-        {/* Main Comparison Section */}
-        <CardContent className="p-4 space-y-6 flex-1 flex flex-col justify-between">
-          {/* Candidates Comparison */}
-          <div className="space-y-4">
-            {candidates.length === 2 ? (
-              <div className="flex flex-row gap-3 items-stretch">
-                {/* First Candidate */}
-                <div className="flex-1">
-                  <div className="text-center h-full flex flex-col">
-                    <div className="relative mb-3">
-                      <div className="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full overflow-hidden border-3 border-gray-200 shadow-lg hover:border-blue-500 transition-all duration-300 relative">
-                        {candidates[0].imageUrl ? (
-                          <img
-                            src={candidates[0].imageUrl}
-                            alt={candidates[0].name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                            <span className="text-2xl md:text-3xl">👤</span>
-                          </div>
-                        )}
-                        {/* Check if this candidate was chosen */}
-                        {poll.votedDetails.alreadyVoted && poll.pollOptions?.find(option => option.candidateId === candidates[0].id)?.id === poll.votedDetails.optionChosen && (
-                          <div className="absolute inset-0 bg-green-500 bg-opacity-80 flex items-center justify-center rounded-full">
-                            <span className="text-white font-bold text-xs">VOTED</span>
-                          </div>
-                        )}
-                      </div>
-                      {!hasVoted && !isExpired && (
-                        <Button
-                          onClick={() => handleVote(candidates[0].id)}
-                          className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 md:px-3 py-1 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
-                        >
-                          {t('vote')}
-                        </Button>
-                      )}
-                    </div>
-
-                    <h4 className="text-sm md:text-base font-semibold text-gray-900 mb-2">
-                      {candidates[0].name}
-                    </h4>
-                    {candidates[0].description && (
-                      <p className="text-xs text-gray-600 mb-3 line-clamp-2">
-                        {candidates[0].description}
-                      </p>
-                    )}
-
-                    {/* Water Filling Effect - Vote Stats */}
-                    <div className="flex-1 flex flex-col justify-end">
-                      <div className="relative h-20 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                        {/* Water filling effect */}
-                        <div
-                          className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t ${getCandidateColor(0).waterFill} transition-all duration-1000 ease-out`}
-                          style={{ height: `${getPercentage(candidates[0].voteCount)}%` }}
-                        />
-                        {/* Vote count overlay */}
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-white font-bold">
-                          <div className="text-lg md:text-xl drop-shadow-lg">
-                            {candidates[0].voteCount}
-                          </div>
-                          <div className="text-xs drop-shadow-lg">
-                            {getPercentage(candidates[0].voteCount)}%
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* VS Section */}
-                <div className="flex flex-col items-center justify-center px-2">
-                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full p-2 md:p-3 shadow-lg">
-                    <Zap className="w-6 h-6 md:w-8 md:h-8 text-white" />
-                  </div>
-                </div>
-
-                {/* Second Candidate */}
-                <div className="flex-1">
-                  <div className="text-center h-full flex flex-col">
-                    <div className="relative mb-3">
-                      <div className="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full overflow-hidden border-3 border-gray-200 shadow-lg hover:border-green-500 transition-all duration-300 relative">
-                        {candidates[1].imageUrl ? (
-                          <img
-                            src={candidates[1].imageUrl}
-                            alt={candidates[1].name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                            <span className="text-2xl md:text-3xl">👤</span>
-                          </div>
-                        )}
-                        {/* Check if this candidate was chosen */}
-                        {poll.votedDetails.alreadyVoted && poll.pollOptions?.find(option => option.candidateId === candidates[1].id)?.id === poll.votedDetails.optionChosen && (
-                          <div className="absolute inset-0 bg-green-500 bg-opacity-80 flex items-center justify-center rounded-full">
-                            <span className="text-white font-bold text-xs">VOTED</span>
-                          </div>
-                        )}
-                      </div>
-                      {!hasVoted && !isExpired && (
-                        <Button
-                          onClick={() => handleVote(candidates[1].id)}
-                          className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 bg-green-600 hover:bg-green-700 text-white text-xs px-2 md:px-3 py-1 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
-                        >
-                          {t('vote')}
-                        </Button>
-                      )}
-                    </div>
-
-                    <h4 className="text-sm md:text-base font-semibold text-gray-900 mb-2">
-                      {candidates[1].name}
-                    </h4>
-                    {candidates[1].description && (
-                      <p className="text-xs text-gray-600 mb-3 line-clamp-2">
-                        {candidates[1].description}
-                      </p>
-                    )}
-
-                    {/* Water Filling Effect - Vote Stats */}
-                    <div className="flex-1 flex flex-col justify-end">
-                      <div className="relative h-20 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                        {/* Water filling effect */}
-                        <div
-                          className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t ${getCandidateColor(1).waterFill} transition-all duration-1000 ease-out`}
-                          style={{ height: `${getPercentage(candidates[1].voteCount)}%` }}
-                        />
-                        {/* Vote count overlay */}
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-white font-bold">
-                          <div className="text-lg md:text-xl drop-shadow-lg">
-                            {candidates[1].voteCount}
-                          </div>
-                          <div className="text-xs drop-shadow-lg">
-                            {getPercentage(candidates[1].voteCount)}%
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              // Handle more than 2 candidates
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {candidates.map((candidate: Candidate, index: number) => {
-                  const colorScheme = getCandidateColor(index);
-                  const isDisabled = hasVoted || isExpired;
-                  return (
-                    <div key={candidate.id} className="text-center">
-                      <div className="relative mb-3">
-                        <div className={`w-20 h-20 mx-auto rounded-full overflow-hidden border-3 border-gray-200 shadow-lg hover:border-${colorScheme.border} transition-all duration-300`}>
-                          {candidate.imageUrl ? (
-                            <img
-                              src={candidate.imageUrl}
-                              alt={candidate.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                              <span className="text-2xl">👤</span>
-                            </div>
-                          )}
-                        </div>
-                        {!isDisabled && (
-                          <Button
-                            onClick={() => handleVote(candidate.id)}
-                            className={`absolute -bottom-1 left-1/2 transform -translate-x-1/2 bg-${colorScheme.bg} text-white text-xs px-2 py-1 rounded-full shadow-lg hover:shadow-xl transition-all duration-300`}
-                          >
-                            {t('vote')}
-                          </Button>
-                        )}
-                      </div>
-
-                      <h4 className="text-sm font-semibold text-gray-900 mb-1">
-                        {candidate.name}
-                      </h4>
-                      {candidate.description && (
-                        <p className="text-xs text-gray-600 mb-2">
-                          {candidate.description}
-                        </p>
-                      )}
-
-                      {/* Water Filling Effect for multiple candidates */}
-                      <div className="relative h-16 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                        <div
-                          className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t ${colorScheme.waterFill} transition-all duration-1000 ease-out`}
-                          style={{ height: `${getPercentage(candidate.voteCount)}%` }}
-                        />
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-white font-bold">
-                          <div className="text-sm drop-shadow-lg">
-                            {candidate.voteCount}
-                          </div>
-                          <div className="text-xs drop-shadow-lg">
-                            {getPercentage(candidate.voteCount)}%
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+        {/* Comment Section */}
+        {showComments && (
+          <div className="mt-4 pt-4 border-t border-gray-100 animate-in slide-in-from-top-2 duration-200">
+            <CommentSection pollId={poll.id} showWordLimit={false} />
           </div>
+        )}
 
-          {/* Voting Status */}
-          {/* {hasVoted && (
-          <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-            <div className="text-green-800 font-medium">
-              ✅ {t('already_voted')}
-            </div>
-            <div className="text-green-600 text-sm mt-1">
-              {t('thank_you_voting')}
-            </div>
-          </div>
-        )} */}
-
-          {/* Comment Toggle and Share Button */}
-          <div className="flex items-center gap-2 mb-4">
-            <Button
-              onClick={() => setShowComments(!showComments)}
-              variant="outline"
-              className="flex-1 flex items-center justify-center space-x-2 hover:bg-gray-50"
-            >
-              <MessageSquare className="w-4 h-4" />
-              <span>{showComments ? "टिप्पणी लुकाउनुहोस्" : "टिप्पणी देखाउनुहोस्"}</span>
-              {showComments ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </Button>
-
-            <Button
-              variant="outline"
-              className={`flex items-center gap-2 transition-all duration-300 ${isCopied ? 'bg-green-50 text-green-600 border-green-200' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
-              onClick={handleShare}
-            >
-              {isCopied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
-              <span className="text-sm font-medium">{isCopied ? "Copied" : "Share"}</span>
-            </Button>
-          </div>
-
-          {/* Comment Section */}
-          {showComments && (
-            <div className="border-t border-gray-100 pt-4">
-              <CommentSection pollId={poll.id} showWordLimit={false} />
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 

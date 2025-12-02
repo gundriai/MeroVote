@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { voteTracker } from "@/lib/vote-tracker";
 import { useToast } from "@/hooks/use-toast";
-import { ThumbsUp, ThumbsDown, Flame, Star, Minus, MessageSquare, ChevronDown, ChevronUp, Heart, Zap, Check, Share2 } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Flame, Star, Minus, MessageSquare, ChevronDown, ChevronUp, Heart, Zap, Check, Share2, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CommentSection from "./comment-section";
@@ -291,109 +291,132 @@ export default function VotingCard({ poll }: VotingCardProps) {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
+  // Calculate total votes for percentage
+  const totalVotes = Object.values(voteCounts).reduce((a, b) => a + b, 0);
+
   return (
-    <div className="relative w-full h-full flex flex-col">
-      <Card className="bg-white shadow-sm border border-gray-200 w-full h-full flex flex-col relative overflow-hidden" style={{
-        backgroundImage: 'url(/assets/Mero Vote.png)',
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center',
-        backgroundBlendMode: 'overlay',
-        backgroundColor: 'rgba(255, 255, 255, 0.95)'
-      }}>
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center space-x-2 mb-2">
-                <Badge className={`${getTypeBadgeColor(poll.type)} text-white text-xs`}>
-                  {getTypeLabel(poll.type, t)}
-                </Badge>
-                <span className="text-sm text-gray-500">{timeRemaining}</span>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{poll.title}</h3>
-              {poll.description && (
-                <p className="text-gray-600 text-sm mb-4">{poll.description}</p>
-              )}
+    <Card className="w-full h-full flex flex-col bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-xl overflow-hidden">
+      <CardHeader className="pb-3 pt-4 px-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 space-y-1.5">
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <Badge variant="secondary" className="rounded-md font-normal bg-gray-100 text-gray-600 hover:bg-gray-200 px-2 py-0.5">
+                {getTypeLabel(poll.type, t)}
+              </Badge>
+              <span>•</span>
+              <span className={`font-medium ${isExpired ? "text-red-500" : "text-green-600"}`}>{timeRemaining}</span>
             </div>
-            {poll.mediaUrl && (
-              <div className="rounded-lg overflow-hidden ml-4 flex items-center justify-center" style={{ width: 128, height: 128 }}>
-                <img
-                  src={poll.mediaUrl}
-                  alt="Poll media"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            )}
+            <h3 className="font-bold text-lg leading-snug text-gray-900 line-clamp-2">{poll.title}</h3>
           </div>
-        </CardHeader>
+          {poll.mediaUrl && (
+            <div className="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-gray-50 border border-gray-100">
+              <img
+                src={poll.mediaUrl}
+                alt="Poll media"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+        </div>
+      </CardHeader>
 
-        <CardContent className="flex-1 flex flex-col justify-between">
-          {/* Voting Options */}
-          <div className={`grid gap-4 mb-6 ${voteOptions.length === 3 ? 'grid-cols-3' : 'grid-cols-2 md:grid-cols-4'}`}>
-            {voteOptions.map((option) => {
-              const Icon = option.icon;
-              const count = (voteCounts as any)?.[option.type] || 0;
-              const isDisabled = hasVoted || isExpired;
-              const isOptionChosen = poll.votedDetails.alreadyVoted && poll.votedDetails.optionChosen === option.type;
+      <CardContent className="flex-1 flex flex-col px-4 pb-4 pt-0">
+        {poll.description && (
+          <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">{poll.description}</p>
+        )}
 
-              return (
-                <Button
-                  key={option.type}
-                  onClick={() => handleVote(option.type)}
-                  disabled={isDisabled}
-                  variant="outline"
-                  className={`vote-button flex flex-col items-center p-4 h-auto border-2 border-gray-200 ${option.hoverColor} transition-all ${isDisabled ? 'opacity-30 cursor-not-allowed' : ''} relative`}
-                >
-                  <div className={`w-10 h-10 ${option.bgColor} rounded-full flex items-center justify-center mb-2 relative`}>
-                    <Icon className="text-white w-5 h-5" />
-                    {isOptionChosen && (
-                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-                        <Check className="text-white w-3 h-3" />
-                      </div>
-                    )}
+        {/* Options List */}
+        <div className="space-y-2.5 flex-1">
+          {voteOptions.map((option) => {
+            const count = (voteCounts as any)?.[option.type] || 0;
+            const percentage = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
+            const isSelected = poll.votedDetails.alreadyVoted && poll.votedDetails.optionChosen === option.type;
+            const Icon = option.icon;
+            const isDisabled = hasVoted || isExpired;
+
+            return (
+              <button
+                key={option.type}
+                onClick={() => handleVote(option.type)}
+                disabled={isDisabled}
+                className={`group relative w-full flex items-center justify-between p-3 rounded-lg border transition-all duration-200 overflow-hidden
+                  ${isSelected
+                    ? 'border-blue-500 ring-1 ring-blue-500 bg-blue-50/50'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  }
+                  ${isDisabled && !isSelected ? 'opacity-70 cursor-default' : 'cursor-pointer'}
+                `}
+              >
+                {/* Progress Bar Background */}
+                {(hasVoted || isExpired) && (
+                  <div
+                    className={`absolute inset-y-0 left-0 bg-blue-100/50 transition-all duration-700 ease-out`}
+                    style={{ width: `${percentage}%`, zIndex: 0 }}
+                  />
+                )}
+
+                <div className="flex items-center gap-3 relative z-10">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${option.bgColor} text-white shadow-sm`}>
+                    <Icon className="w-4 h-4" />
                   </div>
-                  <span className={`font-medium ${option.color} text-sm`}>{option.label}</span>
-                  <span className="text-xs text-gray-500">{count}</span>
-                  {isOptionChosen && (
-                    <div className="absolute inset-0 bg-green-100 bg-opacity-80 flex items-center justify-center rounded-lg">
-                      <span className="text-green-700 font-bold text-xs">VOTED</span>
+                  <span className={`font-medium text-sm text-left ${isSelected ? 'text-blue-700' : 'text-gray-700'}`}>
+                    {option.label}
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-end relative z-10 pl-2">
+                  {(hasVoted || isExpired) ? (
+                    <>
+                      <span className="font-bold text-gray-900">{percentage}%</span>
+                      <span className="text-[10px] text-gray-500 font-medium">{count} votes</span>
+                    </>
+                  ) : (
+                    <div className={`w-4 h-4 rounded-full border-2 ${isSelected ? 'border-blue-500 bg-blue-500' : 'border-gray-300 group-hover:border-gray-400'}`}>
+                      {isSelected && <Check className="w-3 h-3 text-white" />}
                     </div>
                   )}
-                </Button>
-              );
-            })}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Footer Actions */}
+        <div className="flex items-center justify-between mt-5 pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium bg-gray-100 px-2 py-1 rounded-full">
+            <Users className="w-3 h-3" />
+            {totalVotes} Votes
           </div>
-
-
-
-          {/* Comment Toggle and Share Button */}
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-1">
             <Button
+              variant="ghost"
+              size="sm"
+              className={`h-8 px-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 gap-1.5 ${showComments ? 'bg-gray-100 text-gray-900' : ''}`}
               onClick={() => setShowComments(!showComments)}
-              variant="outline"
-              className="flex-1 flex items-center justify-center space-x-2 hover:bg-gray-50"
             >
               <MessageSquare className="w-4 h-4" />
-              <span>{showComments ? "टिप्पणी लुकाउनुहोस्" : "टिप्पणी देखाउनुहोस्"}</span>
-              {showComments ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              <span className="text-xs font-medium hidden sm:inline">{showComments ? "Hide" : "Comments"}</span>
             </Button>
-
             <Button
-              variant="outline"
-              className={`flex items-center gap-2 transition-all duration-300 ${isCopied ? 'bg-green-50 text-green-600 border-green-200' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 gap-1.5"
               onClick={handleShare}
             >
-              {isCopied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
-              <span className="text-sm font-medium">{isCopied ? "Copied" : "Share"}</span>
+              {isCopied ? <Check className="w-4 h-4 text-green-600" /> : <Share2 className="w-4 h-4" />}
+              <span className="text-xs font-medium hidden sm:inline">{isCopied ? "Copied" : "Share"}</span>
             </Button>
           </div>
+        </div>
 
-          {/* Comment Section */}
-          {showComments && (
+        {/* Comment Section */}
+        {showComments && (
+          <div className="mt-4 pt-4 border-t border-gray-100 animate-in slide-in-from-top-2 duration-200">
             <CommentSection pollId={poll.id} showWordLimit={poll.type === "REACTION_BASED"} />
-          )}
-        </CardContent>
-      </Card>
-    </div>
+          </div>
+        )}
+
+      </CardContent>
+    </Card>
   );
 }
