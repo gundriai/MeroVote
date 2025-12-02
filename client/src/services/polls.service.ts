@@ -83,10 +83,10 @@ class PollsService {
   // Fetch all aggregated polls
   async getAggregatedPolls(category?: string): Promise<AggregatedPollsResponse> {
     try {
-      const url = category && category !== 'All' 
+      const url = category && category !== 'All'
         ? `${this.baseUrl}/aggregated-polls/category/${encodeURIComponent(category)}`
         : `${this.baseUrl}/aggregated-polls`;
-      
+
       const response = await apiRequest('GET', url);
       return await response.json();
     } catch (error) {
@@ -111,7 +111,7 @@ class PollsService {
     try {
       const response = await apiRequest('GET', `${this.baseUrl}/aggregated-polls`);
       const data = await response.json();
-      
+
       return {
         totalVotes: data.totalVotes || 0,
         activeVoters: Math.floor((data.totalVotes || 0) * 0.4), // Estimate active voters
@@ -166,27 +166,10 @@ class PollsService {
 
       // Use authenticated user's name if author not provided
       const commentAuthor = author || getUserName() || 'Anonymous';
-      
-      // Get current poll
-      const poll = await this.getAggregatedPoll(pollId);
-      
-      // Add new comment to existing comments
-      const newComment = {
-        id: `comment_${Date.now()}`,
-        pollId,
+
+      await apiRequest('POST', `${this.baseUrl}/polls/${pollId}/comments`, {
         content,
-        author: commentAuthor,
-        createdAt: new Date().toISOString(),
-        gajjabCount: 0,
-        bekarCount: 0,
-        furiousCount: 0
-      };
-
-      const updatedComments = [...(poll.comments || []), newComment];
-
-      // Update poll with new comment
-      await apiRequest('PATCH', `${this.baseUrl}/polls/${pollId}`, {
-        comments: updatedComments
+        author: commentAuthor
       });
     } catch (error) {
       console.error('Error adding comment:', error);
@@ -199,30 +182,15 @@ class PollsService {
     try {
       // Check if user is authenticated
       if (!isAuthenticated()) {
-        throw new Error('User must be logged in to react to comments');
+        throw new Error('User must be logged in to react');
       }
 
-      // Get current poll
-      const poll = await this.getAggregatedPoll(pollId);
-      
-      // Find and update the specific comment
-      const updatedComments = poll.comments.map(comment => {
-        if (comment.id === commentId) {
-          return {
-            ...comment,
-            [`${reactionType}Count`]: (comment[`${reactionType}Count`] || 0) + 1
-          };
-        }
-        return comment;
-      });
-
-      // Update poll with updated comments
-      await apiRequest('PATCH', `${this.baseUrl}/polls/${pollId}`, {
-        comments: updatedComments
+      await apiRequest('POST', `${this.baseUrl}/polls/${pollId}/comments/${commentId}/reactions`, {
+        reactionType
       });
     } catch (error) {
-      console.error('Error adding comment reaction:', error);
-      throw new Error('Failed to add comment reaction');
+      console.error('Error adding reaction:', error);
+      throw new Error('Failed to add reaction');
     }
   }
 }

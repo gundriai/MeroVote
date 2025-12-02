@@ -31,27 +31,6 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
   const { toast } = useToast();
   const [comment, setComment] = useState("");
 
-  // Use hardcoded comments data
-  const mockComments = [
-    {
-      id: "1",
-      content: "रवि लामिछाने नै उत्तम विकल्प हो",
-      author: "राम बहादुर",
-      createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-      gajjabCount: 12,
-      bekarCount: 2,
-      furiousCount: 1,
-    },
-    {
-      id: "2",
-      content: "गगन थापाको नेतृत्व चाहिन्छ",
-      author: "सीता देवी", 
-      createdAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-      gajjabCount: 8,
-      bekarCount: 5,
-      furiousCount: 0,
-    }
-  ];
   // Fetch real comments from API
   const { data: pollData, isLoading } = useQuery({
     queryKey: ['poll', pollId],
@@ -93,11 +72,11 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
 
     try {
       await pollsService.addComment(pollId, comment.trim());
-      
+
       // Invalidate and refetch poll data to show new comment
       queryClient.invalidateQueries({ queryKey: ['poll', pollId] });
       queryClient.invalidateQueries({ queryKey: ['aggregated-polls'] });
-      
+
       setComment("");
       toast({
         title: t('success', 'Success'),
@@ -126,11 +105,11 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
 
     try {
       await pollsService.addCommentReaction(pollId, commentId, reactionType as 'gajjab' | 'bekar' | 'furious');
-      
+
       // Invalidate and refetch poll data to show updated reaction counts
       queryClient.invalidateQueries({ queryKey: ['poll', pollId] });
       queryClient.invalidateQueries({ queryKey: ['aggregated-polls'] });
-      
+
       toast({
         title: t('success', 'Success'),
         description: t('comments.success.reaction_added', 'Reaction added'),
@@ -153,115 +132,137 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
     const now = new Date();
     const commentDate = new Date(dateString);
     const diffInMinutes = Math.floor((now.getTime() - commentDate.getTime()) / (1000 * 60));
-    
-    if (diffInMinutes < 1) return t('time.just_now', 'just now');
-    if (diffInMinutes < 60) return t('time.minutes_ago', { count: diffInMinutes, defaultValue: '{{count}} minutes ago' });
-    
+
+    if (diffInMinutes < 1) return 'now';
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+
     const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return t('time.hours_ago', { count: diffInHours, defaultValue: '{{count}} hours ago' });
-    
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+
     const diffInDays = Math.floor(diffInHours / 24);
-    return t('time.days_ago', { count: diffInDays, defaultValue: '{{count}} days ago' });
+    return `${diffInDays}d ago`;
   };
 
   const wordCount = getWordCount(comment);
   const isOverLimit = showWordLimit && wordCount > 20;
 
+  // Helper to get initials
+  const getInitials = (name: string) => {
+    return name.charAt(0).toUpperCase();
+  };
+
+  // Helper to get random pastel color for avatar
+  const getAvatarColor = (name: string) => {
+    const colors = ['bg-red-100 text-red-600', 'bg-green-100 text-green-600', 'bg-blue-100 text-blue-600', 'bg-yellow-100 text-yellow-600', 'bg-purple-100 text-purple-600', 'bg-pink-100 text-pink-600'];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
+
   return (
-    <Card className="bg-white shadow-sm border border-gray-200 mt-4">
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2 text-lg">
-          <MessageSquare className="w-5 h-5" />
-          <span>टिप्पणीहरू</span>
-          {showWordLimit && <span className="text-sm font-normal text-gray-500">(२० शब्द सीमा)</span>}
-        </CardTitle>
-      </CardHeader>
-      
-      <CardContent>
-        {/* Comments List */}
-        <div className="space-y-3 mb-6">
-          {isLoading ? (
-            <div className="text-center py-4">
-              <h3 className="text-lg font-semibold">{t('comments.title', 'Comments')}</h3>
-              <p className="text-gray-500">{t('loading', 'Loading...')}</p>
-            </div>
-          ) : !comments || !Array.isArray(comments) || comments.length === 0 ? (
-            <div className="text-center py-4">
-              <p className="text-gray-500">{t('comments.empty', 'No comments')}</p>
-            </div>
+    <div className="mt-4 space-y-4">
+      {/* Comment Form */}
+      <div className="flex gap-3">
+        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+          {isAuthenticated() ? (
+            <span className="text-xs font-bold text-gray-600">{getInitials(getUserName())}</span>
           ) : (
-            (comments as Comment[]).map((comment: Comment) => (
-              <div key={comment.id} className="bg-gray-50 rounded-lg p-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-800">{comment.content}</p>
-                    <div className="flex items-center space-x-4 mt-2">
-                      <span className="text-xs text-gray-500">{comment.author}</span>
-                      <p className="text-sm text-gray-500">{comment.author} • {formatTimeAgo(comment.createdAt)}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2 ml-4">
-                    <button
-                      onClick={() => handleReactToComment(comment.id, "gajjab")}
-                      className="text-green-500 hover:text-green-700 text-xs flex items-center space-x-1"
-                    >
-                      <ThumbsUp className="w-3 h-3" />
-                      <span>{comment.gajjabCount}</span>
-                    </button>
-                    <button
-                      onClick={() => handleReactToComment(comment.id, "bekar")}
-                      className="text-red-500 hover:text-red-700 text-xs flex items-center space-x-1"
-                    >
-                      <ThumbsDown className="w-3 h-3" />
-                      <span>{comment.bekarCount}</span>
-                    </button>
-                    <button
-                      onClick={() => handleReactToComment(comment.id, "furious")}
-                      className="text-orange-500 hover:text-orange-700 text-xs flex items-center space-x-1"
-                    >
-                      <Flame className="w-3 h-3" />
-                      <span>{comment.furiousCount}</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))
+            <div className="w-full h-full rounded-full bg-gray-200" />
           )}
         </div>
-
-        {/* Comment Form */}
-        <div className="space-y-3">
-          <div className="space-y-2">
-            {isAuthenticated() && (
-              <p className="text-sm text-gray-600">
-                {t('comments.posting_as', 'Posting as')}: <span className="font-medium">{getUserName()}</span>
-              </p>
-            )}
-            <Input
-              placeholder={showWordLimit ? t('comments.placeholders.comment_with_limit', 'Your comment (20 words limit)') : t('comments.placeholders.comment', 'Your comment')}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              className={isOverLimit ? "border-red-500" : ""}
-            />
-          </div>
-          
+        <div className="flex-1 space-y-2">
+          <Input
+            placeholder={showWordLimit ? t('comments.placeholders.comment_with_limit', 'Write a comment... (20 words max)') : t('comments.placeholders.comment', 'Write a comment...')}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            className={`bg-gray-50 border-gray-200 focus:bg-white transition-colors ${isOverLimit ? "border-red-500 focus:ring-red-200" : ""}`}
+          />
           <div className="flex items-center justify-between">
             {showWordLimit && (
-              <p className={`text-xs ${isOverLimit ? 'text-red-500' : 'text-gray-500'}`}>
-                {t('comments.word_count', 'Word count')}: {wordCount}/२०
-              </p>
+              <span className={`text-xs ${isOverLimit ? 'text-red-500 font-medium' : 'text-gray-400'}`}>
+                {wordCount}/20 words
+              </span>
             )}
             <Button
               onClick={handleSubmitComment}
               disabled={!comment.trim() || isOverLimit || !isAuthenticated()}
-              className="bg-nepal-red hover:bg-red-700 text-white ml-auto"
+              className="ml-auto bg-blue-600 hover:bg-blue-700 text-white h-8 px-4 text-xs rounded-full"
               size="sm"
             >
-              {t('comments.actions.post_comment', 'Post Comment')}
+              {t('comments.actions.post', 'Post')}
             </Button>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      {/* Comments List */}
+      <div className="space-y-4 pt-2">
+        {isLoading ? (
+          <div className="text-center py-4">
+            <div className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-blue-600"></div>
+          </div>
+        ) : !comments || !Array.isArray(comments) || comments.length === 0 ? (
+          <div className="text-center py-6 bg-gray-50/50 rounded-lg border border-dashed border-gray-200">
+            <p className="text-sm text-gray-500">{t('comments.empty', 'No comments yet. Be the first to share your thoughts!')}</p>
+          </div>
+        ) : (
+          (comments as Comment[]).map((comment: Comment) => (
+            <div key={comment.id} className="flex gap-3 group">
+              {/* Avatar */}
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${getAvatarColor(comment.author)}`}>
+                <span className="text-xs font-bold">{getInitials(comment.author)}</span>
+              </div>
+
+              <div className="flex-1 space-y-1">
+                {/* Header */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-gray-900">{comment.author}</span>
+                  <span className="text-xs text-gray-400">•</span>
+                  <span className="text-xs text-gray-400">{formatTimeAgo(comment.createdAt)}</span>
+                </div>
+
+                {/* Content */}
+                <p className="text-sm text-gray-700 leading-relaxed">{comment.content}</p>
+
+                {/* Actions */}
+                <div className="flex items-center gap-4 pt-1">
+                  <button
+                    onClick={() => handleReactToComment(comment.id, "gajjab")}
+                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-green-600 transition-colors group/btn"
+                  >
+                    <div className="p-1 rounded-full group-hover/btn:bg-green-50">
+                      <ThumbsUp className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="font-medium">{comment.gajjabCount || 0}</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleReactToComment(comment.id, "bekar")}
+                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-600 transition-colors group/btn"
+                  >
+                    <div className="p-1 rounded-full group-hover/btn:bg-red-50">
+                      <ThumbsDown className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="font-medium">{comment.bekarCount || 0}</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleReactToComment(comment.id, "furious")}
+                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-orange-600 transition-colors group/btn"
+                  >
+                    <div className="p-1 rounded-full group-hover/btn:bg-orange-50">
+                      <Flame className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="font-medium">{comment.furiousCount || 0}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
   );
 }
