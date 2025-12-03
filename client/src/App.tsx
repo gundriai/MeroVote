@@ -10,11 +10,14 @@ import Login from "@/components/login";
 import AuthSuccess from "./components/AuthSuccess";
 import Privacy from "@/pages/privacy";
 import DataDeletion from "@/pages/data-deletion";
+import MartyrsWall from "@/pages/martyrs-wall";
+import RevolutionJourney from "@/pages/revolution-journey";
 import AdminGuard from "@/components/AdminGuard";
 
 function Router() {
   return (
     <Switch>
+      <Route path="/revolution-journey" component={RevolutionJourney} />
       <Route path="/">
         {() => <Home />}
       </Route>
@@ -26,10 +29,11 @@ function Router() {
           <Admin />
         </AdminGuard>
       </Route>
-      <Route path="/login" component={Login}/>
-      <Route path="/auth/success" component={AuthSuccess}/>
-  <Route path="/privacy" component={Privacy} />
-  <Route path="/data-deletion" component={DataDeletion} />
+      <Route path="/login" component={Login} />
+      <Route path="/auth/success" component={AuthSuccess} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/data-deletion" component={DataDeletion} />
+      <Route path="/martyrs-wall" component={MartyrsWall} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -50,6 +50,9 @@ export default function Header({ stats }: HeaderProps) {
                 {t('header.nav.admin')}
               </Link>
             )}
+            <Link href="/revolution-journey" className={`text-gray-700 hover:text-nepal-red transition-colors${location === "/revolution-journey" || location === "/martyrs-wall" ? " font-bold text-nepal-red" : ""}`}>
+              {t('header.nav.martyrs_wall', 'सहिद पर्खाल')}
+            </Link>
           </nav>
 
           {/* Right side - Auth section */}
