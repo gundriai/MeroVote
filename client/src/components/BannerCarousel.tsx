@@ -55,6 +55,7 @@ export default function BannerCarousel() {
             <div className="absolute inset-0">
               <img
                 src={banner.image}
+                fetchPriority="high"
                 alt={banner.imageAlt || banner.title}
                 className="w-full h-full object-cover"
               />
