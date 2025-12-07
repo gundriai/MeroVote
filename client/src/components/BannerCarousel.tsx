@@ -57,6 +57,8 @@ export default function BannerCarousel() {
                 src={banner.image}
                 fetchPriority="high"
                 alt={banner.imageAlt || banner.title}
+                width={1200}
+                height={400}
                 className="w-full h-full object-cover"
               />
               {/* Subtle overlay */}

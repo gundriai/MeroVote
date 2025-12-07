@@ -16,6 +16,7 @@ import pollCategoriesData from "@/data/poll-categories.json";
 import Header from "@/components/header";
 import BannerCarousel from "@/components/BannerCarousel";
 import PollCategoryNavModel from "@/components/PollCategories";
+import { PollsSkeleton } from "@/components/skeletons/PollsSkeleton";
 import { useState, useEffect } from "react";
 import { PollType, PollCategories as PollCategoriesEnum } from "@/data/mock-polls";
 import { useTranslation } from "react-i18next";
@@ -132,10 +133,7 @@ export default function Home({ pollId }: HomeProps) {
         {/* Polls Section */}
         <div className="flex flex-wrap -mx-3">
           {isLoading ? (
-            <div className="text-center py-8 w-full">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <p className="text-gray-500 mt-2">{t('home.loading')}</p>
-            </div>
+            <PollsSkeleton />
           ) : error ? (
             <div className="text-center py-8 w-full">
               <p className="text-red-500 mb-4">{t('home.error_loading_polls', 'Error loading polls')}</p>
