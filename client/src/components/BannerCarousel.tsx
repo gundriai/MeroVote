@@ -55,7 +55,8 @@ export default function BannerCarousel() {
             <div className="absolute inset-0">
               <img
                 src={banner.image}
-                fetchPriority="high"
+                // @ts-ignore
+                fetchpriority="high"
                 alt={banner.imageAlt || banner.title}
                 width={1200}
                 height={400}
