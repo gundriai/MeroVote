@@ -168,8 +168,9 @@ export default function MartyrsWall() {
         <div className="min-h-screen bg-slate-950 text-slate-100 font-nepali relative overflow-hidden selection:bg-red-500/30">
             {/* Background Elements */}
             {/* Background Elements */}
+            {/* Background Elements */}
             <img
-                src="/assets/martyrs-bg.jpg"
+                src="/assets/martyrs-bg.webp"
                 alt="Background"
                 className="fixed inset-0 w-full h-full object-cover opacity-40 pointer-events-none z-0"
             />

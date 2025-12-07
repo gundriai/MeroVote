@@ -119,7 +119,7 @@ export default function RevolutionJourney() {
             {/* Background Image for Climax (Step 3 - 0 indexed is 3) */}
             <div className={`absolute inset-0 transition-opacity duration-1000 ${currentStep === 3 ? 'opacity-40' : 'opacity-0'}`}>
                 <img
-                    src="/assets/martyrs-bg.jpg"
+                    src="/assets/martyrs-bg.webp"
                     alt="Burning Background"
                     className="w-full h-full object-cover"
                 />
@@ -128,7 +128,7 @@ export default function RevolutionJourney() {
             {/* Background Image for The Spark (Step 0) */}
             <div className={`absolute inset-0 transition-opacity duration-1000 ${currentStep === 0 ? 'opacity-20' : 'opacity-0'} flex items-center justify-center`}>
                 <img
-                    src="/assets/spark-bg.png"
+                    src="/assets/spark-bg.webp"
                     alt="Spark Background"
                     className="max-w-full max-h-full object-contain"
                 />
@@ -137,7 +137,7 @@ export default function RevolutionJourney() {
             {/* Background Image for The Silencing (Step 1) */}
             <div className={`absolute inset-0 transition-opacity duration-1000 ${currentStep === 1 ? 'opacity-30' : 'opacity-0'} flex items-center justify-center`}>
                 <img
-                    src="/assets/silence-bg.png"
+                    src="/assets/silence-bg.webp"
                     alt="Silence Background"
                     className="max-w-full max-h-full object-contain"
                 />
@@ -146,7 +146,7 @@ export default function RevolutionJourney() {
             {/* Background Image for The Uprising (Step 2) */}
             <div className={`absolute inset-0 transition-opacity duration-1000 ${currentStep === 2 ? 'opacity-40' : 'opacity-0'}`}>
                 <img
-                    src="/assets/uprising-bg.png"
+                    src="/assets/uprising-bg.webp"
                     alt="Uprising Background"
                     className="w-full h-full object-cover"
                 />
@@ -155,7 +155,7 @@ export default function RevolutionJourney() {
             {/* Background Image for The Victory (Step 4) */}
             <div className={`absolute inset-0 transition-opacity duration-1000 ${currentStep === 4 ? 'opacity-50' : 'opacity-0'}`}>
                 <img
-                    src="/assets/victory-bg.png"
+                    src="/assets/victory-bg.webp"
                     alt="Victory Background"
                     className="w-full h-full object-cover"
                 />
