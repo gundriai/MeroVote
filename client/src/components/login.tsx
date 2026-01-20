@@ -80,7 +80,7 @@ export default function Login() {
             </Button>
 
             {/* Facebook Login Button */}
-            <Button
+            {/* <Button
               onClick={handleFacebookLogin}
               disabled={isLoading}
               className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white border-0 transition-all duration-200 font-medium text-base"
@@ -91,26 +91,26 @@ export default function Login() {
                 <Facebook className="w-5 h-5 mr-3" />
               )}
               {isLoading && authProvider === 'facebook' ? 'Signing in...' : 'Continue with Facebook'}
-            </Button>
+            </Button> */}
 
             {/* Divider */}
-            <div className="relative my-6">
+            {/* <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-200" />
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-4 bg-white text-gray-500">or</span>
               </div>
-            </div>
+            </div> */}
 
             {/* Guest Access */}
-            <Button
+            {/* <Button
               variant="outline"
               className="w-full h-12 border-gray-200 hover:border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-200"
               onClick={() => window.location.href = '/'}
             >
               Continue as Guest
-            </Button>
+            </Button> */}
           </CardContent>
         </Card>
 
