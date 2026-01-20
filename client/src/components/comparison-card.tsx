@@ -485,7 +485,7 @@ export default function ComparisonCard(poll: AggregatedPoll) {
                       {/* Vote Percentage Badge (Moved outside) */}
                       <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-30 bg-white shadow-sm border border-gray-100 rounded-full px-3 py-1 flex flex-col items-center min-w-[80px]">
                         <span className={`text-sm font-bold leading-none ${c2Scheme.text}`}>{getPercentage(candidates[1].voteCount)}%</span>
-                        <span className="text-[10px] text-gray-500 leading-none mt-0.5">{candidates[1].voteCount} votes</span>
+                        {/* <span className="text-[10px] text-gray-500 leading-none mt-0.5">{candidates[1].voteCount} votes</span> */}
                       </div>
                     </div>
 
