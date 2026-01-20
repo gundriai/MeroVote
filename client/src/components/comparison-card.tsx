@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { MessageSquare, ChevronDown, ChevronUp, Clock, Users, TrendingUp, Zap, Check, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CommentSection from "./comment-section";
+import PollSEO from "./PollSEO";
 import { AggregatedPoll } from "@/services/polls.service";
 import { pollsService } from "@/services/polls.service";
 import { PollVoteStatusMessages } from "@/enums";
@@ -267,6 +268,9 @@ export default function ComparisonCard(poll: AggregatedPoll) {
 
   return (
     <Card className="w-full h-full flex flex-col bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-xl overflow-hidden">
+      {/* Dynamic SEO Tags */}
+      <PollSEO poll={poll} />
+      
       {/* Countdown Banner - Optional, maybe keep it subtle or remove if using the header badge */}
       {/* Keeping it clean, moving time to header like VotingCard */}
 
@@ -387,9 +391,9 @@ export default function ComparisonCard(poll: AggregatedPoll) {
                   `}>
                         {/* Background Image */}
                         {candidates[0].imageUrl ? (
-                          <img src={candidates[0].imageUrl} alt={candidates[0].name} className="w-full h-full object-cover relative z-10" />
+                          <img src={candidates[0].imageUrl} alt={`${candidates[0].name} - Political candidate for polling`} className="w-full h-full object-cover relative z-10" />
                         ) : (
-                          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-3xl relative z-10">👤</div>
+                          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-3xl relative z-10" role="img" aria-label={`${candidates[0].name} avatar`}>👤</div>
                         )}
 
                         {/* Liquid Wave Animation Layer */}
@@ -458,9 +462,9 @@ export default function ComparisonCard(poll: AggregatedPoll) {
                   `}>
                         {/* Background Image */}
                         {candidates[1].imageUrl ? (
-                          <img src={candidates[1].imageUrl} alt={candidates[1].name} className="w-full h-full object-cover relative z-10" />
+                          <img src={candidates[1].imageUrl} alt={`${candidates[1].name} - Political candidate for polling`} className="w-full h-full object-cover relative z-10" />
                         ) : (
-                          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-3xl relative z-10">👤</div>
+                          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-3xl relative z-10" role="img" aria-label={`${candidates[1].name} avatar`}>👤</div>
                         )}
 
                         {/* Liquid Wave Animation Layer */}
@@ -522,9 +526,9 @@ export default function ComparisonCard(poll: AggregatedPoll) {
                     <div className="relative w-16 h-16 mb-3">
                       <div className={`w-full h-full rounded-full overflow-hidden border-2 ${isSelected ? 'border-blue-500' : 'border-gray-200'}`}>
                         {candidate.imageUrl ? (
-                          <img src={candidate.imageUrl} alt={candidate.name} className="w-full h-full object-cover" />
+                          <img src={candidate.imageUrl} alt={`${candidate.name} - Political candidate profile`} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">👤</div>
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center" role="img" aria-label={`${candidate.name} avatar`}>👤</div>
                         )}
                       </div>
                       {isSelected && <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white rounded-full p-0.5"><Check className="w-3 h-3" /></div>}

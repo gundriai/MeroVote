@@ -67,9 +67,9 @@ export default function BannerCarousel() {
             </div>
             {/* Banner Content */}
             <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 py-8">
-              <h1 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">
+              <h2 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">
                 {banner.title || 'Your Voice Matters'}
-              </h1>
+              </h2>
               {banner.subTitle && (
                 <p className="text-white/90 mt-4 text-base md:text-xl max-w-3xl mx-auto leading-relaxed">
                   {banner.subTitle}

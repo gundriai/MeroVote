@@ -9,6 +9,7 @@ import { ThumbsUp, ThumbsDown, Flame, Star, Minus, MessageSquare, ChevronDown, C
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CommentSection from "./comment-section";
+import PollSEO from "./PollSEO";
 import { PollType } from "@/data/mock-polls";
 import { AggregatedPoll, AggregatedPollOption } from "@/services/polls.service";
 import { pollsService } from "@/services/polls.service";
@@ -331,6 +332,9 @@ export default function VotingCard({ poll }: VotingCardProps) {
 
   return (
     <Card className="w-full h-full flex flex-col bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-xl overflow-hidden">
+      {/* Dynamic SEO Tags */}
+      <PollSEO poll={poll} />
+      
       <CardHeader className="pb-3 pt-4 px-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 space-y-1.5">
@@ -347,7 +351,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
             <div className="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-gray-50 border border-gray-100">
               <img
                 src={poll.mediaUrl}
-                alt="Poll media"
+                alt={`${poll.title} - Political poll media`}
                 className="w-full h-full object-cover"
               />
             </div>
