@@ -5,7 +5,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { voteTracker } from "@/lib/vote-tracker";
 import { useToast } from "@/hooks/use-toast";
-import { ThumbsUp, ThumbsDown, Flame, MessageSquare } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Flame, MessageSquare, User } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { pollsService } from "@/services/polls.service";
@@ -147,9 +147,10 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
   const isOverLimit = showWordLimit && wordCount > 20;
 
   // Helper to get initials
-  const getInitials = (name: string) => {
-    return name.charAt(0).toUpperCase();
-  };
+    const getInitials = (name: string | null | undefined) => {
+      if (!name) return '?';
+      return name.trim().charAt(0).toUpperCase();
+    };
 
   // Helper to get random pastel color for avatar
   const getAvatarColor = (name: string) => {
@@ -162,14 +163,23 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
   };
 
   return (
-    <div className="mt-4 space-y-4">
+    <section className="mt-4 space-y-4" aria-label="Comments section">
       {/* Comment Form */}
-      <div className="flex gap-3">
-        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+      <form
+        className="flex gap-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmitComment();
+        }}
+        aria-label="Add a comment"
+      >
+        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0" aria-hidden="true">
           {isAuthenticated() ? (
-            <span className="text-xs font-bold text-gray-600">{getInitials(getUserName())}</span>
+            <span className="text-xs font-bold text-gray-600" aria-label={`${getUserName() || 'User'}'s avatar`}>
+              {getInitials(getUserName())}
+            </span>
           ) : (
-            <div className="w-full h-full rounded-full bg-gray-200" />
+            <User className="w-4 h-4 text-gray-400" />
           )}
         </div>
         <div className="flex-1 space-y-2">
@@ -178,91 +188,110 @@ export default function CommentSection({ pollId, showWordLimit = false }: Commen
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             className={`bg-gray-50 border-gray-200 focus:bg-white transition-colors ${isOverLimit ? "border-red-500 focus:ring-red-200" : ""}`}
+            aria-label="Comment text"
+            aria-describedby={showWordLimit ? "word-count" : undefined}
+            aria-invalid={isOverLimit}
           />
           <div className="flex items-center justify-between">
             {showWordLimit && (
-              <span className={`text-xs ${isOverLimit ? 'text-red-500 font-medium' : 'text-gray-400'}`}>
+              <span
+                id="word-count"
+                className={`text-xs ${isOverLimit ? 'text-red-500 font-medium' : 'text-gray-400'}`}
+                aria-live="polite"
+              >
                 {wordCount}/20 words
               </span>
             )}
             <Button
-              onClick={handleSubmitComment}
+              type="submit"
               disabled={!comment.trim() || isOverLimit || !isAuthenticated()}
               className="ml-auto bg-blue-600 hover:bg-blue-700 text-white h-8 px-4 text-xs rounded-full"
               size="sm"
+              aria-label="Post comment"
             >
               {t('comments.actions.post', 'Post')}
             </Button>
           </div>
         </div>
-      </div>
+      </form>
 
       {/* Comments List */}
-      <div className="space-y-4 pt-2">
+      <div className="space-y-4 pt-2" role="feed" aria-label="User comments">
         {isLoading ? (
-          <div className="text-center py-4">
-            <div className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-blue-600"></div>
+          <div className="text-center py-4" role="status" aria-live="polite">
+            <div className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-blue-600" aria-hidden="true"></div>
+            <span className="sr-only">Loading comments...</span>
           </div>
         ) : !comments || !Array.isArray(comments) || comments.length === 0 ? (
-          <div className="text-center py-6 bg-gray-50/50 rounded-lg border border-dashed border-gray-200">
+          <div className="text-center py-6 bg-gray-50/50 rounded-lg border border-dashed border-gray-200" role="status">
             <p className="text-sm text-gray-500">{t('comments.empty', 'No comments yet. Be the first to share your thoughts!')}</p>
           </div>
         ) : (
           (comments as Comment[]).map((comment: Comment) => (
-            <div key={comment.id} className="flex gap-3 group">
+            <article key={comment.id} className="flex gap-3 group" itemScope itemType="https://schema.org/Comment">
               {/* Avatar */}
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${getAvatarColor(comment.author)}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${getAvatarColor(comment.author)}`} aria-hidden="true">
                 <span className="text-xs font-bold">{getInitials(comment.author)}</span>
               </div>
 
               <div className="flex-1 space-y-1">
                 {/* Header */}
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-gray-900">{comment.author}</span>
-                  <span className="text-xs text-gray-400">•</span>
-                  <span className="text-xs text-gray-400">{formatTimeAgo(comment.createdAt)}</span>
-                </div>
+                <header className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-gray-900" itemProp="author" itemScope itemType="https://schema.org/Person">
+                    <span itemProp="name">{comment.author}</span>
+                  </span>
+                  <span className="text-xs text-gray-400" aria-hidden="true">•</span>
+                  <time className="text-xs text-gray-400" dateTime={comment.createdAt} itemProp="datePublished">
+                    {formatTimeAgo(comment.createdAt)}
+                  </time>
+                </header>
 
                 {/* Content */}
-                <p className="text-sm text-gray-700 leading-relaxed">{comment.content}</p>
+                <p className="text-sm text-gray-700 leading-relaxed" itemProp="text">{comment.content}</p>
 
                 {/* Actions */}
-                <div className="flex items-center gap-4 pt-1">
+                <footer className="flex items-center gap-4 pt-1" role="group" aria-label="Comment reactions">
                   <button
                     onClick={() => handleReactToComment(comment.id, "gajjab")}
                     className="flex items-center gap-1 text-xs text-gray-500 hover:text-green-600 transition-colors group/btn"
+                    aria-label={`Like comment (${comment.gajjabCount || 0} likes)`}
+                    title="Like this comment"
                   >
-                    <div className="p-1 rounded-full group-hover/btn:bg-green-50">
+                    <div className="p-1 rounded-full group-hover/btn:bg-green-50" aria-hidden="true">
                       <ThumbsUp className="w-3.5 h-3.5" />
                     </div>
-                    <span className="font-medium">{comment.gajjabCount || 0}</span>
+                    <span className="font-medium" aria-label={`${comment.gajjabCount || 0} likes`}>{comment.gajjabCount || 0}</span>
                   </button>
 
                   <button
                     onClick={() => handleReactToComment(comment.id, "bekar")}
                     className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-600 transition-colors group/btn"
+                    aria-label={`Dislike comment (${comment.bekarCount || 0} dislikes)`}
+                    title="Dislike this comment"
                   >
-                    <div className="p-1 rounded-full group-hover/btn:bg-red-50">
+                    <div className="p-1 rounded-full group-hover/btn:bg-red-50" aria-hidden="true">
                       <ThumbsDown className="w-3.5 h-3.5" />
                     </div>
-                    <span className="font-medium">{comment.bekarCount || 0}</span>
+                    <span className="font-medium" aria-label={`${comment.bekarCount || 0} dislikes`}>{comment.bekarCount || 0}</span>
                   </button>
 
                   <button
                     onClick={() => handleReactToComment(comment.id, "furious")}
                     className="flex items-center gap-1 text-xs text-gray-500 hover:text-orange-600 transition-colors group/btn"
+                    aria-label={`React with furious (${comment.furiousCount || 0} reactions)`}
+                    title="React as furious to this comment"
                   >
-                    <div className="p-1 rounded-full group-hover/btn:bg-orange-50">
+                    <div className="p-1 rounded-full group-hover/btn:bg-orange-50" aria-hidden="true">
                       <Flame className="w-3.5 h-3.5" />
                     </div>
-                    <span className="font-medium">{comment.furiousCount || 0}</span>
+                    <span className="font-medium" aria-label={`${comment.furiousCount || 0} furious reactions`}>{comment.furiousCount || 0}</span>
                   </button>
-                </div>
+                </footer>
               </div>
-            </div>
+            </article>
           ))
         )}
       </div>
-    </div>
+    </section>
   );
 }

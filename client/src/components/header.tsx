@@ -53,7 +53,7 @@ export default function Header({ stats }: HeaderProps) {
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
                   <img src="/assets/icons/android-chrome-512x512.png" alt="MeroVote Logo" className="w-full h-full object-contain mix-blend-multiply" />
                 </div>
-                <h1 className="text-xl font-bold text-gray-900 hidden md:block">{t('header.app_name')}</h1>
+                <div className="text-xl font-bold text-gray-900 hidden md:block">{t('header.app_name')}</div>
               </div>
             </Link>
           </div>
