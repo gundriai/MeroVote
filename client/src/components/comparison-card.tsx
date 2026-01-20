@@ -414,7 +414,7 @@ export default function ComparisonCard(poll: AggregatedPoll) {
                       {/* Vote Percentage Badge (Moved outside) */}
                       <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-30 bg-white shadow-sm border border-gray-100 rounded-full px-3 py-1 flex flex-col items-center min-w-[80px]">
                         <span className={`text-sm font-bold leading-none ${c1Scheme.text}`}>{getPercentage(candidates[0].voteCount)}%</span>
-                        <span className="text-[10px] text-gray-500 leading-none mt-0.5">{candidates[0].voteCount} votes</span>
+                        {/* <span className="text-[10px] text-gray-500 leading-none mt-0.5">{candidates[0].voteCount} votes</span> */}
                       </div>
                     </div>
 
@@ -560,7 +560,7 @@ export default function ComparisonCard(poll: AggregatedPoll) {
         <div className="flex items-center justify-between mt-5 pt-3 border-t border-gray-100">
           <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium bg-gray-100 px-2 py-1 rounded-full">
             <Users className="w-3 h-3" />
-            {totalVotes} Votes
+            {/* {totalVotes} Votes */}
           </div>
           <div className="flex items-center gap-1">
             <Button

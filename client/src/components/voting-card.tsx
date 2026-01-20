@@ -404,7 +404,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
                 <div className="flex flex-col items-end relative z-10 pl-2">
                   {/* Always show percentage and vote count */}
                   <span className="font-bold text-gray-900">{percentage}%</span>
-                  <span className="text-[10px] text-gray-500 font-medium">{count} votes</span>
+                  {/* <span className="text-[10px] text-gray-500 font-medium">{count} votes</span> */}
                 </div>
               </button>
             );
@@ -415,7 +415,7 @@ export default function VotingCard({ poll }: VotingCardProps) {
         <div className="flex items-center justify-between mt-5 pt-3 border-t border-gray-100">
           <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium bg-gray-100 px-2 py-1 rounded-full">
             <Users className="w-3 h-3" />
-            {totalVotes} Votes
+            {/* {totalVotes} Votes */}
           </div>
           <div className="flex items-center gap-1">
             <Button
