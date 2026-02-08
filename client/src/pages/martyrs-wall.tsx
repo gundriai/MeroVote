@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Flower2 } from 'lucide-react';
+import { Flame, Flower2, Leaf } from 'lucide-react';
 
 // Flower Rain Component
 const FlowerRain = () => {
@@ -86,37 +86,52 @@ const BurningCandle = () => {
 };
 
 // Wall Frame Component
-const WallFrame = ({ index }: { index: number }) => {
+const WallFrame = ({ index, name, address }: { index: number; name: string; address: string }) => {
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.05 }}
-            className="bg-slate-900/40 border border-slate-800/50 rounded-lg p-4 flex flex-col items-center gap-4 backdrop-blur-sm hover:bg-slate-800/40 transition-colors group"
+            className="bg-white rounded-sm p-4 flex flex-col items-center gap-2 shadow-xl hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden h-full max-w-[280px] mx-auto"
         >
-            {/* Photo Placeholder (Nepal Flag) */}
-            <div className="w-full aspect-[3/4] bg-slate-950/50 rounded-md overflow-hidden relative border border-slate-800/30 shadow-inner flex items-center justify-center">
-                {/* Using a generic flag representation or actual image if available. 
-            For now, using a stylized flag shape/color */}
-                <div className="w-full h-full relative p-4 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+            {/* Top Text */}
+            <div className="text-center mb-1">
+                <p className="font-serif text-slate-800 text-sm italic">In loving</p>
+                <p className="font-serif text-slate-900 text-2xl font-bold italic tracking-wide">memory</p>
+            </div>
+
+            {/* Photo/Name Placeholder Area */}
+            <div className="relative w-full aspect-[3/4] max-w-[180px] mx-auto mb-2">
+                {/* Central Container */}
+                <div className="w-full h-full bg-slate-50/50 rounded-lg overflow-hidden flex items-center justify-center relative shadow-inner border border-slate-100 p-4">
+                    {/* Background Flag (Low Opacity) */}
                     <img
                         src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Flag_of_Nepal.svg"
-                        alt="Nepal Flag"
-                        className="w-full h-full object-contain drop-shadow-md"
+                        alt="Flag Background"
+                        className="absolute inset-0 w-full h-full object-cover opacity-10 blur-[0.5px]"
                     />
+
+                    {/* Name in Center */}
+                    <p className="relative z-10 text-slate-900 font-bold text-lg text-center leading-tight drop-shadow-sm font-serif break-words w-full">
+                        {name}
+                    </p>
                 </div>
 
-                {/* Overlay gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent"></div>
+                {/* Decorative Leaves */}
+                <Leaf className="absolute -left-4 bottom-8 w-8 h-8 text-black fill-black rotate-[-45deg]" />
+                <Leaf className="absolute -right-4 bottom-8 w-8 h-8 text-black fill-black rotate-[45deg] scale-x-[-1]" />
             </div>
 
             {/* Candle */}
-            <BurningCandle />
+            <div className="scale-75 -my-2">
+                <BurningCandle />
+            </div>
 
-            {/* Text */}
-            <div className="text-center">
-                <p className="text-slate-400 text-xs font-medium">वीर सहिद</p>
-                <p className="text-slate-600 text-[10px]">अमर रहुन्</p>
+            {/* Bottom Address Section */}
+            <div className="w-full mt-auto relative min-h-[3rem] flex flex-col items-center justify-center">
+                <div className="text-center w-full px-2 border-t border-slate-100 pt-2">
+                    <p className="text-slate-500 text-xs font-medium line-clamp-2 leading-tight" title={address}>{address}</p>
+                </div>
             </div>
         </motion.div>
     );
@@ -162,6 +177,189 @@ const TorchLight = () => {
         </div>
     );
 };
+
+const MARTYRS = [
+    {
+        "Name": "Buddha Bahadur Tamang",
+        "Address": "Kirtipur Municipality–2, Kathmandu"
+    },
+    {
+        "Name": "Iswat Bahadur Adhikari",
+        "Address": "Kathmandu Metropolitan City–11"
+    },
+    {
+        "Name": "Santosh Bishwakarma",
+        "Address": "Belka Municipality–4, Udayapur"
+    },
+    {
+        "Name": "Sulav Raj Shrestha",
+        "Address": "Nepalgunj Sub-Metropolitan City–1, Banke"
+    },
+    {
+        "Name": "Ayush Thapa",
+        "Address": "Nepalgunj Sub-Metropolitan City–1, Banke"
+    },
+    {
+        "Name": "Shriyam Chaulagain",
+        "Address": "Belbari Municipality–11, Morang"
+    },
+    {
+        "Name": "Gaurav Joshi",
+        "Address": "Dhangadhi Sub-Metropolitan City–5, Kailali"
+    },
+    {
+        "Name": "Yog Bahadur Shrestha",
+        "Address": "Bahrabise Municipality–6, Sindhupalchok"
+    },
+    {
+        "Name": "Umesh Mahat",
+        "Address": "Chautara Sangachokgadhi Municipality–8"
+    },
+    {
+        "Name": "Asahab Alam Thakurai",
+        "Address": "Birgunj Metropolitan City–12, Parsa"
+    },
+    {
+        "Name": "Sauran Kishor Shrestha",
+        "Address": "Baglung Municipality–4, Baglung"
+    },
+    {
+        "Name": "Subhash Kumar Bohora",
+        "Address": "Khaptad Chhanna Rural Municipality–7, Bajhang"
+    },
+    {
+        "Name": "Bhimraj Dhami",
+        "Address": "Durgathali Rural Municipality–1, Bajura"
+    },
+    {
+        "Name": "Rasik Khatri Khatiwada",
+        "Address": "Panauti Municipality–10, Kavrepalanchok"
+    },
+    {
+        "Name": "Dilanarayan Tamang",
+        "Address": "Temal Rural Municipality–7, Kavrepalanchok"
+    },
+    {
+        "Name": "Vinod Maharjan",
+        "Address": "Lalitpur Metropolitan City–7"
+    },
+    {
+        "Name": "Yogendra Nyaupane",
+        "Address": "Golanjor Rural Municipality–1, Sindhuli"
+    },
+    {
+        "Name": "Milan Rai",
+        "Address": "Dudhauli Municipality–8, Sindhuli"
+    },
+    {
+        "Name": "Dipesh Sunuwar",
+        "Address": "Tinpatan Rural Municipality–6, Sindhuli"
+    },
+    {
+        "Name": "Chhatraman Kuthumi",
+        "Address": "Pakhribas Municipality–2, Dhankuta"
+    },
+    {
+        "Name": "Ojhan Budha",
+        "Address": "Swamikartik Khapar Rural Municipality–2, Bajura"
+    },
+    {
+        "Name": "Sarkumar Rai",
+        "Address": "Chaudandigadhi Municipality–3, Udayapur"
+    },
+    {
+        "Name": "Shabharaj Balami Shrestha",
+        "Address": "Kakani Rural Municipality–1, Nuwakot"
+    },
+    {
+        "Name": "Lachhuman Rai",
+        "Address": "Panchakanya Rural Municipality–2, Nuwakot"
+    },
+    {
+        "Name": "Dhiraj Shrestha",
+        "Address": "Tadi Rural Municipality–3, Nuwakot"
+    },
+    {
+        "Name": "Devkumar Subedi",
+        "Address": "Lalbandi Municipality–5, Sarlahi"
+    },
+    {
+        "Name": "Pravin Kulung",
+        "Address": "Silichong Rural Municipality–3, Sankhuwasabha"
+    },
+    {
+        "Name": "Nikhita Gautam",
+        "Address": "Kalika Municipality–8, Chitwan"
+    },
+    {
+        "Name": "Abhishek Chaulagain",
+        "Address": "Shailung Rural Municipality–4, Dolakha"
+    },
+    {
+        "Name": "Mahesh Budhathoki",
+        "Address": "Bigu Rural Municipality–3, Dolakha"
+    },
+    {
+        "Name": "Vijay Chaudhary",
+        "Address": "Lahan Municipality–15, Siraha"
+    },
+    {
+        "Name": "Niraj Pant",
+        "Address": "Dasharathchanda Municipality–6, Baitadi"
+    },
+    {
+        "Name": "Deepak Singh Saud",
+        "Address": "Shivanath Rural Municipality–2, Baitadi"
+    },
+    {
+        "Name": "Abhishek Shrestha",
+        "Address": "Inaruwa Municipality–6, Sunsari"
+    },
+    {
+        "Name": "Sajan Rai",
+        "Address": "Dharan Sub-Metropolitan City–22, Sunsari"
+    },
+    {
+        "Name": "Mohan Sardar",
+        "Address": "Itahari Sub-Metropolitan City–14, Sunsari"
+    },
+    {
+        "Name": "Madhav Saru Magar",
+        "Address": "Bhumikasthan Municipality–4, Arghakhanchi"
+    },
+    {
+        "Name": "Bimbal Babu Bhatt",
+        "Address": "Barpak Sulikot Rural Municipality–5, Gorkha"
+    },
+    {
+        "Name": "Arjun Bhatt",
+        "Address": "Gandaki Rural Municipality–4, Gorkha"
+    },
+    {
+        "Name": "Anish Parajuli",
+        "Address": "Palungtar Municipality–2, Gorkha"
+    },
+    {
+        "Name": "Gyanindra Sedhai",
+        "Address": "Arjundhara Municipality–11, Jhapa"
+    },
+    {
+        "Name": "Dinesh Rajbanshi",
+        "Address": "Ward No. 8, Jhapa"
+    },
+    {
+        "Name": "Kamal Bhandari",
+        "Address": "Hilihang Rural Municipality–2, Panchthar"
+    },
+    {
+        "Name": "Amrit Gurung",
+        "Address": "Rupa Rural Municipality–5, Kaski"
+    },
+    {
+        "Name": "Uttam Thapa",
+        "Address": "Lekam Rural Municipality–3, Darchula"
+    }
+];
 
 export default function MartyrsWall() {
     return (
@@ -216,8 +414,13 @@ export default function MartyrsWall() {
 
                 {/* The Wall Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8">
-                    {Array.from({ length: 20 }).map((_, index) => (
-                        <WallFrame key={index} index={index} />
+                    {MARTYRS.map((martyr, index) => (
+                        <WallFrame
+                            key={index}
+                            index={index}
+                            name={martyr.Name}
+                            address={martyr.Address}
+                        />
                     ))}
                 </div>
 
