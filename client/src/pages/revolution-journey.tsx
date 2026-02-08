@@ -9,7 +9,8 @@ const JourneyStep = ({
     icon: Icon,
     bgClass,
     isActive,
-    onNext
+    onNext,
+    onSkip
 }: {
     title: string;
     description: string;
@@ -17,6 +18,7 @@ const JourneyStep = ({
     bgClass: string;
     isActive: boolean;
     onNext?: () => void;
+    onSkip?: () => void;
 }) => {
     return (
         <div className={`absolute inset-0 flex flex-col items-center justify-center p-8 transition-opacity duration-1000 ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}>
@@ -44,14 +46,27 @@ const JourneyStep = ({
                 </p>
 
                 {onNext && (
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={onNext}
-                        className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white rounded-full font-medium text-lg flex items-center gap-3 mx-auto transition-colors shadow-lg shadow-red-900/20"
-                    >
-                        अर्को चरण <ArrowRight className="w-5 h-5" />
-                    </motion.button>
+                    <div className="flex items-center justify-center gap-4">
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={onNext}
+                            className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white rounded-full font-medium text-lg flex items-center gap-3 transition-colors shadow-lg shadow-red-900/20"
+                        >
+                            अर्को चरण <ArrowRight className="w-5 h-5" />
+                        </motion.button>
+
+                        {onSkip && (
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={onSkip}
+                                className="px-6 py-4 text-slate-400 hover:text-slate-200 font-medium text-lg transition-colors"
+                            >
+                                Skip Intro
+                            </motion.button>
+                        )}
+                    </div>
                 )}
             </motion.div>
         </div>
@@ -168,16 +183,12 @@ export default function RevolutionJourney() {
                     {...step}
                     isActive={currentStep === index}
                     onNext={handleNext}
+                    onSkip={() => setLocation('/martyrs-wall')}
                 />
             ))}
 
             {/* Skip Button */}
-            <button
-                onClick={() => setLocation('/martyrs-wall')}
-                className="absolute top-6 right-6 text-slate-500 hover:text-slate-300 text-sm z-50 transition-colors"
-            >
-                Skip Intro
-            </button>
+
         </div>
     );
 }
